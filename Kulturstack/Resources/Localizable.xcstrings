@@ -1,24 +1,102 @@
 {
-  "sourceLanguage" : "fr",
-  "strings" : {
-    "app.name" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kulturstack" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kulturstack" } }
+  "sourceLanguage": "fr",
+  "strings": {
+    "app.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kulturstack"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kulturstack"
+          }
+        }
       }
     },
-    "root.empty.title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing here yet" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rien ici pour l’instant" } }
+    "debug.storage.badge %lld %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store V%1$lld · %2$lld items · %3$lld logs"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base V%1$lld · %2$lld fiches · %3$lld logs"
+          }
+        }
       }
     },
-    "root.empty.message" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your journal is coming in the next step." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ton journal arrive à la prochaine étape." } }
+    "root.empty.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your journal is coming in the next step."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton journal arrive à la prochaine étape."
+          }
+        }
+      }
+    },
+    "root.empty.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing here yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien ici pour l’instant"
+          }
+        }
+      }
+    },
+    "storage.error.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The database could not be opened. Reinstalling the app may help — if it persists, contact us."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La base de données n’a pas pu être ouverte. Réinstaller l’app peut aider — si ça persiste, écris-nous."
+          }
+        }
+      }
+    },
+    "storage.error.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your journal can’t be opened"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’ouvrir ton journal"
+          }
+        }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

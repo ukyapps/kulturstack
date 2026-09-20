@@ -6,7 +6,7 @@ Journal de consommation culturelle multi-média, sans friction, local-first, iOS
 
 ## État
 
-- **2026-09-20** — cadrage technique terminé, 8 décisions tranchées, plan Tranche 1 écrit. **Aucune ligne de Swift.** Prochaine session : PR 0 (bootstrap).
+- **2026-09-20** — cadrage terminé, 11 ADRs, plan Tranche 1. **PR 0 fusionnée** : le projet compile, 2 tests, CI (tests + review Claude) en place, `main` protégée. Prochaine étape : PR 1 (schéma V1).
 
 ## Carte des documents
 
@@ -23,7 +23,7 @@ Journal de consommation culturelle multi-média, sans friction, local-first, iOS
 |---|---|
 | Nom | Kulturstack |
 | Bundle id | `com.ukyapps.kulturstack` |
-| Repo GitHub (à créer) | `ukyapps/kulturstack`, **public** |
+| Repo GitHub | [ukyapps/kulturstack](https://github.com/ukyapps/kulturstack), public |
 | Service Trousseau | `kulturstack` |
 | iOS minimum | 18.0, iPhone uniquement |
 | Langues | français (référence) + anglais |
