@@ -17,7 +17,7 @@ La founder ne relit pas le Swift en détail. **Les tests sont le filet, pas une 
 | `Features/` (ViewModels) | **≥ 50 %** | ViewModels testés avec providers/repos mockés ; les Views ne sont pas testées unitairement |
 | `DesignSystem/` | best-effort | composants triviaux |
 
-Mesure : `make test` produit le rapport `xccov` ; la CI échoue sous les seuils.
+Mesure : `make test` puis `make coverage` (rapport `xccov`). Les seuils sont vérifiés à la review locale (CLAUDE.md), pas encore imposés par la CI.
 
 ## Outils
 
