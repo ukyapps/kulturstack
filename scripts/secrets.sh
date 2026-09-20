@@ -4,7 +4,9 @@
 set -euo pipefail
 
 SERVICE="kulturstack"
-OUT="$(cd "$(dirname "$0")/.." && pwd)/Config/Secrets.xcconfig"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$ROOT/Config/Secrets.xcconfig"
+mkdir -p "$ROOT/Config"
 SECRETS=(TMDB_READ_TOKEN)
 
 get_secret() {
