@@ -8,18 +8,18 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** : projet Xcode, design system minimal, schéma de base V1 avec plan de migration, 21 tests. **Aucune fonctionnalité utilisable** encore : l'app se lance sur un écran vide et affiche « Base V1 · 0 fiches · 0 logs ».
+Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration) et le **premier écran** : le Journal, liste des logs du plus récent au plus ancien, avec son état vide, son état d'erreur et un menu DEBUG pour remplir / effacer des données de démo. 41 tests. **Pas encore de recherche** : on ne peut rien logger soi-même avant la PR 5-6.
 
 ## 2. Features — planifié vs livré
 
-### Tranche 1 — Le log magique (en cours, 2 PRs sur 12)
+### Tranche 1 — Le log magique (en cours, 3 PRs sur 12)
 
 | PR | Feature | État |
 |---|---|---|
 | 0 | Bootstrap : projet, Makefile, secrets, `EmptyState`, FR/EN, CI tests | ✅ fusionnée (#1, 2026-09-20) |
 | 1 | Schéma V1 + plan de migration + règles métier | ✅ fusionnée (#2, 2026-09-20) |
-| 2 | Journal vide + seed DEBUG | ⏳ prochaine |
-| 3 | Secrets + client TMDB | — |
+| 2 | Journal vide + seed DEBUG | ✅ PR #4 (2026-09-20) |
+| 3 | Secrets + client TMDB | ⏳ prochaine |
 | 4 | OpenLibrary + recherche unifiée | — |
 | 5 | Écran Recherche | — |
 | 6 | Log en 1 tap | — |
@@ -50,8 +50,24 @@ Le détail de chaque feature : `docs/product/prd.md` §6. Les écrans : `docs/pr
 Kulturstack/
 ├── App/
 │   ├── KulturstackApp.swift          ouvre le ModelContainer de prod ; EmptyState d'erreur si échec
-│   ├── RootView.swift                placeholder + badge DEBUG « Base V1 · n fiches · n logs »
+│   ├── RootView.swift                NavigationStack → JournalView ; badge DEBUG « Base V1 · n fiches · n logs »
 │   └── ModelContainerFactory.swift   production() / onDisk(url:) / inMemory() — toujours avec le plan de migration
+├── Data/
+│   └── Repositories/
+│       ├── LogRepository.swift       protocole : fetchAll()
+│       └── SwiftDataLogRepository.swift  tri date desc, puis createdAt desc
+├── Features/
+│   ├── Journal/
+│   │   ├── JournalView.swift         4 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · liste
+│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed
+│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (titre, sous-titre, date, statut, note, jaquette)
+│   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
+│   └── Shared/
+│       ├── MediaKind+Presentation.swift   label localisé + symbole SF par type
+│       └── LogStatus+Presentation.swift   label localisé par statut
+├── Debug/                            compilé hors Release
+│   ├── DemoSeed.swift                fill() = wipe() puis 23 fiches / 25 logs sur 12 mois ; wipe() = tout supprimer
+│   └── DebugMenu.swift               coccinelle dans la toolbar : « Remplir données démo » / « Tout effacer »
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
@@ -70,18 +86,20 @@ Kulturstack/
 │       └── KulturstackMigrationPlan.swift  schemas [V1], stages [], current
 ├── DesignSystem/
 │   ├── Tokens.swift                  Spacing, Radius, Color.*
-│   └── EmptyState.swift              icône + titre + message + action optionnelle
+│   ├── EmptyState.swift              icône + titre + message + action optionnelle
+│   ├── StarRating.swift              note 1…10 → 5 étoiles avec demi ; Stars(rating:) testable
+│   └── CoverThumbnail.swift          AsyncImage 2:3 avec placeholder par symbole
 └── Resources/
     ├── Localizable.xcstrings         6 clés FR + EN
     ├── PrivacyInfo.xcprivacy         aucune donnée collectée
     └── Assets.xcassets               AccentColor, AppIcon (vide)
 ```
 
-**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `Data/` (providers, repositories, réseau), `Features/` (Search, Journal, ItemDetail, LogEdit, Settings), `Debug/` (seed), `Domain/UseCases/`.
+**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `Data/Providers/` et `Data/Network/` (PR 3-4), `Features/Search`, `ItemDetail`, `LogEdit`, `Settings`, `Domain/UseCases/`.
 
-652 lignes de Swift, tests compris.
+**Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 21, tous verts
+## 4. Tests — 41, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -90,10 +108,17 @@ Kulturstack/
 | `LogRulesTests` | 7 (paramétrés : 11 cas) | **T-02** statut interdit, **T-03** note hors plage, **T-06** date = maintenant, fabrique refuse un statut interdit |
 | `DetailsCodecTests` | 5 | round-trip, **T-15** champs manquants → défauts, `{}` → défauts, décodage par type, `MediaItem.details` |
 | `SchemaMigrationTests` | 3 | **T-01** store V1 rouvert avec le plan → données intactes ; schéma courant = dernier du plan ; clé `ExternalRef` unique |
+| `DemoSeedTests` | 3 | **T-14** fill × 2 = mêmes comptes ; wipe → 0 ; logs dans les 12 derniers mois, avec notes et commentaires |
+| `SwiftDataLogRepositoryTests` | 2 | tri du plus récent au plus ancien ; base vide → liste vide |
+| `JournalViewModelTests` | 6 | loading au départ ; vide ; chargé ; erreur ; reprise après erreur ; **l'état survit à la suppression des logs** (régression du crash) |
+| `JournalRowModelTests` | 4 | livre → auteur, film → année, repli, champs recopiés |
+| `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
+| `MediaKindPresentationTests` | 3 (paramétrés : 13 cas) | chaque type et statut a un label, FR et EN |
+| `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
 
-Couverture : `Domain/` 81-100 % par fichier, app 91 % global. Cibles (≥ 70 % Domain, ≥ 50 % Features) tenues.
+Couverture : `Domain/` 90 %, `Data/` 100 %, `Features/` 90 %, `DesignSystem/` 93 %. Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
-Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (recherche et providers, PR 3-4), T-13 (secrets, PR 3), T-14 (seed, PR 2), T-16 (stats, PR 9), T-17 (conversion des notes, PR 3 ou T3).
+Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (recherche et providers, PR 3-4), T-13 (secrets, PR 3), T-16 (stats, PR 9), T-17 (conversion des notes, PR 3 ou T3).
 
 ## 5. Infrastructure
 
@@ -132,6 +157,6 @@ Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (rech
 
 **Founder** : réserver les domaines · poser la clé TMDB dans le Trousseau · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store.
 
-**Prochaine session** : PR 2 — Journal vide + seed DEBUG.
+**Prochaine session** : PR 3 — Secrets + client TMDB. **Prérequis** : la clé TMDB dans le Trousseau (voir ci-dessus). Le menu DEBUG déménagera dans Réglages en PR 11 ; le bouton « Chercher » de l'état vide du Journal arrive en PR 5 avec l'écran Recherche.
 
 **Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; recherche = onglet ou « + » ; tap immédiat vs délai annulable ; journal groupé par jour ; Envie en chip.
