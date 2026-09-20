@@ -2,17 +2,14 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.modelContext) private var context
+
     var body: some View {
         NavigationStack {
-            EmptyState(
-                icon: "books.vertical",
-                title: String(localized: "root.empty.title"),
-                message: String(localized: "root.empty.message")
-            )
-            .navigationTitle(String(localized: "app.name"))
-            #if DEBUG
-            .safeAreaInset(edge: .bottom) { StorageBadge() }
-            #endif
+            JournalView(repository: SwiftDataLogRepository(context: context))
+                #if DEBUG
+                .safeAreaInset(edge: .bottom) { StorageBadge() }
+                #endif
         }
     }
 }
@@ -28,6 +25,8 @@ private struct StorageBadge: View {
             .font(.caption.monospaced())
             .foregroundStyle(Color.textSecondary)
             .padding(.vertical, Spacing.s)
+            .frame(maxWidth: .infinity)
+            .background(.bar)
     }
 }
 #endif

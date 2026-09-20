@@ -11,10 +11,10 @@ struct SmokeTests {
     }
 
     @Test func frenchAndEnglishStringsExist() {
-        let fr = String(localized: "root.empty.title", locale: Locale(identifier: "fr"))
-        let en = String(localized: "root.empty.title", locale: Locale(identifier: "en"))
+        let fr = String(localized: "journal.empty.title", locale: Locale(identifier: "fr"))
+        let en = String(localized: "journal.empty.title", locale: Locale(identifier: "en"))
         #expect(!fr.isEmpty)
         #expect(!en.isEmpty)
-        #expect(fr != "root.empty.title")
+        #expect(fr != "journal.empty.title")
     }
 }
