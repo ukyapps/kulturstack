@@ -1,8 +1,8 @@
 # Kulturstack — conventions du repo
 
-Journal de consommation culturelle multi-média, sans friction, local-first, iOS. Lis ce fichier à chaque session. Les décisions sont dans `docs/decisions/`, le cadrage dans `docs/tdd/`, le plan courant dans `docs/plans/`.
+Journal de consommation culturelle multi-média, sans friction, local-first, iOS. Lis ce fichier à chaque session, puis `docs/etat-du-projet.md` (la photo) et la dernière page de `docs/journal/` (l'histoire) pour reprendre là où on s'est arrêté. Le produit est décrit dans `docs/product/` (PRD + design), les décisions dans `docs/decisions/`, le cadrage dans `docs/tdd/`, le plan courant dans `docs/plans/`.
 
-> En CI, le reviewer n'a que `Read` / `Write` / `Grep` / `Glob` — pas de MCP, pas de daemon, pas de simulateur. Rien ici n'exige un autre outil.
+> Pas de review automatique en CI (décision du 2026-09-20, ADR-012). **Chaque PR est relue par Claude en local, avec la grille du §« Review locale », avant d'être poussée.** La CI ne fait tourner que les tests.
 
 ## Identité
 
@@ -15,13 +15,13 @@ Journal de consommation culturelle multi-média, sans friction, local-first, iOS
 
 ## Stack
 
-Swift 5.9+ · SwiftUI · MVVM + Repository · SwiftData (`VersionedSchema` + `SchemaMigrationPlan`, toujours) · `async/await` partout · Swift Testing.
+Swift 6 (Xcode 26) · SwiftUI · MVVM + Repository · SwiftData (`VersionedSchema` + `SchemaMigrationPlan`, toujours) · `async/await` partout · Swift Testing.
 
 **XcodeGen** : le `.xcodeproj` est généré depuis `project.yml`, jamais édité à la main.
 ```
 make generate            # secrets + xcodegen
 make build
-make test SIM="iPhone 16 Pro"
+make test SIM="iPhone 17 Pro"
 make coverage
 ```
 
@@ -71,8 +71,21 @@ La founder ne relit pas le Swift en détail : **les tests sont le filet**. Pour 
 
 - `main` protégée, **jamais** de commit direct. Branches `feat/` · `fix/` · `chore/`. 1 branche = 1 PR = 1 changement focalisé ; jamais réutiliser un nom de branche.
 - Messages à l'infinitif, première ligne < 72 caractères, 1 commit = 1 changement logique.
-- Merge sur verdict **PASS** de la review (zéro finding bloquant ; mineurs corrigés ou justifiés dans la PR). Le `/5` est indicatif — **ne pas chasser le 5/5**.
+- Merge quand le check `test` est vert **et** que la review locale (ci-dessous) est PASS, collée dans la description de la PR. La founder fusionne dans le navigateur (Squash and merge).
 - Jamais de `--force`, `reset --hard` destructif, `--no-verify`, ni de secret committé.
+
+## Review locale — avant chaque push
+
+Relire le diff complet (`git diff main...HEAD`) contre ce fichier et écrire la fiche dans la description de la PR :
+
+```
+VERDICT: PASS | FAIL
+## Bloquant   (liste ou « aucun »)
+## Mineur     (liste ou « aucun »)
+## Bien       (1 à 3 points)
+```
+
+Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feature sans test ; `@Model` modifié sans `SchemaVN` + stage ; string UI en dur ou FR sans EN ; seed au boot ou non idempotent ; écran sans `EmptyState` ou qui confond vide / erreur / edge ; statut hors `allowedStatuses` ; note hors 1…10 ; singleton ; completion handler ; SDK analytics / crash / pub. Un FAIL ne se pousse pas.
 
 ## Code
 

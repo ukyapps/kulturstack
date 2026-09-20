@@ -14,7 +14,7 @@ créé: 2026-09-20
 **Règles du plan**
 - 1 PR = 1 branche = 1 jour max = **quelque chose de visible à l'écran** à la fin.
 - Chaque PR : tests d'abord (rouge → vert), strings dans `Localizable.xcstrings` FR + EN, captures état vide / rempli dans la description.
-- Merge sur verdict PASS de la review. Pas de chasse au 5/5.
+- Merge quand `test` est vert en CI et que la review locale (CLAUDE.md) est PASS, collée dans la PR.
 - Si une PR déborde d'une journée : la couper, pas la forcer.
 
 **Estimation** : 12 PRs ≈ 12 jours de travail → **4 à 6 semaines part-time**.
@@ -33,10 +33,12 @@ créé: 2026-09-20
 - `PrivacyInfo.xcprivacy`.
 - `DesignSystem/` : tokens (couleurs, espacements, typo), `EmptyState` (icône + titre + message + CTA optionnel).
 - `CLAUDE.md`, `docs/` (déjà écrits), `README.md`.
-- `.github/workflows/claude-review.yml` écrit pour Kulturstack (reviewer Claude, fiche /5 en commentaire sticky, gate fail-closed, cap 12 000 lignes, `--max-turns 40`).
-- Secret de review `CLAUDE_CODE_OAUTH_TOKEN` + ruleset `main` exigeant le check `review` (repo public → gratuit).
+- ~~`.github/workflows/claude-review.yml`~~ — mis en place puis **retiré le 2026-09-20** (ADR-012) : remplacé par la review locale.
+- Ruleset `main` exigeant le check `test` (repo public → gratuit).
 
 **Démo** : `make generate && make build`, app lancée, écran avec `EmptyState`. **Tests** : 1 test trivial qui prouve que la cible de test tourne.
+
+**Fait le 2026-09-20 (#1).**
 
 ## PR 1 — Schéma V1 et plan de migration `feat/schema-v1`
 
@@ -46,6 +48,8 @@ créé: 2026-09-20
 - Règles métier dans `Domain/` : `allowedStatuses`, validation rating, `DetailsCodec`.
 
 **Démo** : le placeholder affiche un badge DEBUG « Base V1 · 0 fiches · 0 logs ». (Peu spectaculaire, assumé : ce sont les fondations, voir ADR-003.)
+
+**Fait le 2026-09-20 (#2) — 21 tests, Domain 81-100 %.**
 
 ## PR 2 — Journal vide + seed DEBUG `feat/journal-empty-and-seed`
 
@@ -157,5 +161,6 @@ PR 2 et PR 3 peuvent se faire dans n'importe quel ordre après PR 1.
 - [ ] Panne OpenLibrary simulée : films toujours cherchables.
 - [ ] Aucune string en dur (grep `Text("` sans `String(localized:)` = 0).
 - [ ] `Secrets.xcconfig` absent du repo, hook pre-commit actif.
+- [ ] Chaque PR porte sa fiche de review locale (CLAUDE.md).
 - [ ] `PrivacyInfo.xcprivacy` présent, attribution TMDB visible.
 - [ ] Installé sur l'iPhone de la founder via TestFlight.
