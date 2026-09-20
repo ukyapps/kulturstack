@@ -1,0 +1,28 @@
+import Foundation
+import Testing
+@testable import Kulturstack
+
+struct MediaKindPresentationTests {
+    @Test(arguments: MediaKind.allCases)
+    func everyKindHasALabelAndASymbol(kind: MediaKind) {
+        #expect(!kind.label.isEmpty)
+        #expect(!kind.label.hasPrefix("kind."))
+        #expect(!kind.symbol.isEmpty)
+    }
+
+    @Test(arguments: LogStatus.allCases)
+    func everyStatusHasALabel(status: LogStatus) {
+        #expect(!status.label.isEmpty)
+        #expect(!status.label.hasPrefix("status."))
+    }
+
+    @Test func labelsExistInBothLanguages() {
+        for kind in MediaKind.allCases {
+            let key = "kind.\(kind.rawValue)"
+            let fr = String(localized: String.LocalizationValue(key), locale: Locale(identifier: "fr"))
+            let en = String(localized: String.LocalizationValue(key), locale: Locale(identifier: "en"))
+            #expect(fr != key, "FR manquant pour \(key)")
+            #expect(en != key, "EN manquant pour \(key)")
+        }
+    }
+}
