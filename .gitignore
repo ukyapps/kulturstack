@@ -1,0 +1,26 @@
+# Généré par XcodeGen — jamais édité à la main
+*.xcodeproj
+*.xcworkspace
+Kulturstack/Info.plist
+
+# Secrets — jamais versionnés (voir docs/tdd/06-secrets.md)
+Config/Secrets.xcconfig
+.env
+*.env
+
+# Xcode
+DerivedData/
+build/
+*.xcresult
+xcuserdata/
+*.xccheckout
+*.moved-aside
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+
+# CI
+pr.diff
+review.md
