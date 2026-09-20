@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Refuse tout commit contenant un secret ou un fichier interdit. Installé par `make hooks`.
+set -euo pipefail
+
+blocked=0
+while IFS= read -r file; do
+  case "$file" in
+    Config/Secrets.xcconfig|*.env|.env)
+      echo "✗ $file est interdit dans le repo (secret)." >&2; blocked=1 ;;
+  esac
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if git diff --cached --diff-filter=ACM -U0 | grep -qE '^\+.*(TMDB_READ_TOKEN|CLIENT_SECRET|API_KEY|OAUTH_TOKEN)[[:space:]]*[=:][[:space:]]*["'"'"']?[A-Za-z0-9_\-]{16,}'; then
+  echo "✗ Une valeur ressemblant à un secret est dans le diff. Retire-la et fais-la tourner." >&2
+  blocked=1
+fi
+
+exit $blocked

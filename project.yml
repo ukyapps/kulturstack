@@ -1,0 +1,67 @@
+name: Kulturstack
+
+options:
+  bundleIdPrefix: com.ukyapps
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: fr
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+configFiles:
+  Debug: Config/Secrets.xcconfig
+  Release: Config/Secrets.xcconfig
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+
+targets:
+  Kulturstack:
+    type: application
+    platform: iOS
+    sources:
+      - path: Kulturstack
+        excludes:
+          - Info.plist
+    info:
+      path: Kulturstack/Info.plist
+      properties:
+        CFBundleDisplayName: Kulturstack
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        TMDBReadToken: $(TMDB_READ_TOKEN)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ukyapps.kulturstack
+        GENERATE_INFOPLIST_FILE: NO
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    scheme:
+      testTargets:
+        - KulturstackTests
+      gatherCoverageData: true
+      coverageTargets:
+        - Kulturstack
+
+  KulturstackTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: KulturstackTests
+    dependencies:
+      - target: Kulturstack
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.ukyapps.kulturstack.tests

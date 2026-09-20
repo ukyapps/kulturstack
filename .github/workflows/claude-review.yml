@@ -1,0 +1,106 @@
+name: review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  MAX_DIFF_LINES: 12000
+
+jobs:
+  review:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extraire le diff (cap ${{ env.MAX_DIFF_LINES }} lignes)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr diff "${{ github.event.pull_request.number }}" > pr.diff
+          lines=$(wc -l < pr.diff | tr -d ' ')
+          echo "Diff : $lines lignes"
+          if [ "$lines" -gt "$MAX_DIFF_LINES" ]; then
+            echo "::error::Diff trop gros ($lines > $MAX_DIFF_LINES lignes). Découper la PR."
+            exit 1
+          fi
+
+      - name: Review Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--max-turns 40 --model claude-opus-5 --allowedTools Read,Grep,Glob,Write"
+          prompt: |
+            Tu es le reviewer de Kulturstack. Tu tournes en CI : tu n'as que Read, Grep, Glob et Write — pas de Bash, pas de simulateur, pas de MCP.
+
+            1. Lis `CLAUDE.md` en entier : ce sont les règles du repo.
+            2. Lis `pr.diff` **par pages** avec Read(offset:, limit: 400) jusqu'à la fin. Ne lis jamais le fichier en une fois.
+            3. Ouvre les fichiers du repo dont tu as besoin pour comprendre le contexte du diff.
+            4. Écris ta review dans `review.md`, exactement dans ce format, et rien d'autre dans le fichier :
+
+            VERDICT: PASS
+            SCORE: 4/5
+
+            ## Bloquant
+            (liste, ou « aucun »)
+
+            ## Mineur
+            (liste, ou « aucun »)
+
+            ## Bien
+            (1 à 3 points)
+
+            VERDICT vaut FAIL dès qu'il y a au moins un point bloquant. Sont bloquants :
+            - un bug ou un comportement faux ;
+            - un secret ou une valeur ressemblant à un secret dans le diff, ou `Config/Secrets.xcconfig` versionné ;
+            - du code de feature sans test (TDD strict, voir CLAUDE.md) ;
+            - une modification d'un `@Model` sans nouveau `SchemaVN` + stage de migration ;
+            - une string d'interface en dur (hors `Localizable.xcstrings`) ou une string FR sans sa traduction EN ;
+            - un seed de données au démarrage, ou un seed non idempotent ;
+            - un écran sans état vide via `EmptyState`, ou qui confond vide / erreur / edge ;
+            - un statut de log non déclaré dans `allowedStatuses`, ou une note hors 1…10 ;
+            - un singleton, un completion handler, un `--force` ou un `--no-verify` ;
+            - un SDK d'analytics, de crash reporting ou de pub.
+
+            Le score /5 est indicatif. Ne cherche pas la perfection : un point mineur n'empêche pas un PASS. Sois concret : fichier, ligne, ce qui cloche, ce qu'il faudrait.
+
+      - name: Poster la fiche et verrouiller (fail-closed)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          marker="<!-- kulturstack-review -->"
+          if [ ! -s review.md ]; then
+            printf '%s\n\n**VERDICT: FAIL** — la review n'"'"'a pas produit de fiche (`review.md` absent). Fail-closed.\n' "$marker" > body.md
+            verdict=FAIL
+          else
+            verdict=$(grep -m1 -E '^VERDICT: (PASS|FAIL)$' review.md | awk '{print $2}' || true)
+            [ -n "$verdict" ] || verdict=FAIL
+            { echo "$marker"; echo; echo "### 🧐 Review Claude"; echo; cat review.md; } > body.md
+          fi
+
+          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@body.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$PR/comments" -F body=@body.md > /dev/null
+          fi
+
+          echo "Verdict : $verdict"
+          [ "$verdict" = "PASS" ]

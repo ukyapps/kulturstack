@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "app.name" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kulturstack" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kulturstack" } }
+      }
+    },
+    "root.empty.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing here yet" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rien ici pour l’instant" } }
+      }
+    },
+    "root.empty.message" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your journal is coming in the next step." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ton journal arrive à la prochaine étape." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
