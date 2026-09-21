@@ -1,12 +1,27 @@
 ---
 type: design
-statut: v1 — 2026-09-20 — propositions à valider avec la founder écran par écran
+statut: v1.1 — 2026-09-21 — Journal et Recherche réalisés et validés à l'écran ; Fiche, Modifier, Envie, Réglages à faire
 propriétaire: founder
 ---
 
 # Kulturstack — Design document (expérience et interface)
 
-Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est dans le PRD, le *comment technique* dans `docs/tdd/`. Tout ce qui suit est une proposition : l'ergonomie fine se valide à l'écran, maquette par maquette, en Tranche 1.
+Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est dans le PRD, le *comment technique* dans `docs/tdd/`. L'ergonomie fine se valide à l'écran, maquette par maquette, en Tranche 1 — chaque écran ci-dessous porte un encadré **Réalisé** qui dit ce qui est dans l'app et ce qui manque encore.
+
+## 0. Où en est l'interface (21/09/2026)
+
+| Écran | État | PR |
+|---|---|---|
+| Barre d'onglets Journal / Recherche | ✅ | #7 |
+| Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
+| Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), « Vu le … » sur une ligne déjà loggée (PR 8), ♡ Envie (PR 10) | #7 |
+| Tap = loggé + bandeau | ✅ · ⏳ bouton « Modifier » du bandeau (PR 7) | #8 |
+| Fiche d'une œuvre | ⏳ PR 8 | — |
+| Modifier un log | ⏳ PR 7 | — |
+| Envie | ⏳ PR 10 | — |
+| Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
+
+Les captures d'écran de chaque PR sont dans `docs/captures/pr-NN/`.
 
 ## 1. Les trois idées qui guident tout
 
@@ -43,7 +58,7 @@ Kulturstack
     └── À propos (attributions)
 ```
 
-**En Tranche 1** : deux onglets, Journal et Recherche, plus Réglages accessible depuis une icône en haut du Journal. La Bibliothèque n'apparaît qu'en T5 — on n'affiche pas un onglet vide pendant quatre tranches.
+**En Tranche 1** : deux onglets, Journal et Recherche (✅ depuis la PR #7), plus Réglages accessible depuis une icône en haut du Journal (PR 11). La Bibliothèque n'apparaît qu'en T5 — on n'affiche pas un onglet vide pendant quatre tranches.
 
 ## 3. Les écrans de la Tranche 1
 
@@ -71,6 +86,8 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log. **Manque** : groupement par jour, segments de période et chips de type avec compteurs, tap → fiche, appui long → modifier (PR 7-9).
+
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
 - **Edge** : « Aucun livre cette semaine » + « Voir tout ».
@@ -95,6 +112,8 @@ Kulturstack
 │                                 │
 └─────────────────────────────────┘
 ```
+
+> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s. Ligne = jaquette + titre + « Type · année · créateur ». **Manque** : « Vu le … » sur une ligne déjà loggée (PR 8), bouton « Modifier » du bandeau (PR 7), appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
 
 - La barre a le focus dès l'ouverture, clavier levé. Recherche à partir de 2 caractères, 300 ms après la dernière frappe.
 - **Tap = loggé** (statut terminé, maintenant). Bandeau en bas : « *Dune (2021)* loggé ✓ · **Modifier** » pendant 4 s.
@@ -129,10 +148,14 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
+> **À faire (PR 8).** Les données sont prêtes : poche `FilmDetails` / `SeriesDetails` / `BookDetails` encodée à la création de la fiche, logs reliés à la fiche.
+
 - Les détails de la « poche » varient par type : durée / réalisateur pour un film, saisons pour une série, pages / éditeur pour un livre.
 - Tap sur un log → Modifier.
 
 ### 3.4 Modifier un log (feuille)
+
+> **À faire (PR 7).** `StarRating` existe en lecture seule ; `LogRules` valide déjà statut et note ; `LogStatus.label` est localisé.
 
 ```
 ┌─────────────────────────────────┐
@@ -158,11 +181,15 @@ Kulturstack
 
 ### 3.5 Envie
 
+> **À faire (PR 10).** `LogUseCase.logNow(status: .wishlist)` est déjà testé ; le Journal affiche déjà la pastille « Envie ».
+
 Un filtre du Journal (chip « Envie »), pas un écran à part. Ligne = jaquette, titre, « ajouté le … », bouton « Je l'ai vu » qui crée un log terminé daté maintenant. L'envie reste dans l'historique.
 
 **Vide** : « Rien en attente », « Appuie longtemps sur un résultat de recherche pour le garder pour plus tard. »
 
 ### 3.6 Réglages
+
+> **À faire (PR 11).** Le menu DEBUG (« Remplir données démo » / « Tout effacer » / « Test recherche TMDB ») vit pour l'instant derrière une coccinelle dans la barre du Journal.
 
 Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), **Tout effacer** (rouge, double confirmation), Confidentialité (deux paragraphes), À propos (version, attributions TMDB avec logo, OpenLibrary). En DEBUG uniquement : « Remplir données démo » / « Tout effacer (démo) » et le badge « Base V1 · n fiches · n logs ».
 
@@ -210,12 +237,14 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 | Composant | Rôle | Tranche |
 |---|---|---|
 | `EmptyState` | icône + titre + message + CTA optionnel ; sert aux trois visages | 0 ✅ |
-| `MediaRow` | jaquette + titre + sous-titre + accessoire (étoiles, ♡, ✓) | 1 |
-| `KindBadge` | icône + libellé du type | 1 |
-| `StarRating` | demi-étoiles, interactif ou lecture seule | 1 |
-| `SectionHeader` | titre de section + état (spinner / erreur + réessayer) | 1 |
-| `Toast` | bandeau « Loggé ✓ · Modifier » | 1 |
-| `PeriodSegments` / `KindChips` | filtres du Journal avec compteurs | 1 |
+| `CoverThumbnail` | jaquette 2:3 avec placeholder par type | 1 ✅ (#4) |
+| `MediaRow` | jaquette + titre + sous-titre + accessoire (étoiles, ♡, ✓) | 1 ✅ (#7) — utilisé par la Recherche ; le Journal a encore sa propre `JournalRow` |
+| `KindBadge` | icône + libellé du type | 1 — remplacé par le libellé dans le sous-titre + l'icône du placeholder ; à créer seulement si un écran en a besoin |
+| `StarRating` | demi-étoiles, interactif ou lecture seule | 1 ✅ lecture seule (#4) · ⏳ interactif (PR 7) |
+| `SectionHeader` | titre de section + état (spinner / erreur + réessayer) | 1 ✅ titre + spinner (#7) ; l'erreur est une ligne de section |
+| `Toast` | bandeau « Loggé ✓ · Modifier » | 1 ✅ « loggé ✓ » (#8) · ⏳ « Modifier » (PR 7) |
+| `Chip` / `KindChips` | chips de filtre par type | 1 ✅ Recherche (#7) · ⏳ Journal avec compteurs (PR 9) |
+| `PeriodSegments` | segments Semaine · Mois · Année · Tout avec compteurs | 1 ⏳ (PR 9) |
 | `EpisodeCheckbox` | case + « prochain » | 2 |
 | `BarcodeScanner` | viseur | 5 |
 
