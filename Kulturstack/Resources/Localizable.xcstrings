@@ -65,22 +65,6 @@
         }
       }
     },
-    "debug.search.empty.message %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "TMDB found nothing for “%@”."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "TMDB n’a rien trouvé pour « %@ »."
-          }
-        }
-      }
-    },
     "debug.search.empty.title": {
       "localizations": {
         "en": {
@@ -93,22 +77,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun résultat"
-          }
-        }
-      }
-    },
-    "debug.search.error.title": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Search failed"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La recherche a échoué"
           }
         }
       }
@@ -157,6 +125,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Test recherche TMDB"
+          }
+        }
+      }
+    },
+    "debug.search.outage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simulate an OpenLibrary outage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simuler une panne OpenLibrary"
           }
         }
       }
@@ -253,6 +237,102 @@
           "stringUnit": {
             "state": "translated",
             "value": "Base V%1$lld · %2$lld fiches · %3$lld logs"
+          }
+        }
+      }
+    },
+    "family.books": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Books"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Livres"
+          }
+        }
+      }
+    },
+    "family.games": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux"
+          }
+        }
+      }
+    },
+    "family.live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concerts, theatre, exhibitions"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concerts, théâtre, expos"
+          }
+        }
+      }
+    },
+    "family.music": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Albums"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disques"
+          }
+        }
+      }
+    },
+    "family.podcasts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcasts"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcasts"
+          }
+        }
+      }
+    },
+    "family.screen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Films & series"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Films & séries"
           }
         }
       }
@@ -493,6 +573,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Note : %@ sur 5"
+          }
+        }
+      }
+    },
+    "search.section.failed %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ unavailable"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ indisponibles"
           }
         }
       }

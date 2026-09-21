@@ -16,6 +16,12 @@ struct MediaKindPresentationTests {
         #expect(!status.label.hasPrefix("status."))
     }
 
+    @Test(arguments: SearchFamily.allCases)
+    func everyFamilyHasALabel(family: SearchFamily) {
+        #expect(!family.label.isEmpty)
+        #expect(!family.label.hasPrefix("family."))
+    }
+
     @Test func labelsExistInBothLanguages() {
         for kind in MediaKind.allCases {
             let key = "kind.\(kind.rawValue)"
