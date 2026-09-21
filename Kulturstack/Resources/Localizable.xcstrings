@@ -17,6 +17,22 @@
         }
       }
     },
+    "chip.all": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous"
+          }
+        }
+      }
+    },
     "common.close": {
       "localizations": {
         "en": {
@@ -45,6 +61,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Réessayer"
+          }
+        }
+      }
+    },
+    "common.separator": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · "
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · "
           }
         }
       }
@@ -337,6 +369,22 @@
         }
       }
     },
+    "journal.empty.cta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chercher"
+          }
+        }
+      }
+    },
     "journal.empty.message": {
       "localizations": {
         "en": {
@@ -433,6 +481,22 @@
         }
       }
     },
+    "kind.album.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Albums"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disques"
+          }
+        }
+      }
+    },
     "kind.book": {
       "localizations": {
         "en": {
@@ -445,6 +509,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Livre"
+          }
+        }
+      }
+    },
+    "kind.book.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Books"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Livres"
           }
         }
       }
@@ -465,6 +545,22 @@
         }
       }
     },
+    "kind.concert.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concerts"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concerts"
+          }
+        }
+      }
+    },
     "kind.exhibition": {
       "localizations": {
         "en": {
@@ -477,6 +573,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Expo"
+          }
+        }
+      }
+    },
+    "kind.exhibition.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exhibitions"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expos"
           }
         }
       }
@@ -497,6 +609,22 @@
         }
       }
     },
+    "kind.film.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Films"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Films"
+          }
+        }
+      }
+    },
     "kind.game": {
       "localizations": {
         "en": {
@@ -509,6 +637,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Jeu"
+          }
+        }
+      }
+    },
+    "kind.game.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeux"
           }
         }
       }
@@ -529,6 +673,22 @@
         }
       }
     },
+    "kind.podcast.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcasts"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcasts"
+          }
+        }
+      }
+    },
     "kind.series": {
       "localizations": {
         "en": {
@@ -545,7 +705,39 @@
         }
       }
     },
+    "kind.series.plural": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Series"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Séries"
+          }
+        }
+      }
+    },
     "kind.theatre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theatre"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Théâtre"
+          }
+        }
+      }
+    },
+    "kind.theatre.plural": {
       "localizations": {
         "en": {
           "stringUnit": {
@@ -573,6 +765,150 @@
           "stringUnit": {
             "state": "translated",
             "value": "Note : %@ sur 5"
+          }
+        }
+      }
+    },
+    "search.filter.noResults.message %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No “%@” results for this search."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun résultat dans « %@ » pour cette recherche."
+          }
+        }
+      }
+    },
+    "search.filter.noResults.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing of this kind"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien dans ce type"
+          }
+        }
+      }
+    },
+    "search.filter.showAll": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout voir"
+          }
+        }
+      }
+    },
+    "search.initial.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A film, a series or a book. Tap a result: it’s logged, dated now."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un film, une série ou un livre. Tape sur un résultat : c’est loggé, daté maintenant."
+          }
+        }
+      }
+    },
+    "search.initial.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type a title"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tape un titre"
+          }
+        }
+      }
+    },
+    "search.noResults.message %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing for “%@”. Check the spelling or try the original title."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien pour « %@ ». Vérifie l’orthographe ou essaie le titre original."
+          }
+        }
+      }
+    },
+    "search.noResults.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No results"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun résultat"
+          }
+        }
+      }
+    },
+    "search.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A film, a series, a book…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un film, une série, un livre…"
+          }
+        }
+      }
+    },
+    "search.section.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No results"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun résultat"
           }
         }
       }
@@ -685,6 +1021,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible d’ouvrir ton journal"
+          }
+        }
+      }
+    },
+    "tab.journal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal"
+          }
+        }
+      }
+    },
+    "tab.search": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche"
           }
         }
       }

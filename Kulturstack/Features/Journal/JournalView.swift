@@ -2,9 +2,11 @@ import SwiftUI
 
 struct JournalView: View {
     @State private var viewModel: JournalViewModel
+    private let onSearch: () -> Void
 
-    init(repository: any LogRepository) {
+    init(repository: any LogRepository, onSearch: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: JournalViewModel(repository: repository))
+        self.onSearch = onSearch
     }
 
     var body: some View {
@@ -24,7 +26,8 @@ struct JournalView: View {
             EmptyState(
                 icon: "books.vertical",
                 title: String(localized: "journal.empty.title"),
-                message: String(localized: "journal.empty.message")
+                message: String(localized: "journal.empty.message"),
+                action: .init(title: String(localized: "journal.empty.cta"), handler: onSearch)
             )
         case .failed:
             EmptyState(
