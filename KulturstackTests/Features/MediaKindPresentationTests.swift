@@ -7,6 +7,8 @@ struct MediaKindPresentationTests {
     func everyKindHasALabelAndASymbol(kind: MediaKind) {
         #expect(!kind.label.isEmpty)
         #expect(!kind.label.hasPrefix("kind."))
+        #expect(!kind.pluralLabel.isEmpty)
+        #expect(!kind.pluralLabel.hasPrefix("kind."))
         #expect(!kind.symbol.isEmpty)
     }
 

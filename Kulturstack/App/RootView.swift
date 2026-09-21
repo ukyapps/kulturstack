@@ -2,15 +2,33 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
+    enum Tab: Hashable { case journal, search }
+
     @Environment(\.modelContext) private var context
+    @State private var selectedTab = Tab.journal
 
     var body: some View {
-        NavigationStack {
-            JournalView(repository: SwiftDataLogRepository(context: context))
-                #if DEBUG
-                .safeAreaInset(edge: .bottom) { StorageBadge() }
-                #endif
+        TabView(selection: $selectedTab) {
+            NavigationStack {
+                JournalView(repository: SwiftDataLogRepository(context: context)) { selectedTab = .search }
+                    #if DEBUG
+                    .safeAreaInset(edge: .bottom) { StorageBadge() }
+                    #endif
+            }
+            .tabItem { Label(String(localized: "tab.journal"), systemImage: "books.vertical") }
+            .tag(Tab.journal)
+
+            NavigationStack {
+                SearchView(useCase: SearchUseCase(providers: providers))
+            }
+            .tabItem { Label(String(localized: "tab.search"), systemImage: "magnifyingglass") }
+            .tag(Tab.search)
         }
+    }
+
+    private var providers: [any MetadataProvider] {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+        return ProviderRegistry.live(secrets: BundleSecrets(), client: URLSessionHTTPClient(), appVersion: version).providers
     }
 }
 
