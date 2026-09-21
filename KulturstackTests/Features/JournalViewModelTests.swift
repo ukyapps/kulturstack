@@ -61,6 +61,40 @@ struct JournalViewModelTests {
         }
         #expect(rows.allSatisfy { !$0.title.isEmpty })
     }
+
+    @Test @MainActor func deletingALogRemovesItAndReloads() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "Dune")
+        context.insert(item)
+        let log = try LogEntry.make(item: item, status: .done)
+        context.insert(log)
+        try context.save()
+        let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: context))
+        await viewModel.load()
+
+        await viewModel.delete(id: log.id)
+
+        #expect(viewModel.state == .empty)
+        #expect(viewModel.didFailToDelete == false)
+        #expect(try context.fetchCount(FetchDescriptor<LogEntry>()) == 0)
+    }
+
+    @Test @MainActor func aFailedDeletionIsReported() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "Dune")
+        context.insert(item)
+        let log = try LogEntry.make(item: item, status: .done)
+        context.insert(log)
+        let viewModel = JournalViewModel(repository: StubLogRepository(result: .success([log])))
+        await viewModel.load()
+
+        await viewModel.delete(id: log.id)
+
+        #expect(viewModel.didFailToDelete)
+        #expect(viewModel.state == .loaded([JournalRowModel(log: log)]))
+    }
 }
 
 private struct StubError: Error {}
@@ -72,4 +106,7 @@ private final class StubLogRepository: LogRepository {
     init(result: Result<[LogEntry], Error>) { self.result = result }
 
     func fetchAll() async throws -> [LogEntry] { try result.get() }
+    func find(id: UUID) throws -> LogEntry? { try result.get().first { $0.id == id } }
+    func save() throws {}
+    func delete(_ log: LogEntry) throws { throw StubError() }
 }

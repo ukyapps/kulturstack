@@ -19,7 +19,8 @@ struct RootView: View {
             .tag(Tab.journal)
 
             NavigationStack {
-                SearchView(useCase: SearchUseCase(providers: providers), logNow: { try logUseCase.logNow($0) })
+                SearchView(useCase: SearchUseCase(providers: providers), logNow: { try logUseCase.logNow($0).id },
+                           editUseCase: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
             }
             .tabItem { Label(String(localized: "tab.search"), systemImage: "magnifyingglass") }
             .tag(Tab.search)

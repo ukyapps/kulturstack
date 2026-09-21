@@ -15,9 +15,9 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Barre d'onglets Journal / Recherche | ✅ | #7 |
 | Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
 | Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), « Vu le … » sur une ligne déjà loggée (PR 8), ♡ Envie (PR 10) | #7 |
-| Tap = loggé + bandeau | ✅ · ⏳ bouton « Modifier » du bandeau (PR 7) | #8 |
+| Tap = loggé + bandeau | ✅ | #8, #9 |
 | Fiche d'une œuvre | ⏳ PR 8 | — |
-| Modifier un log | ⏳ PR 7 | — |
+| Modifier un log | ✅ | #9 |
 | Envie | ⏳ PR 10 | — |
 | Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
 
@@ -86,7 +86,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log. **Manque** : groupement par jour, segments de période et chips de type avec compteurs, tap → fiche, appui long → modifier (PR 7-9).
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; appui long → Modifier / Supprimer (PR #9). **Manque** : groupement par jour, segments de période et chips de type avec compteurs, tap → fiche (PR 8-9).
 
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
@@ -113,7 +113,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s. Ligne = jaquette + titre + « Type · année · créateur ». **Manque** : « Vu le … » sur une ligne déjà loggée (PR 8), bouton « Modifier » du bandeau (PR 7), appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
+> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». **Manque** : « Vu le … » sur une ligne déjà loggée (PR 8), appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
 
 - La barre a le focus dès l'ouverture, clavier levé. Recherche à partir de 2 caractères, 300 ms après la dernière frappe.
 - **Tap = loggé** (statut terminé, maintenant). Bandeau en bas : « *Dune (2021)* loggé ✓ · **Modifier** » pendant 4 s.
@@ -155,7 +155,7 @@ Kulturstack
 
 ### 3.4 Modifier un log (feuille)
 
-> **À faire (PR 7).** `StarRating` existe en lecture seule ; `LogRules` valide déjà statut et note ; `LogStatus.label` est localisé.
+> **Réalisé (PR #9)** : feuille Annuler / Log / Enregistrer, titre « Dune (2021) », date avec raccourcis Aujourd'hui · Hier · Ce week-end, demi-étoiles cliquables (re-tap = sans note), statut segmenté limité au type, commentaire, « Supprimer ce log » avec confirmation ; états « ce log n'existe plus » et erreur de lecture. Ouverte par « Modifier » sur le bandeau de la Recherche et par appui long dans le Journal (Modifier / Supprimer).
 
 ```
 ┌─────────────────────────────────┐
@@ -240,9 +240,9 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 | `CoverThumbnail` | jaquette 2:3 avec placeholder par type | 1 ✅ (#4) |
 | `MediaRow` | jaquette + titre + sous-titre + accessoire (étoiles, ♡, ✓) | 1 ✅ (#7) — utilisé par la Recherche ; le Journal a encore sa propre `JournalRow` |
 | `KindBadge` | icône + libellé du type | 1 — remplacé par le libellé dans le sous-titre + l'icône du placeholder ; à créer seulement si un écran en a besoin |
-| `StarRating` | demi-étoiles, interactif ou lecture seule | 1 ✅ lecture seule (#4) · ⏳ interactif (PR 7) |
+| `StarRating` | demi-étoiles, interactif ou lecture seule | 1 ✅ lecture seule (#4) · ✅ `StarRatingPicker` (#9) |
 | `SectionHeader` | titre de section + état (spinner / erreur + réessayer) | 1 ✅ titre + spinner (#7) ; l'erreur est une ligne de section |
-| `Toast` | bandeau « Loggé ✓ · Modifier » | 1 ✅ « loggé ✓ » (#8) · ⏳ « Modifier » (PR 7) |
+| `Toast` | bandeau « Loggé ✓ · Modifier » | 1 ✅ (#8, #9) |
 | `Chip` / `KindChips` | chips de filtre par type | 1 ✅ Recherche (#7) · ⏳ Journal avec compteurs (PR 9) |
 | `PeriodSegments` | segments Semaine · Mois · Année · Tout avec compteurs | 1 ⏳ (PR 9) |
 | `EpisodeCheckbox` | case + « prochain » | 2 |

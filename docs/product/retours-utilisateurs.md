@@ -52,6 +52,16 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 | « Est-ce qu'on peut abandonner le process de CI/CD sur GitHub ? Je n'ai pas les secrets et c'est bourbier pour le projet. » | Review Claude en CI retirée (ADR-012). Tests CI gardés (aucun secret). Review faite par Claude en local avant chaque PR. |
 | « Vérifie que tu as bien exhaustivement documenté le projet à date, l'architecture, les features et les retours utilisateurs » | Ce fichier, l'état des lieux dans `docs/journal/`, la carte des documents du README, et l'inventaire des features dans le PRD §6. |
 
+## Founder — sessions du 2026-09-21 (en utilisant le prototype)
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| Tape 7 fois sur Dune dans la Recherche, rien ne dit que c'est déjà loggé | Comportement voulu (re-tap = revisionnage), mais « Vu le … » sur la ligne de résultat passe en PR 8 avec la fiche. |
+| Tap immédiat plutôt que délai annulable | Décision produit : tap = loggé + bandeau 4 s. Design §6. |
+| Après avoir passé un log à « Hier », « je vois pas la date d'hier » — le log était en bas de liste, hors écran | Rien à corriger, mais argument fort pour le Journal groupé par jour (PR 9). |
+| « Modifier » sur le bandeau ouvre « une autre feuille » — celle du nouveau log, pas du log édité avant | Expliqué : chaque tap crée un log. Renforce le besoin de « Vu le … » (PR 8). |
+| « J'aimerais que quand je clique dessus juste ça s'ouvre, pas besoin de dire modifier et tout. À terme. » | **À trancher avant la PR 8.** Le design prévoit tap → fiche de l'œuvre, appui long → modifier. Pistes : (a) tap → feuille d'édition directement, la fiche accessible depuis la feuille ; (b) tap → fiche avec le log en tête, éditable sur place. Reco à venir avec la PR 8. |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*

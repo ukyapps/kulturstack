@@ -11,4 +11,19 @@ struct SwiftDataLogRepository: LogRepository {
         )
         return try context.fetch(descriptor)
     }
+
+    func find(id: UUID) throws -> LogEntry? {
+        var descriptor = FetchDescriptor<LogEntry>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
+    func save() throws {
+        try context.save()
+    }
+
+    func delete(_ log: LogEntry) throws {
+        context.delete(log)
+        try context.save()
+    }
 }

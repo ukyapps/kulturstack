@@ -13,13 +13,14 @@ struct SearchViewModelTests {
         let tmdb = tmdb ?? MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film, series]))
         let openLibrary = openLibrary ?? MockProvider(id: "openlibrary", kinds: [.book], result: .success([book]))
         let useCase = SearchUseCase(providers: [tmdb, openLibrary])
-        return (SearchViewModel(useCase: useCase, logNow: { _ in }, debounce: debounce), tmdb, openLibrary)
+        return (SearchViewModel(useCase: useCase, logNow: { _ in UUID() }, debounce: debounce), tmdb, openLibrary)
     }
 
     @Test func tappingACandidateLogsItAndShowsAToastThatFadesOut() async throws {
         let logged = Logged()
+        let logID = UUID()
         let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
-                                        logNow: { logged.ids.append($0.id) },
+                                        logNow: { logged.ids.append($0.id); return logID },
                                         debounce: .zero, toastDuration: .milliseconds(60))
 
         viewModel.log(film)
@@ -27,6 +28,7 @@ struct SearchViewModelTests {
         #expect(logged.ids == ["tmdb:movie:1"])
         #expect(viewModel.toast?.title.contains("Dune") == true)
         #expect(viewModel.toast?.isError == false)
+        #expect(viewModel.toast?.logID == logID)
         try await Task.sleep(for: .milliseconds(150))
         #expect(viewModel.toast == nil)
     }
@@ -38,6 +40,7 @@ struct SearchViewModelTests {
         viewModel.log(film)
 
         #expect(viewModel.toast?.isError == true)
+        #expect(viewModel.toast?.logID == nil)
     }
 
     private final class Logged { var ids: [String] = [] }
