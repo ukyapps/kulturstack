@@ -8,11 +8,11 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et la **recherche unifiée** : TMDB (films, séries) + OpenLibrary (livres) interrogés en parallèle, sections par famille à états indépendants, annulation, timeout — prouvée par un écran DEBUG avec simulateur de panne. 76 tests. **Pas encore de recherche dans le produit** : on ne peut rien logger soi-même avant la PR 5-6.
+Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et l'**écran Recherche** : deux onglets, barre avec clavier levé, debounce 300 ms, TMDB + OpenLibrary en parallèle, sections par famille à états indépendants, chips de filtre par type. 89 tests. **Le tap ne logge pas encore** (PR 6) : on peut chercher mais pas enregistrer. **Pas encore de recherche dans le produit** : on ne peut rien logger soi-même avant la PR 5-6.
 
 ## 2. Features — planifié vs livré
 
-### Tranche 1 — Le log magique (en cours, 5 PRs sur 12)
+### Tranche 1 — Le log magique (en cours, 6 PRs sur 12)
 
 | PR | Feature | État |
 |---|---|---|
@@ -21,8 +21,8 @@ Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient le
 | 2 | Journal vide + seed DEBUG | ✅ PR #4 (2026-09-20) |
 | 3 | Secrets + client TMDB | ✅ PR #5 (2026-09-21) |
 | 4 | OpenLibrary + recherche unifiée | ✅ PR #6 (2026-09-21) |
-| 5 | Écran Recherche | ⏳ prochaine |
-| 6 | Log en 1 tap | — |
+| 5 | Écran Recherche | ✅ PR #7 (2026-09-21) |
+| 6 | Log en 1 tap | ⏳ prochaine |
 | 7 | Modifier un log (date, demi-étoiles, statut, note, supprimer) | — |
 | 8 | Fiche d'une œuvre | — |
 | 9 | Journal par période et par type, compteurs | — |
@@ -50,7 +50,7 @@ Le détail de chaque feature : `docs/product/prd.md` §6. Les écrans : `docs/pr
 Kulturstack/
 ├── App/
 │   ├── KulturstackApp.swift          ouvre le ModelContainer de prod ; EmptyState d'erreur si échec
-│   ├── RootView.swift                NavigationStack → JournalView ; badge DEBUG « Base V1 · n fiches · n logs »
+│   ├── RootView.swift                TabView Journal / Recherche ; le CTA « Chercher » du Journal vide bascule d'onglet ; badge DEBUG
 │   └── ModelContainerFactory.swift   production() / onDisk(url:) / inMemory() — toujours avec le plan de migration
 ├── Data/
 │   ├── Network/
@@ -73,8 +73,14 @@ Kulturstack/
 │   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed
 │   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (titre, sous-titre, date, statut, note, jaquette)
 │   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
+│   ├── Search/
+│   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; 4 rendus : initial · sections (chips + liste) · aucun résultat · filtre sans résultat
+│   │   ├── SearchViewModel.swift     query (didSet → debounce 300 ms, ≥ 2 caractères), sections, selectedKind ; presentation calculée ; retry(family)
+│   │   ├── SearchResultRowModel.swift  instantané valeur d'un candidat (titre, « Type · année · créateur », jaquette)
+│   │   ├── SearchResultRow.swift     MediaRow sans accessoire (le tap arrive en PR 6)
+│   │   └── KindChips.swift           « Tous » + un chip par type des familles enregistrées
 │   └── Shared/
-│       ├── MediaKind+Presentation.swift   label localisé + symbole SF par type
+│       ├── MediaKind+Presentation.swift   label, pluralLabel + symbole SF par type
 │       ├── LogStatus+Presentation.swift   label localisé par statut
 │       └── SearchFamily+Presentation.swift  label localisé par famille
 ├── Debug/                            compilé hors Release
@@ -107,18 +113,21 @@ Kulturstack/
 │   ├── Tokens.swift                  Spacing, Radius, Color.*
 │   ├── EmptyState.swift              icône + titre + message + action optionnelle
 │   ├── StarRating.swift              note 1…10 → 5 étoiles avec demi ; Stars(rating:) testable
-│   └── CoverThumbnail.swift          AsyncImage 2:3 avec placeholder par symbole
+│   ├── CoverThumbnail.swift          AsyncImage 2:3 avec placeholder par symbole
+│   ├── MediaRow.swift                jaquette + titre + sous-titre + accessoire générique
+│   ├── Chip.swift                    capsule sélectionnable (accent quand active)
+│   └── SectionHeader.swift           titre de section + spinner optionnel
 └── Resources/
     ├── Localizable.xcstrings         6 clés FR + EN
     ├── PrivacyInfo.xcprivacy         aucune donnée collectée
     └── Assets.xcassets               AccentColor, AppIcon (vide)
 ```
 
-**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `Features/Search` (PR 5), `LogUseCase` + `DedupUseCase` (PR 6), `ItemDetail`, `LogEdit`, `Settings`. Le **debounce** de la saisie (300 ms) n'est pas dans `SearchUseCase` : il ira dans le ViewModel de l'écran Recherche (PR 5).
+**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `LogUseCase` + `DedupUseCase` + toast « Loggé ✓ » (PR 6), `ItemDetail`, `LogEdit`, `Settings`, bandeau hors-ligne (PR 11). Le debounce vit dans `SearchViewModel`, pas dans `SearchUseCase`.
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 76, tous verts
+## 4. Tests — 89, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -132,7 +141,7 @@ Kulturstack/
 | `JournalViewModelTests` | 6 | loading au départ ; vide ; chargé ; erreur ; reprise après erreur ; **l'état survit à la suppression des logs** (régression du crash) |
 | `JournalRowModelTests` | 4 | livre → auteur, film → année, repli, champs recopiés |
 | `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
-| `MediaKindPresentationTests` | 4 (paramétrés : 19 cas) | chaque type, statut et famille a un label, FR et EN |
+| `MediaKindPresentationTests` | 4 (paramétrés : 19 cas) | chaque type (singulier et pluriel), statut et famille a un label, FR et EN |
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
 | `SecretsTests` | 5 (paramétrés : 7 cas) | **T-13** manquant → message avec la commande ; blanc / « $(…) » = manquant ; valeur trimée ; bundle sans clé ; `MockSecrets` |
 | `URLSessionHTTPClientTests` | 3 | en-têtes + timeout 8 s + GET (via `StubURLProtocol`) ; 401 → `HTTPError.status` ; panne réseau propagée |
@@ -140,9 +149,11 @@ Kulturstack/
 | `MediaCandidateTests` | 1 | identité = clé externe |
 | `OpenLibraryProviderTests` | 5 | **T-11** fixture réelle → 20 livres, `ol:work:` + `isbn13:` (13 chiffres, max 20) ; `BookDetails` ; **T-12** User-Agent + requête ; 503 propagé ; livres seulement |
 | `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary], familles [écran, livres] ; User-Agent nomme l'app et un contact |
+| `SearchViewModelTests` | 11 | idle sous 2 caractères ; une section par famille ; **debounce → un seul appel avec la dernière saisie** ; effacer → idle ; filtre par type (candidats filtrés, familles étrangères masquées) ; filtre sans résultat = edge ; rien nulle part = aucun résultat ; section en erreur visible à côté des résultats ; retry ciblé ; chips = types des familles ; sous-titre |
+| `SearchViewRenderingTests` | 2 | l'écran traverse ses 4 rendus dans une UIWindow ; chips, en-tête et ligne se rendent |
 | `SearchUseCaseTests` | 8 | loading pour chaque famille puis settle ; **T-07** panne isolée ; **T-09** le rapide n'attend pas le lent ; **T-08** annulation → providers annulés, rien de périmé ; timeout → failed ; vide → empty ; retry n'appelle que la famille ; ordre canonique des familles |
 
-Couverture : `Domain/` 94 %, `Data/` 98 %, `Features/` ~90 %, `DesignSystem/` 93 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (capturées le 21/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
+Couverture : `Domain/` 94 %, `Data/` 98 %, `Features/` 90 %, `DesignSystem/` 99 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (capturées le 21/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
 Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-16 (stats, PR 9), T-17 (conversion des notes, T3).
 
@@ -183,6 +194,6 @@ Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-16 (stats, PR 9)
 
 **Founder** : réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : PR 5 — Écran Recherche (onglets Journal / Recherche, barre avec focus, debounce 300 ms dans le ViewModel, sections par famille, chips de filtre, états vide / edge / erreur par section, hors-ligne). Le bouton « Chercher » de l'état vide du Journal arrive avec. Le menu DEBUG déménagera dans Réglages en PR 11. **Question produit à trancher avant** : recherche = onglet ou bouton « + » (design §6).
+**Prochaine session** : PR 6 — Le log en 1 tap (`LogUseCase.logNow`, `DedupUseCase` par `ExternalRef`, T-04 / T-05, toast « Loggé ✓ · Modifier », rechargement du Journal après un log, appui long = Envie). **Question produit à trancher avant** : tap immédiat ou délai annulable (design §6.2, reco : immédiat + toast). Le bandeau hors-ligne de la Recherche est reporté en PR 11.
 
 **Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; recherche = onglet ou « + » ; tap immédiat vs délai annulable ; journal groupé par jour ; Envie en chip.

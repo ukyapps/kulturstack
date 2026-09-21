@@ -227,7 +227,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 
 ## 6. Questions d'ergonomie à trancher (avec la founder, à l'écran)
 
-1. **Recherche = onglet ou bouton « + » flottant sur le Journal ?** Reco : onglet en T1 (plus simple, pouce), on reverra si le « + » s'impose à l'usage.
+1. ~~**Recherche = onglet ou bouton « + » flottant sur le Journal ?**~~ **Tranché le 21/09/2026 : onglet** (founder). On reverra si le « + » s'impose à l'usage.
 2. **Le tap logge immédiatement ou après un court délai annulable ?** Reco : immédiat + toast « Modifier » — c'est le cœur du « sans friction » ; on mesure les erreurs à l'usage.
 3. **Groupement du Journal par jour ou liste plate ?** Reco : par jour, ça rend les « cette semaine » lisibles.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
