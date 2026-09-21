@@ -24,6 +24,8 @@ statut: PR 7 ouverte (#9), review locale PASS
 1. **Un log qui change de date « disparaît »** : trié par date, il part en bas de la liste, hors écran, et la founder a cru que rien n'était enregistré (vérifié dans la base : tout y était). Le groupement par jour de la PR 9 (« Aujourd'hui / Hier / …») rendra ça lisible. Rien à faire ici.
 2. « Modifier » sur le bandeau ouvre la feuille du log **qui vient d'être créé** par le tap, pas d'un log antérieur de la même œuvre — la founder s'attendait à retrouver le log édité juste avant. C'est le comportement voulu (un re-tap = un revisionnage), mais ça confirme le besoin de « Vu le … » sur la ligne de résultat (PR 8).
 
+3. « J'aimerais que quand je clique dessus juste ça s'ouvre, pas besoin de dire modifier et tout. À terme. » Le design prévoit tap → fiche (PR 8) et appui long → modifier. **À trancher au début de la PR 8**, avec une reco (voir `retours-utilisateurs.md`).
+
 ## Choix faits
 
 - Appui long (menu contextuel) et pas tap sur la ligne du Journal : le tap est réservé à la fiche (PR 8), comme dans le design §3.1.
@@ -44,4 +46,5 @@ statut: PR 7 ouverte (#9), review locale PASS
 ## À faire — prochaine session Claude
 
 1. Lire `docs/etat-du-projet.md`.
-2. PR 8 : fiche d'une œuvre (`docs/plans/tranche-1.md`, design §3.3) + « Vu le … » sur une ligne de résultat déjà loggée + tap sur une ligne du Journal → fiche.
+2. **D'abord trancher** : tap sur une ligne du Journal = fiche de l'œuvre ou feuille d'édition ? (retour founder, une question, une reco.)
+3. PR 8 : fiche d'une œuvre (`docs/plans/tranche-1.md`, design §3.3) + « Vu le … » sur une ligne de résultat déjà loggée + comportement du tap selon la décision.
