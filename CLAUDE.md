@@ -62,7 +62,7 @@ La founder ne relit pas le Swift en détail : **les tests sont le filet**. Pour 
 - **Jamais** dans le chat, un `.env`, un fichier versionné, un plist launchd.
 - Trousseau → `make secrets` → `Config/Secrets.xcconfig` (gitignoré) → `Info.plist`. Env d'abord (`TMDB_READ_TOKEN`), trousseau sinon.
   ```bash
-  security add-generic-password -s kulturstack -a TMDB_READ_TOKEN -w
+  security add-generic-password -s kulturstack -a TMDB_READ_TOKEN -w "$(pbpaste)"   # jamais en collant à l'invite : coupé à 128 caractères
   ```
 - Un secret qui a transité en clair est à faire tourner.
 - Clé TMDB embarquée = risque accepté (ADR-001). Proxy en T6.

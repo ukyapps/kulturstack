@@ -34,6 +34,20 @@ Binaire
    Bundle.main.infoDictionary["TMDBReadToken"]
 ```
 
+### Piège connu : le collage dans l'invite masquée coupe à 128 caractères
+
+Le jeton TMDB fait ~240 caractères. Si on le colle à l'invite `password data for new item:`, macOS ne garde que les 128 premiers → TMDB répond 401. Vérifié le 21/09/2026. La bonne commande lit le presse-papiers directement :
+
+```bash
+# 1. copier le jeton sur themoviedb.org/settings/api (bouton copier ou triple-clic)
+security add-generic-password -s kulturstack -a TMDB_READ_TOKEN -w "$(pbpaste)"
+# 2. vérifier sans l'afficher
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $(security find-generic-password -s kulturstack -a TMDB_READ_TOKEN -w)" https://api.themoviedb.org/3/configuration   # attendu : 200
+# 3. écraser le presse-papiers
+```
+
+Pour remplacer un jeton existant : `security delete-generic-password -s kulturstack -a TMDB_READ_TOKEN` d'abord.
+
 ### `scripts/secrets.sh` — règles
 
 - Lit **la variable d'environnement d'abord** (`$TMDB_READ_TOKEN`), sinon le trousseau. → CI et override sans toucher au trousseau.

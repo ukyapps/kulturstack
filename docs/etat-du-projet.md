@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-20
+maj: 2026-09-21
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,19 +8,19 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration) et le **premier écran** : le Journal, liste des logs du plus récent au plus ancien, avec son état vide, son état d'erreur et un menu DEBUG pour remplir / effacer des données de démo. 41 tests. **Pas encore de recherche** : on ne peut rien logger soi-même avant la PR 5-6.
+Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et la **première source de données** : le client TMDB, qui cherche films et séries avec la vraie clé (prouvé par un écran DEBUG « Test recherche »). 60 tests. **Pas encore de recherche dans le produit** : on ne peut rien logger soi-même avant la PR 5-6.
 
 ## 2. Features — planifié vs livré
 
-### Tranche 1 — Le log magique (en cours, 3 PRs sur 12)
+### Tranche 1 — Le log magique (en cours, 4 PRs sur 12)
 
 | PR | Feature | État |
 |---|---|---|
 | 0 | Bootstrap : projet, Makefile, secrets, `EmptyState`, FR/EN, CI tests | ✅ fusionnée (#1, 2026-09-20) |
 | 1 | Schéma V1 + plan de migration + règles métier | ✅ fusionnée (#2, 2026-09-20) |
 | 2 | Journal vide + seed DEBUG | ✅ PR #4 (2026-09-20) |
-| 3 | Secrets + client TMDB | ⏳ prochaine |
-| 4 | OpenLibrary + recherche unifiée | — |
+| 3 | Secrets + client TMDB | ✅ PR #5 (2026-09-21) |
+| 4 | OpenLibrary + recherche unifiée | ⏳ prochaine |
 | 5 | Écran Recherche | — |
 | 6 | Log en 1 tap | — |
 | 7 | Modifier un log (date, demi-étoiles, statut, note, supprimer) | — |
@@ -53,6 +53,14 @@ Kulturstack/
 │   ├── RootView.swift                NavigationStack → JournalView ; badge DEBUG « Base V1 · n fiches · n logs »
 │   └── ModelContainerFactory.swift   production() / onDisk(url:) / inMemory() — toujours avec le plan de migration
 ├── Data/
+│   ├── Network/
+│   │   ├── SecretsProviding.swift    protocole + SecretKey (.tmdbReadToken) + SecretsError.missing (message = commande d'ajout)
+│   │   ├── BundleSecrets.swift       lit Info.plist ; vide, blanc ou « $(…) » non résolu = manquant
+│   │   ├── HTTPClient.swift          protocole get(url, headers) + HTTPError
+│   │   └── URLSessionHTTPClient.swift  timeout 8 s, non-2xx → HTTPError.status
+│   ├── Providers/
+│   │   ├── TMDBProvider.swift        search/multi fr-FR|en-US, Bearer, garde movie + tv, clés tmdb:movie:<id> / tmdb:tv:<id>, affiches w342
+│   │   └── TMDBSearchResponse.swift  DTO Decodable (snake_case)
 │   └── Repositories/
 │       ├── LogRepository.swift       protocole : fetchAll()
 │       └── SwiftDataLogRepository.swift  tri date desc, puis createdAt desc
@@ -67,7 +75,8 @@ Kulturstack/
 │       └── LogStatus+Presentation.swift   label localisé par statut
 ├── Debug/                            compilé hors Release
 │   ├── DemoSeed.swift                fill() = wipe() puis 23 fiches / 25 logs sur 12 mois ; wipe() = tout supprimer
-│   └── DebugMenu.swift               coccinelle dans la toolbar : « Remplir données démo » / « Tout effacer »
+│   ├── DebugMenu.swift               coccinelle dans la toolbar : « Remplir données démo » / « Tout effacer » / « Test recherche TMDB »
+│   └── DebugSearchView.swift         champ + liste brute des candidats TMDB ; prouve clé + réseau ; sans test (outil jetable)
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
@@ -81,6 +90,9 @@ Kulturstack/
 │   ├── Rules/
 │   │   ├── LogRules.swift            validate(status:for:) · validate(rating:)
 │   │   └── DomainError.swift
+│   ├── Search/
+│   │   ├── MetadataProvider.swift    protocole : id, supportedKinds, search(_:)
+│   │   └── MediaCandidate.swift      résultat de recherche ; identité = clé externe principale
 │   └── Schema/
 │       ├── KulturstackSchemaV1.swift 3 modèles ; typealias MediaItem / ExternalRef / LogEntry
 │       └── KulturstackMigrationPlan.swift  schemas [V1], stages [], current
@@ -95,11 +107,11 @@ Kulturstack/
     └── Assets.xcassets               AccentColor, AppIcon (vide)
 ```
 
-**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `Data/Providers/` et `Data/Network/` (PR 3-4), `Features/Search`, `ItemDetail`, `LogEdit`, `Settings`, `Domain/UseCases/`.
+**Pas encore là** (prévu par `docs/tdd/01-architecture.md`) : `OpenLibraryProvider` et `SearchUseCase` (PR 4), `Features/Search`, `ItemDetail`, `LogEdit`, `Settings`, `Domain/UseCases/`.
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 41, tous verts
+## 4. Tests — 60, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -115,10 +127,14 @@ Kulturstack/
 | `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
 | `MediaKindPresentationTests` | 3 (paramétrés : 13 cas) | chaque type et statut a un label, FR et EN |
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
+| `SecretsTests` | 5 (paramétrés : 7 cas) | **T-13** manquant → message avec la commande ; blanc / « $(…) » = manquant ; valeur trimée ; bundle sans clé ; `MockSecrets` |
+| `URLSessionHTTPClientTests` | 3 | en-têtes + timeout 8 s + GET (via `StubURLProtocol`) ; 401 → `HTTPError.status` ; panne réseau propagée |
+| `TMDBProviderTests` | 10 (paramétrés : 13 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale |
+| `MediaCandidateTests` | 1 | identité = clé externe |
 
-Couverture : `Domain/` 90 %, `Data/` 100 %, `Features/` 90 %, `DesignSystem/` 93 %. Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
+Couverture : `Domain/` 91 %, `Data/` 99 %, `Features/` 90 %, `DesignSystem/` 93 %. Fixture réelle : `KulturstackTests/Fixtures/tmdb-search-multi-dune.json` (capturée le 21/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient`. Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
-Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (recherche et providers, PR 3-4), T-13 (secrets, PR 3), T-16 (stats, PR 9), T-17 (conversion des notes, PR 3 ou T3).
+Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-09, T-11, T-12 (recherche unifiée et OpenLibrary, PR 4), T-16 (stats, PR 9), T-17 (conversion des notes, T3).
 
 ## 5. Infrastructure
 
@@ -129,8 +145,8 @@ Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (rech
 | CI | `tests.yml` : macos-26, Xcode 26.3, `make test`, ~5 min. **Vert.** |
 | Review | **locale**, par Claude, avant chaque push (CLAUDE.md § Review locale). Plus de review en CI (ADR-012). |
 | Secrets GitHub | aucun |
-| Secrets locaux | Trousseau `kulturstack` : **`TMDB_READ_TOKEN` pas encore posé** (nécessaire avant PR 3). `Config/Secrets.xcconfig` généré, gitignoré. |
-| Outils locaux | Xcode 26.3, Swift 6.2, XcodeGen 2.46, simulateur iPhone 17 Pro (iOS 26.2), hook pre-commit installé |
+| Secrets locaux | Trousseau `kulturstack` : `TMDB_READ_TOKEN` posé le 21/09 (usage personnel déclaré à TMDB — à renégocier si monétisation). `Config/Secrets.xcconfig` généré, gitignoré. |
+| Outils locaux | Xcode 26.3, Swift 6.2, XcodeGen 2.46, simulateur iPhone 17 Pro (iOS 26.2), hook pre-commit installé. Repo dans `~/Documents/kulturstack` (déplacé du Bureau le 21/09) |
 | Identité git | `ukyapps` + email noreply |
 | Domaines | kulturstack.com / .app / .io / .fr **libres au 19/09, pas réservés** |
 
@@ -155,8 +171,8 @@ Tests du plan pas encore écrits : T-04, T-05 (dédup, PR 6), T-07 à T-12 (rech
 
 ## 8. Ouvert / à faire
 
-**Founder** : réserver les domaines · poser la clé TMDB dans le Trousseau · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store.
+**Founder** : réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : PR 3 — Secrets + client TMDB. **Prérequis** : la clé TMDB dans le Trousseau (voir ci-dessus). Le menu DEBUG déménagera dans Réglages en PR 11 ; le bouton « Chercher » de l'état vide du Journal arrive en PR 5 avec l'écran Recherche.
+**Prochaine session** : PR 4 — OpenLibrary + recherche unifiée (`SearchUseCase`, sections par famille à états indépendants, T-07 à T-09, T-11, T-12). Le menu DEBUG déménagera dans Réglages en PR 11 ; le bouton « Chercher » de l'état vide du Journal arrive en PR 5 avec l'écran Recherche.
 
 **Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; recherche = onglet ou « + » ; tap immédiat vs délai annulable ; journal groupé par jour ; Envie en chip.
