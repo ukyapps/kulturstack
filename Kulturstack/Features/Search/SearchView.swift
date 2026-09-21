@@ -4,8 +4,9 @@ struct SearchView: View {
     @State private var viewModel: SearchViewModel
     @FocusState private var isSearchFocused: Bool
 
-    init(useCase: SearchUseCase, debounce: Duration = .milliseconds(300)) {
-        _viewModel = State(initialValue: SearchViewModel(useCase: useCase, debounce: debounce))
+    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> Void,
+         debounce: Duration = .milliseconds(300)) {
+        _viewModel = State(initialValue: SearchViewModel(useCase: useCase, logNow: logNow, debounce: debounce))
     }
 
     #if DEBUG
@@ -21,6 +22,14 @@ struct SearchView: View {
             .searchFocused($isSearchFocused)
             .autocorrectionDisabled()
             .onAppear { isSearchFocused = true }
+            .overlay(alignment: .bottom) {
+                if let toast = viewModel.toast {
+                    Toast(text: toast.title, isError: toast.isError)
+                        .padding(Spacing.m)
+                        .transition(.opacity)
+                }
+            }
+            .animation(.default, value: viewModel.toast)
     }
 
     @ViewBuilder private var content: some View {
@@ -84,8 +93,14 @@ struct SearchView: View {
                     .font(.subheadline.weight(.semibold))
             }
         case .loaded(let candidates):
-            ForEach(candidates.map(SearchResultRowModel.init)) { row in
-                SearchResultRow(model: row)
+            ForEach(candidates) { candidate in
+                Button {
+                    viewModel.log(candidate)
+                } label: {
+                    SearchResultRow(model: SearchResultRowModel(candidate: candidate))
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(String(localized: "search.row.hint"))
             }
         }
     }

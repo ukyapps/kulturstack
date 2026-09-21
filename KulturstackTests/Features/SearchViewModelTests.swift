@@ -13,8 +13,34 @@ struct SearchViewModelTests {
         let tmdb = tmdb ?? MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film, series]))
         let openLibrary = openLibrary ?? MockProvider(id: "openlibrary", kinds: [.book], result: .success([book]))
         let useCase = SearchUseCase(providers: [tmdb, openLibrary])
-        return (SearchViewModel(useCase: useCase, debounce: debounce), tmdb, openLibrary)
+        return (SearchViewModel(useCase: useCase, logNow: { _ in }, debounce: debounce), tmdb, openLibrary)
     }
+
+    @Test func tappingACandidateLogsItAndShowsAToastThatFadesOut() async throws {
+        let logged = Logged()
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
+                                        logNow: { logged.ids.append($0.id) },
+                                        debounce: .zero, toastDuration: .milliseconds(60))
+
+        viewModel.log(film)
+
+        #expect(logged.ids == ["tmdb:movie:1"])
+        #expect(viewModel.toast?.title.contains("Dune") == true)
+        #expect(viewModel.toast?.isError == false)
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(viewModel.toast == nil)
+    }
+
+    @Test func aLoggingFailureShowsAnErrorToast() {
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
+                                        logNow: { _ in throw HTTPError.status(500) }, debounce: .zero)
+
+        viewModel.log(film)
+
+        #expect(viewModel.toast?.isError == true)
+    }
+
+    private final class Logged { var ids: [String] = [] }
 
     private func settle(_ viewModel: SearchViewModel) async throws {
         for _ in 0..<200 {

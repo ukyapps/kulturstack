@@ -10,6 +10,11 @@ final class SearchViewModel {
         case noResultsForKind(MediaKind)
     }
 
+    struct Toast: Equatable {
+        let title: String
+        let isError: Bool
+    }
+
     static let minimumQueryLength = 2
 
     var query = "" {
@@ -17,18 +22,44 @@ final class SearchViewModel {
     }
     var selectedKind: MediaKind?
     private(set) var sections: [SearchSection] = []
+    private(set) var toast: Toast?
 
     let availableKinds: [MediaKind]
     private let useCase: SearchUseCase
+    private let logNow: (MediaCandidate) throws -> Void
     private let debounce: Duration
+    private let toastDuration: Duration
     private var debounceTask: Task<Void, Never>?
     private var searchTask: Task<Void, Never>?
+    private var toastTask: Task<Void, Never>?
     private var activeQuery = ""
 
-    init(useCase: SearchUseCase, debounce: Duration = .milliseconds(300)) {
+    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> Void,
+         debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
+        self.logNow = logNow
         self.debounce = debounce
+        self.toastDuration = toastDuration
         availableKinds = MediaKind.allCases.filter { useCase.families.contains($0.searchFamily) }
+    }
+
+    func log(_ candidate: MediaCandidate) {
+        do {
+            try logNow(candidate)
+            show(Toast(title: String(localized: "search.toast.logged \(candidate.title)"), isError: false))
+        } catch {
+            show(Toast(title: String(localized: "search.toast.failed \(candidate.title)"), isError: true))
+        }
+    }
+
+    private func show(_ newToast: Toast) {
+        toastTask?.cancel()
+        toast = newToast
+        toastTask = Task {
+            try? await Task.sleep(for: toastDuration)
+            guard !Task.isCancelled else { return }
+            toast = nil
+        }
     }
 
     var presentation: Presentation {
