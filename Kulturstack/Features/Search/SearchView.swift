@@ -2,11 +2,14 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var viewModel: SearchViewModel
+    @State private var editing: LogReference?
     @FocusState private var isSearchFocused: Bool
+    private let editUseCase: EditLogUseCase
 
-    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> Void,
+    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID, editUseCase: EditLogUseCase,
          debounce: Duration = .milliseconds(300)) {
         _viewModel = State(initialValue: SearchViewModel(useCase: useCase, logNow: logNow, debounce: debounce))
+        self.editUseCase = editUseCase
     }
 
     #if DEBUG
@@ -24,12 +27,18 @@ struct SearchView: View {
             .onAppear { isSearchFocused = true }
             .overlay(alignment: .bottom) {
                 if let toast = viewModel.toast {
-                    Toast(text: toast.title, isError: toast.isError)
+                    Toast(text: toast.title, isError: toast.isError, action: editAction(for: toast))
                         .padding(Spacing.m)
                         .transition(.opacity)
                 }
             }
             .animation(.default, value: viewModel.toast)
+            .sheet(item: $editing) { LogEditView(logID: $0.id, useCase: editUseCase) }
+    }
+
+    private func editAction(for toast: SearchViewModel.Toast) -> Toast.Action? {
+        guard let logID = toast.logID else { return nil }
+        return .init(title: String(localized: "common.edit")) { editing = LogReference(id: logID) }
     }
 
     @ViewBuilder private var content: some View {

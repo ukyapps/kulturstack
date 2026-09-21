@@ -13,6 +13,7 @@ final class SearchViewModel {
     struct Toast: Equatable {
         let title: String
         let isError: Bool
+        var logID: UUID? = nil
     }
 
     static let minimumQueryLength = 2
@@ -26,7 +27,7 @@ final class SearchViewModel {
 
     let availableKinds: [MediaKind]
     private let useCase: SearchUseCase
-    private let logNow: (MediaCandidate) throws -> Void
+    private let logNow: (MediaCandidate) throws -> UUID
     private let debounce: Duration
     private let toastDuration: Duration
     private var debounceTask: Task<Void, Never>?
@@ -34,7 +35,7 @@ final class SearchViewModel {
     private var toastTask: Task<Void, Never>?
     private var activeQuery = ""
 
-    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> Void,
+    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID,
          debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
         self.logNow = logNow
@@ -45,8 +46,8 @@ final class SearchViewModel {
 
     func log(_ candidate: MediaCandidate) {
         do {
-            try logNow(candidate)
-            show(Toast(title: String(localized: "search.toast.logged \(candidate.title)"), isError: false))
+            let logID = try logNow(candidate)
+            show(Toast(title: String(localized: "search.toast.logged \(candidate.title)"), isError: false, logID: logID))
         } catch {
             show(Toast(title: String(localized: "search.toast.failed \(candidate.title)"), isError: true))
         }
