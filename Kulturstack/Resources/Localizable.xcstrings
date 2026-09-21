@@ -897,6 +897,22 @@
         }
       }
     },
+    "search.row.hint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logs this work, dated now"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logge cette œuvre, datée maintenant"
+          }
+        }
+      }
+    },
     "search.section.empty": {
       "localizations": {
         "en": {
@@ -925,6 +941,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ indisponibles"
+          }
+        }
+      }
+    },
+    "search.toast.failed %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t log %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de logger %@"
+          }
+        }
+      }
+    },
+    "search.toast.logged %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ logged ✓"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ loggé ✓"
           }
         }
       }

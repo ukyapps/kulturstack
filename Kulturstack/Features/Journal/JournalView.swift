@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 struct JournalView: View {
@@ -13,6 +14,9 @@ struct JournalView: View {
         content
             .navigationTitle(String(localized: "app.name"))
             .task { await viewModel.load() }
+            .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+                Task { await viewModel.load() }
+            }
             #if DEBUG
             .toolbar { DebugMenu { await viewModel.load() } }
             #endif

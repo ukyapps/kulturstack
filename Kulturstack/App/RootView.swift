@@ -19,11 +19,16 @@ struct RootView: View {
             .tag(Tab.journal)
 
             NavigationStack {
-                SearchView(useCase: SearchUseCase(providers: providers))
+                SearchView(useCase: SearchUseCase(providers: providers), logNow: { try logUseCase.logNow($0) })
             }
             .tabItem { Label(String(localized: "tab.search"), systemImage: "magnifyingglass") }
             .tag(Tab.search)
         }
+    }
+
+    private var logUseCase: LogUseCase {
+        let repository = SwiftDataMediaRepository(context: context)
+        return LogUseCase(repository: repository, dedup: DedupUseCase(repository: repository))
     }
 
     private var providers: [any MetadataProvider] {

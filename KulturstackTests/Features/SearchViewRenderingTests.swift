@@ -10,7 +10,7 @@ struct SearchViewRenderingTests {
             MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film])),
             MockProvider(id: "openlibrary", kinds: [.book], result: .failure(HTTPError.status(503))),
         ])
-        let searchView = SearchView(useCase: useCase, debounce: .zero)
+        let searchView = SearchView(useCase: useCase, logNow: { _ in }, debounce: .zero)
         let host = UIHostingController(rootView: NavigationStack { searchView })
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         window.rootViewController = host
