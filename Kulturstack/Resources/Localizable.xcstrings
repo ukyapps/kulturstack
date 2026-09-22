@@ -1,6 +1,86 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "about.openlibrary.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Books come from Open Library, an Internet Archive project."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les livres viennent d’Open Library, un projet de l’Internet Archive."
+          }
+        }
+      }
+    },
+    "about.sources": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources"
+          }
+        }
+      }
+    },
+    "about.tagline": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A journal of what you watch, read and listen to. Local, no account."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un journal de ce que tu vois, lis et écoutes. Local, sans compte."
+          }
+        }
+      }
+    },
+    "about.tmdb.notice": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce produit utilise l’API de TMDB mais n’est ni approuvé ni certifié par TMDB."
+          }
+        }
+      }
+    },
+    "about.version %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %1$@ (%2$@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %1$@ (%2$@)"
+          }
+        }
+      }
+    },
     "app.name": {
       "localizations": {
         "en": {
@@ -310,13 +390,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erase everything"
+            "value": "Erase everything (demo)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tout effacer"
+            "value": "Tout effacer (démo)"
           }
         }
       }
@@ -1817,6 +1897,70 @@
         }
       }
     },
+    "privacy.leaves.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When you search for a work, the text you type is sent to TMDB (films and series) and OpenLibrary (books), along with your IP address, like any web search. Posters and covers come from their servers. That’s all: no account, no usage analytics, no crash reports."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quand tu cherches une œuvre, le texte que tu tapes est envoyé à TMDB (films et séries) et à OpenLibrary (livres), avec ton adresse IP, comme n’importe quelle recherche sur le web. Les affiches et couvertures viennent de leurs serveurs. C’est tout : pas de compte, pas de statistiques d’usage, pas de rapport de plantage."
+          }
+        }
+      }
+    },
+    "privacy.leaves.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What leaves your iPhone"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce qui sort de ton iPhone"
+          }
+        }
+      }
+    },
+    "privacy.stays.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What you’ve seen, read, rated, commented or saved for later never leaves your iPhone — apart from the device’s iCloud backup, handled and encrypted by Apple. “Erase everything” in Settings deletes it all, right away. Exporting your data will come with import."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que tu as vu, lu, noté, commenté ou gardé en envie ne quitte jamais ton iPhone — hors sauvegarde iCloud de l’appareil, gérée et chiffrée par Apple. « Tout effacer » dans Réglages supprime tout, tout de suite. L’export de tes données arrive avec l’import."
+          }
+        }
+      }
+    },
+    "privacy.stays.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What stays with you"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce qui reste chez toi"
+          }
+        }
+      }
+    },
     "rating.accessibility %@": {
       "localizations": {
         "en": {
@@ -1941,6 +2085,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aucun résultat"
+          }
+        }
+      }
+    },
+    "search.offline": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline — search needs the Internet. Your journal is still here."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hors ligne — la recherche a besoin d’Internet. Ton journal, lui, reste là."
           }
         }
       }
@@ -2149,6 +2309,262 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gardé pour plus tard ✓"
+          }
+        }
+      }
+    },
+    "settings.about": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos"
+          }
+        }
+      }
+    },
+    "settings.language": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langue"
+          }
+        }
+      }
+    },
+    "settings.language.open": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change in iOS Settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changer dans les Réglages iOS"
+          }
+        }
+      }
+    },
+    "settings.language.system": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follows the system"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suit le système"
+          }
+        }
+      }
+    },
+    "settings.privacy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confidentialité"
+          }
+        }
+      }
+    },
+    "settings.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages"
+          }
+        }
+      }
+    },
+    "settings.wipe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erase everything"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout effacer"
+          }
+        }
+      }
+    },
+    "settings.wipe.again.action": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erase everything"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout effacer"
+          }
+        }
+      }
+    },
+    "settings.wipe.again.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last confirmation: everything will be lost."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière confirmation : tout sera perdu."
+          }
+        }
+      }
+    },
+    "settings.wipe.again.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Really erase everything?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vraiment tout effacer ?"
+          }
+        }
+      }
+    },
+    "settings.wipe.confirm.action": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
+          }
+        }
+      }
+    },
+    "settings.wipe.confirm.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your works, logs, ratings and wishes will be deleted. This cannot be undone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tes fiches, tes logs, tes notes et tes envies seront supprimés. C’est irréversible."
+          }
+        }
+      }
+    },
+    "settings.wipe.confirm.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erase everything?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout effacer ?"
+          }
+        }
+      }
+    },
+    "settings.wipe.done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is erased."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout est effacé."
+          }
+        }
+      }
+    },
+    "settings.wipe.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t erase. Try again — if it persists, contact us."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’effacer. Réessaie — si ça persiste, écris-nous."
+          }
+        }
+      }
+    },
+    "settings.wipe.footer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deletes all your works and logs from this iPhone. There is no backup inside the app."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprime toutes tes fiches et tous tes logs de cet iPhone. Il n’y a pas de sauvegarde dans l’app."
           }
         }
       }

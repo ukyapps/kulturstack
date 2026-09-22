@@ -26,10 +26,7 @@ struct DemoSeed {
     }
 
     func wipe() throws {
-        for log in try context.fetch(FetchDescriptor<LogEntry>()) { context.delete(log) }
-        for ref in try context.fetch(FetchDescriptor<ExternalRef>()) { context.delete(ref) }
-        for item in try context.fetch(FetchDescriptor<MediaItem>()) { context.delete(item) }
-        try context.save()
+        try WipeUseCase(repository: SwiftDataMediaRepository(context: context)).wipe()
     }
 
     private struct Entry {

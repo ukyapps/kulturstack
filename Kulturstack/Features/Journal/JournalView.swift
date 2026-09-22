@@ -37,9 +37,13 @@ struct JournalView: View {
                 Text(String(localized: "log.edit.delete.confirm.message"))
             }
             .alert(String(localized: "journal.delete.failed"), isPresented: $viewModel.didFailToDelete) {}
-            #if DEBUG
-            .toolbar { DebugMenu { await viewModel.load() } }
-            #endif
+            .toolbar {
+                NavigationLink {
+                    SettingsView(services: services)
+                } label: {
+                    Label(String(localized: "settings.title"), systemImage: "gearshape")
+                }
+            }
     }
 
     private var isDeleting: Binding<Bool> {

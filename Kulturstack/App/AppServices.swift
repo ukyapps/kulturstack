@@ -9,8 +9,11 @@ struct AppServices {
     let editUseCase: EditLogUseCase
     let logHistory: LogHistoryUseCase
     let enrichUseCase: EnrichUseCase
+    let wipeUseCase: WipeUseCase
+    let connectivity: any ConnectivityMonitoring
 
-    init(context: ModelContext, detailsProviders: [any DetailsProvider] = []) {
+    init(context: ModelContext, detailsProviders: [any DetailsProvider] = [],
+         connectivity: any ConnectivityMonitoring = NetworkMonitor()) {
         let logRepository = SwiftDataLogRepository(context: context)
         let mediaRepository = SwiftDataMediaRepository(context: context)
         let dedup = DedupUseCase(repository: mediaRepository)
@@ -20,5 +23,7 @@ struct AppServices {
         editUseCase = EditLogUseCase(repository: logRepository)
         logHistory = LogHistoryUseCase(dedup: dedup)
         enrichUseCase = EnrichUseCase(repository: mediaRepository, providers: detailsProviders)
+        wipeUseCase = WipeUseCase(repository: mediaRepository)
+        self.connectivity = connectivity
     }
 }
