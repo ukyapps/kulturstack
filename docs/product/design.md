@@ -14,7 +14,7 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 |---|---|---|
 | Barre d'onglets Journal / Recherche | ✅ | #7 |
 | Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
-| Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), « Vu le … » sur une ligne déjà loggée (PR 8), ♡ Envie (PR 10) | #7 |
+| Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), ♡ Envie (PR 10) | #7, #10 |
 | Tap = loggé + bandeau | ✅ · ⏳ remplacé par tap = fiche (PR 8b, décision du 22/09) | #8, #9 |
 | Fiche d'une œuvre | ✅ · ⏳ depuis la Recherche (PR 8b), détails TMDB (PR à part) | #10 |
 | Modifier un log | ✅ | #9 |
