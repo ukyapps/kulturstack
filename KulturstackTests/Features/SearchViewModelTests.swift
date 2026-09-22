@@ -13,44 +13,14 @@ struct SearchViewModelTests {
         let tmdb = tmdb ?? MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film, series]))
         let openLibrary = openLibrary ?? MockProvider(id: "openlibrary", kinds: [.book], result: .success([book]))
         let useCase = SearchUseCase(providers: [tmdb, openLibrary])
-        return (SearchViewModel(useCase: useCase, logNow: { _ in UUID() }, debounce: debounce), tmdb, openLibrary)
+        return (SearchViewModel(useCase: useCase, debounce: debounce), tmdb, openLibrary)
     }
 
-    @Test func tappingACandidateLogsItAndShowsAToastThatFadesOut() async throws {
-        let logged = Logged()
-        let logID = UUID()
-        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
-                                        logNow: { logged.ids.append($0.id); return logID },
-                                        debounce: .zero, toastDuration: .milliseconds(60))
-
-        viewModel.log(film)
-
-        #expect(logged.ids == ["tmdb:movie:1"])
-        #expect(viewModel.toast?.title.contains("Dune") == true)
-        #expect(viewModel.toast?.isError == false)
-        #expect(viewModel.toast?.logID == logID)
-        try await Task.sleep(for: .milliseconds(150))
-        #expect(viewModel.toast == nil)
-    }
-
-    @Test func aLoggingFailureShowsAnErrorToast() {
-        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
-                                        logNow: { _ in throw HTTPError.status(500) }, debounce: .zero)
-
-        viewModel.log(film)
-
-        #expect(viewModel.toast?.isError == true)
-        #expect(viewModel.toast?.logID == nil)
-    }
-
-    private final class Logged { var ids: [String] = [] }
-
-    @Test func aCandidateAlreadyLoggedShowsWhenAndATapUpdatesIt() async throws {
+    @Test func aCandidateAlreadyLoggedShowsWhenAndARefreshPicksUpNewLogs() async throws {
         let yesterday = Date.now.addingTimeInterval(-86_400)
         let dates = Dates(byID: ["tmdb:movie:1": yesterday])
         let tmdb = MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film, series]))
         let viewModel = SearchViewModel(useCase: SearchUseCase(providers: [tmdb]),
-                                        logNow: { dates.byID[$0.id] = .now; return UUID() },
                                         lastLogDate: { dates.byID[$0.id] }, debounce: .zero)
 
         viewModel.query = "dune"
@@ -61,11 +31,46 @@ struct SearchViewModelTests {
         #expect(viewModel.row(for: series).lastLoggedAt == nil)
         #expect(viewModel.row(for: series).loggedLabel == nil)
 
-        viewModel.log(series)
+        dates.byID["tmdb:tv:1"] = .now
+        viewModel.refreshLogDates()
 
         #expect(viewModel.row(for: series).lastLoggedAt != nil)
     }
 
+    @Test func thePlusButtonLogsMarksTheRowAndShowsAToastWithTheLogThatFadesOut() async throws {
+        let logged = Logged()
+        let logID = UUID()
+        let tmdb = MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film]))
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: [tmdb]),
+                                        logNow: { logged.ids.append($0.id); return logID },
+                                        debounce: .zero, toastDuration: .milliseconds(60))
+        viewModel.query = "dune"
+        try await settle(viewModel)
+        #expect(viewModel.row(for: film).lastLoggedAt == nil)
+
+        viewModel.log(film)
+
+        #expect(logged.ids == ["tmdb:movie:1"])
+        #expect(viewModel.row(for: film).lastLoggedAt != nil)
+        #expect(viewModel.toast?.title.contains("Dune") == true)
+        #expect(viewModel.toast?.isError == false)
+        #expect(viewModel.toast?.logID == logID)
+        try await Task.sleep(for: .milliseconds(150))
+        #expect(viewModel.toast == nil)
+    }
+
+    @Test func aFailedQuickLogShowsAnErrorToastAndLeavesTheRowUntouched() {
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
+                                        logNow: { _ in throw HTTPError.status(500) }, debounce: .zero)
+
+        viewModel.log(film)
+
+        #expect(viewModel.toast?.isError == true)
+        #expect(viewModel.toast?.logID == nil)
+        #expect(viewModel.row(for: film).lastLoggedAt == nil)
+    }
+
+    private final class Logged { var ids: [String] = [] }
     private final class Dates { var byID: [String: Date]; init(byID: [String: Date]) { self.byID = byID } }
 
     private func settle(_ viewModel: SearchViewModel) async throws {

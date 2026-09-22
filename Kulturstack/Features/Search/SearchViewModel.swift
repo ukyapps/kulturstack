@@ -37,7 +37,7 @@ final class SearchViewModel {
     private var toastTask: Task<Void, Never>?
     private var activeQuery = ""
 
-    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID,
+    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID = { _ in UUID() },
          lastLogDate: @escaping (MediaCandidate) throws -> Date? = { _ in nil },
          debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
@@ -52,6 +52,7 @@ final class SearchViewModel {
         SearchResultRowModel(candidate: candidate, lastLoggedAt: loggedDates[candidate.id])
     }
 
+    // Le « + » de la ligne : loggé tout de suite ; la pastille « Vu le … » et le bandeau « Modifier » confirment.
     func log(_ candidate: MediaCandidate) {
         do {
             let logID = try logNow(candidate)
@@ -70,6 +71,11 @@ final class SearchViewModel {
             guard !Task.isCancelled else { return }
             toast = nil
         }
+    }
+
+    // Après un log fait depuis la fiche, les pastilles « Vu le … » des sections affichées se remettent à jour.
+    func refreshLogDates() {
+        for section in sections { rememberLogDates(of: section) }
     }
 
     var presentation: Presentation {

@@ -14,7 +14,8 @@ struct ItemDetailModel: Equatable {
 
     private static let maxSubjects = 3
     // Les sources qu'on interroge d'abord, les clés secondaires (IMDb, Trakt…) ensuite.
-    private static let providerNames = [("tmdb", "TMDB"), ("ol", "OpenLibrary"), ("isbn13", "OpenLibrary"), ("imdb", "IMDb"), ("trakt", "Trakt")]
+    private static let providerNames = [("tmdb", "TMDB"), ("ol", "OpenLibrary"), ("openlibrary", "OpenLibrary"), ("isbn13", "OpenLibrary"),
+                                        ("imdb", "IMDb"), ("trakt", "Trakt")]
 
     init(item: MediaItem) {
         let details = item.details
@@ -30,6 +31,21 @@ struct ItemDetailModel: Equatable {
             .sorted { ($0.date, $0.createdAt) > ($1.date, $1.createdAt) }
             .map(ItemLogRowModel.init)
         source = Self.source(of: item.externalRefs)
+    }
+
+    // Aperçu d'un résultat de recherche pas encore en base : mêmes rubriques, aucun log.
+    init(candidate: MediaCandidate) {
+        id = UUID()
+        kind = candidate.kind
+        title = candidate.title
+        year = candidate.year
+        summary = candidate.summary
+        coverURL = candidate.coverURL
+        headline = Self.headline(kind: candidate.kind, runtime: (candidate.details as? FilmDetails)?.runtimeMinutes,
+                                 creator: candidate.creators.first)
+        facts = Self.facts(for: candidate.details)
+        logs = []
+        source = Self.providerNames.first { $0.0 == candidate.providerID }?.1 ?? candidate.providerID
     }
 
     private static func headline(kind: MediaKind, runtime: Int?, creator: String?) -> String {

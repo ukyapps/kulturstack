@@ -80,6 +80,32 @@ struct ItemDetailModelTests {
         #expect(logs.map(\.status) == [.done, .done])
     }
 
+    @Test func aCandidateGivesAPreviewWithoutLogs() {
+        let candidate = MediaCandidate(
+            id: "tmdb:movie:438631", kind: .film, title: "Dune", originalTitle: "Dune", year: 2021,
+            creators: ["Denis Villeneuve"], coverURL: URL(string: "https://img/dune.jpg"), summary: "Paul…",
+            externalKeys: ["tmdb:movie:438631"], details: FilmDetails(runtimeMinutes: 155, genres: ["SF"]), providerID: "tmdb")
+
+        let model = ItemDetailModel(candidate: candidate)
+
+        #expect(model.title == "Dune")
+        #expect(model.year == 2021)
+        #expect(model.headline.contains("2h35"))
+        #expect(model.headline.contains("Denis Villeneuve"))
+        #expect(model.facts == ["SF"])
+        #expect(model.summary == "Paul…")
+        #expect(model.coverURL == candidate.coverURL)
+        #expect(model.logs.isEmpty)
+        #expect(model.source == "TMDB")
+    }
+
+    @Test func anOpenLibraryCandidateNamesItsSource() {
+        let candidate = MockProvider.candidate("ol:work:1", kind: .book, title: "Dune")
+        let fromOL = MediaCandidate(id: candidate.id, kind: .book, title: "Dune", originalTitle: nil, year: nil, creators: [],
+                                    coverURL: nil, summary: nil, externalKeys: [candidate.id], details: BookDetails(), providerID: "openlibrary")
+        #expect(ItemDetailModel(candidate: fromOL).source == "OpenLibrary")
+    }
+
     @Test(arguments: [
         (["tmdb"], "TMDB"), (["ol", "isbn13"], "OpenLibrary"), (["tmdb", "imdb"], "TMDB, IMDb"), ([], nil),
     ])
