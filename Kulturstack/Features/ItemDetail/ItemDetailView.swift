@@ -52,10 +52,14 @@ struct ItemDetailView: View {
         ScrollView {
             VStack(spacing: Spacing.l) {
                 header(model)
-                Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
-                    viewModel.log()
+                HStack(spacing: Spacing.s) {
+                    Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
+                        viewModel.log()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
+                        .buttonStyle(.bordered)
                 }
-                .buttonStyle(.borderedProminent)
                 .sensoryFeedback(.success, trigger: model.logs.count)
                 logs(model.logs)
                 if let source = model.source {

@@ -56,3 +56,15 @@ extension MediaKind {
         }
     }
 }
+
+extension MediaKind {
+    // « Je l'ai vu » sur une envie : le verbe suit le type.
+    var seenActionLabel: String {
+        switch self {
+        case .film, .series, .concert, .theatre, .exhibition: String(localized: "wishlist.seen.seen")
+        case .book: String(localized: "wishlist.seen.read")
+        case .album, .podcast: String(localized: "wishlist.seen.listened")
+        case .game: String(localized: "wishlist.seen.played")
+        }
+    }
+}

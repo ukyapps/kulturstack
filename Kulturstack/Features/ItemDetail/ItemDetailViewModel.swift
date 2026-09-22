@@ -67,6 +67,14 @@ final class ItemDetailViewModel {
     }
 
     func log() {
+        record(stored: { try logUseCase.logAgain($0) }, candidate: { try logUseCase.logNow($0) })
+    }
+
+    func wish() {
+        record(stored: { try logUseCase.wish($0) }, candidate: { try logUseCase.wish($0) })
+    }
+
+    private func record(stored: (MediaItem) throws -> LogEntry, candidate: (MediaCandidate) throws -> LogEntry) {
         do {
             switch subject {
             case .stored(let itemID):
@@ -74,9 +82,9 @@ final class ItemDetailViewModel {
                     state = .missing
                     return
                 }
-                try logUseCase.logAgain(item)
-            case .candidate(let candidate):
-                let log = try logUseCase.logNow(candidate)
+                _ = try stored(item)
+            case .candidate(let value):
+                let log = try candidate(value)
                 if let item = log.item { subject = .stored(item.id) }
             }
             didFailToLog = false

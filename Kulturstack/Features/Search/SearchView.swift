@@ -13,6 +13,7 @@ struct SearchView: View {
         _viewModel = State(initialValue: SearchViewModel(
             useCase: useCase,
             logNow: { try logUseCase.logNow($0).id },
+            wish: { try logUseCase.wish($0).id },
             lastLogDate: { try history.lastLogDate(for: $0) },
             debounce: debounce))
         self.services = services
@@ -114,7 +115,9 @@ struct SearchView: View {
         case .loaded(let candidates):
             ForEach(candidates) { candidate in
                 NavigationLink(value: candidate) {
-                    SearchResultRow(model: viewModel.row(for: candidate)) { viewModel.log(candidate) }
+                    SearchResultRow(model: viewModel.row(for: candidate),
+                                    onLog: { viewModel.log(candidate) },
+                                    onWish: { viewModel.wish(candidate) })
                 }
                 .accessibilityHint(String(localized: "search.row.hint"))
             }

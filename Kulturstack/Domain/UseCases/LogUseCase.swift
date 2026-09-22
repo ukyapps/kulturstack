@@ -16,6 +16,19 @@ struct LogUseCase {
     }
 
     @discardableResult
+    func wish(_ candidate: MediaCandidate, now: Date = .now) throws -> LogEntry {
+        try logNow(candidate, status: .wishlist, now: now)
+    }
+
+    // L'envie reste dans l'historique quand l'œuvre est vue ensuite (ADR-006) : on ajoute, on ne remplace pas.
+    @discardableResult
+    func wish(_ item: MediaItem, now: Date = .now) throws -> LogEntry {
+        let log = try LogEntry.make(item: item, status: .wishlist, date: now, source: "manual")
+        try repository.add(log)
+        return log
+    }
+
+    @discardableResult
     func logAgain(_ item: MediaItem, now: Date = .now) throws -> LogEntry {
         let log = try LogEntry.make(item: item, status: .done, date: now, source: "manual")
         try repository.add(log)

@@ -29,6 +29,7 @@ final class SearchViewModel {
     let availableKinds: [MediaKind]
     private let useCase: SearchUseCase
     private let logNow: (MediaCandidate) throws -> UUID
+    private let wishNow: (MediaCandidate) throws -> UUID
     private let lastLogDate: (MediaCandidate) throws -> Date?
     private let debounce: Duration
     private let toastDuration: Duration
@@ -38,10 +39,12 @@ final class SearchViewModel {
     private var activeQuery = ""
 
     init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID = { _ in UUID() },
+         wish: @escaping (MediaCandidate) throws -> UUID = { _ in UUID() },
          lastLogDate: @escaping (MediaCandidate) throws -> Date? = { _ in nil },
          debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
         self.logNow = logNow
+        self.wishNow = wish
         self.lastLogDate = lastLogDate
         self.debounce = debounce
         self.toastDuration = toastDuration
@@ -58,6 +61,16 @@ final class SearchViewModel {
             let logID = try logNow(candidate)
             loggedDates[candidate.id] = .now
             show(Toast(title: String(localized: "search.toast.logged"), isError: false, logID: logID))
+        } catch {
+            show(Toast(title: String(localized: "search.toast.failed"), isError: true))
+        }
+    }
+
+    // Appui long : gardé pour plus tard. Pas de pastille « Vu le … », une envie n'est pas une consommation.
+    func wish(_ candidate: MediaCandidate) {
+        do {
+            let logID = try wishNow(candidate)
+            show(Toast(title: String(localized: "search.toast.wished"), isError: false, logID: logID))
         } catch {
             show(Toast(title: String(localized: "search.toast.failed"), isError: true))
         }

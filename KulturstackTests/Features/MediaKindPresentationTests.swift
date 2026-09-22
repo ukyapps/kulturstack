@@ -10,6 +10,8 @@ struct MediaKindPresentationTests {
         #expect(!kind.pluralLabel.isEmpty)
         #expect(!kind.pluralLabel.hasPrefix("kind."))
         #expect(!kind.symbol.isEmpty)
+        #expect(!kind.seenActionLabel.isEmpty)
+        #expect(!kind.seenActionLabel.hasPrefix("journal."))
     }
 
     @Test(arguments: LogStatus.allCases)

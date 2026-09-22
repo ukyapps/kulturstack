@@ -70,6 +70,20 @@ struct SearchViewModelTests {
         #expect(viewModel.row(for: film).lastLoggedAt == nil)
     }
 
+    @Test func keepingForLaterWishesAndShowsAToastWithTheLog() {
+        let wished = Logged()
+        let logID = UUID()
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
+                                        wish: { wished.ids.append($0.id); return logID }, debounce: .zero)
+
+        viewModel.wish(film)
+
+        #expect(wished.ids == ["tmdb:movie:1"])
+        #expect(viewModel.toast?.isError == false)
+        #expect(viewModel.toast?.logID == logID)
+        #expect(viewModel.row(for: film).lastLoggedAt == nil)
+    }
+
     private final class Logged { var ids: [String] = [] }
     private final class Dates { var byID: [String: Date]; init(byID: [String: Date]) { self.byID = byID } }
 

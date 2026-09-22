@@ -681,6 +681,22 @@
         }
       }
     },
+    "detail.wish": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Want to"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envie"
+          }
+        }
+      }
+    },
     "family.books": {
       "localizations": {
         "en": {
@@ -1870,13 +1886,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A film, a series or a book. Tap a result to see its page, or its + to log it right away."
+            "value": "A film, a series or a book. Tap a result to see its page, + to log it right away, ♡ to keep it for later."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un film, une série ou un livre. Tape sur un résultat pour voir sa fiche, ou sur son + pour le logger tout de suite."
+            "value": "Un film, une série ou un livre. Tape sur un résultat pour voir sa fiche, sur + pour le logger tout de suite, sur ♡ pour le garder pour plus tard."
           }
         }
       }
@@ -2041,6 +2057,22 @@
         }
       }
     },
+    "search.row.wish": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save for later"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder pour plus tard"
+          }
+        }
+      }
+    },
     "search.section.empty": {
       "localizations": {
         "en": {
@@ -2101,6 +2133,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loggé ✓"
+          }
+        }
+      }
+    },
+    "search.toast.wished": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved for later ✓"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardé pour plus tard ✓"
           }
         }
       }
@@ -2229,6 +2277,166 @@
           "stringUnit": {
             "state": "translated",
             "value": "Recherche"
+          }
+        }
+      }
+    },
+    "tab.wishlist": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Want to"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envie"
+          }
+        }
+      }
+    },
+    "wishlist.added %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouté le %@"
+          }
+        }
+      }
+    },
+    "wishlist.empty.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap ♡ next to a search result, or on its page, to keep it for later."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tape sur ♡ à côté d’un résultat de recherche, ou dans sa fiche, pour le garder pour plus tard."
+          }
+        }
+      }
+    },
+    "wishlist.empty.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing waiting"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien en attente"
+          }
+        }
+      }
+    },
+    "wishlist.error.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your wishes couldn’t be loaded"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de charger tes envies"
+          }
+        }
+      }
+    },
+    "wishlist.seen.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t mark it as seen. Try again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de marquer comme vu. Réessaie."
+          }
+        }
+      }
+    },
+    "wishlist.seen.listened": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heard it"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je l’ai écouté"
+          }
+        }
+      }
+    },
+    "wishlist.seen.played": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Played it"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J’y ai joué"
+          }
+        }
+      }
+    },
+    "wishlist.seen.read": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read it"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je l’ai lu"
+          }
+        }
+      }
+    },
+    "wishlist.seen.seen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seen it"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je l’ai vu"
           }
         }
       }

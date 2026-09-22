@@ -34,7 +34,7 @@ final class JournalViewModel {
         editUseCase = EditLogUseCase(repository: repository)
     }
 
-    // Vide (rien loggé) ≠ edge (filtre sans résultat) ≠ erreur : trois rendus distincts.
+    // Vide (rien consommé — les envies vivent dans leur onglet) ≠ edge (filtre sans résultat) ≠ erreur.
     var presentation: Presentation {
         switch state {
         case .loading: return .loading
@@ -43,7 +43,9 @@ final class JournalViewModel {
         case .loaded(let rows):
             let now = now()
             let kept = StatsUseCase.filter(rows, period: period, kind: selectedKind, now: now, calendar: calendar)
-            guard !kept.isEmpty else { return .edge(period: period, kind: selectedKind) }
+            guard !kept.isEmpty else {
+                return rows.allSatisfy({ $0.status == .wishlist }) ? .empty : .edge(period: period, kind: selectedKind)
+            }
             return .loaded(JournalContent(sections: StatsUseCase.groupByDay(kept, now: now, calendar: calendar), total: kept.count))
         }
     }
