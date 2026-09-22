@@ -8,7 +8,7 @@ struct ItemDetailView: View {
 
     init(subject: ItemDetailViewModel.Subject, services: AppServices) {
         _viewModel = State(initialValue: ItemDetailViewModel(subject: subject, repository: services.mediaRepository,
-                                                             logUseCase: services.logUseCase))
+                                                             logUseCase: services.logUseCase, enrich: services.enrichUseCase))
         self.services = services
     }
 

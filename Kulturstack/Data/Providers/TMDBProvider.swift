@@ -1,6 +1,6 @@
 import Foundation
 
-struct TMDBProvider: MetadataProvider {
+struct TMDBProvider: MetadataProvider, DetailsProvider {
     static let baseURL = URL(string: "https://api.themoviedb.org/3")!
     static let imageBaseURL = URL(string: "https://image.tmdb.org/t/p/w342")!
 
@@ -38,6 +38,36 @@ struct TMDBProvider: MetadataProvider {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let response = try decoder.decode(TMDBSearchResponse.self, from: data)
         return response.results.compactMap { Self.candidate(from: $0) }
+    }
+
+    // Clés « tmdb:movie:<id> » et « tmdb:tv:<id> » seulement ; les autres ne sont pas à nous.
+    func details(forKey key: String) async throws -> MediaEnrichment? {
+        let parts = key.split(separator: ":", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count == 3, parts[0] == id, ["movie", "tv"].contains(parts[1]), Int(parts[2]) != nil else { return nil }
+        let token = try secrets.value(for: .tmdbReadToken)
+        var components = URLComponents(url: Self.baseURL.appending(path: "\(parts[1])/\(parts[2])"), resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "language", value: language)]
+        if parts[1] == "movie" {
+            components.queryItems?.append(URLQueryItem(name: "append_to_response", value: "credits"))
+        }
+        let data = try await client.get(components.url!, headers: [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json",
+        ])
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        if parts[1] == "movie" {
+            let movie = try decoder.decode(TMDBMovieDetailsResponse.self, from: data)
+            let directors = (movie.credits?.crew ?? []).filter { $0.job == "Director" }.map(\.name)
+            return MediaEnrichment(
+                creators: directors,
+                details: FilmDetails(runtimeMinutes: movie.runtime, genres: (movie.genres ?? []).map(\.name), directors: directors))
+        }
+        let show = try decoder.decode(TMDBTVDetailsResponse.self, from: data)
+        return MediaEnrichment(
+            creators: (show.createdBy ?? []).map(\.name),
+            details: SeriesDetails(seasonCount: show.numberOfSeasons, episodeCount: show.numberOfEpisodes,
+                                   status: show.status, genres: (show.genres ?? []).map(\.name)))
     }
 
     private static func candidate(from result: TMDBSearchResult) -> MediaCandidate? {

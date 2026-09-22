@@ -8,7 +8,8 @@ struct RootView: View {
     @State private var selectedTab = Tab.journal
 
     var body: some View {
-        let services = AppServices(context: context)
+        let registry = providerRegistry
+        let services = AppServices(context: context, detailsProviders: registry.detailsProviders)
         TabView(selection: $selectedTab) {
             NavigationStack {
                 JournalView(services: services) { selectedTab = .search }
@@ -20,16 +21,16 @@ struct RootView: View {
             .tag(Tab.journal)
 
             NavigationStack {
-                SearchView(useCase: SearchUseCase(providers: providers), services: services)
+                SearchView(useCase: SearchUseCase(providers: registry.providers), services: services)
             }
             .tabItem { Label(String(localized: "tab.search"), systemImage: "magnifyingglass") }
             .tag(Tab.search)
         }
     }
 
-    private var providers: [any MetadataProvider] {
+    private var providerRegistry: ProviderRegistry {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        return ProviderRegistry.live(secrets: BundleSecrets(), client: URLSessionHTTPClient(), appVersion: version).providers
+        return ProviderRegistry.live(secrets: BundleSecrets(), client: URLSessionHTTPClient(), appVersion: version)
     }
 }
 

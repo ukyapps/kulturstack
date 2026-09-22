@@ -8,8 +8,9 @@ struct AppServices {
     let logUseCase: LogUseCase
     let editUseCase: EditLogUseCase
     let logHistory: LogHistoryUseCase
+    let enrichUseCase: EnrichUseCase
 
-    init(context: ModelContext) {
+    init(context: ModelContext, detailsProviders: [any DetailsProvider] = []) {
         let logRepository = SwiftDataLogRepository(context: context)
         let mediaRepository = SwiftDataMediaRepository(context: context)
         let dedup = DedupUseCase(repository: mediaRepository)
@@ -18,5 +19,6 @@ struct AppServices {
         logUseCase = LogUseCase(repository: mediaRepository, dedup: dedup)
         editUseCase = EditLogUseCase(repository: logRepository)
         logHistory = LogHistoryUseCase(dedup: dedup)
+        enrichUseCase = EnrichUseCase(repository: mediaRepository, providers: detailsProviders)
     }
 }
