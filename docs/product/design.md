@@ -1,6 +1,6 @@
 ---
 type: design
-statut: v1.1 — 2026-09-21 — Journal et Recherche réalisés et validés à l'écran ; Fiche, Modifier, Envie, Réglages à faire
+statut: v1.2 — 2026-09-22 — tous les écrans de la Tranche 1 réalisés et validés à l'écran ; décisions du 22/09 intégrées (tap = fiche, + / ♡, onglet Envie)
 propriétaire: founder
 ---
 
@@ -58,7 +58,7 @@ Kulturstack
     └── À propos (attributions)
 ```
 
-**En Tranche 1** : deux onglets, Journal et Recherche (✅ depuis la PR #7), plus Réglages accessible depuis une icône en haut du Journal (PR 11). La Bibliothèque n'apparaît qu'en T5 — on n'affiche pas un onglet vide pendant quatre tranches.
+**En Tranche 1** : trois onglets, Journal, Envie et Recherche (✅ #7, #14), plus Réglages depuis ⚙︎ en haut du Journal (✅ #15). La Bibliothèque n'apparaît qu'en T5 — on n'affiche pas un onglet vide pendant quatre tranches.
 
 ## 3. Les écrans de la Tranche 1
 
