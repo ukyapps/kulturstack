@@ -7,7 +7,8 @@ struct SearchView: View {
     @FocusState private var isSearchFocused: Bool
     private let services: AppServices
 
-    init(useCase: SearchUseCase, services: AppServices, debounce: Duration = .milliseconds(300)) {
+    init(useCase: SearchUseCase, services: AppServices, connectivity: (any ConnectivityMonitoring)? = nil,
+         debounce: Duration = .milliseconds(300)) {
         let logUseCase = services.logUseCase
         let history = services.logHistory
         _viewModel = State(initialValue: SearchViewModel(
@@ -15,6 +16,7 @@ struct SearchView: View {
             logNow: { try logUseCase.logNow($0).id },
             wish: { try logUseCase.wish($0).id },
             lastLogDate: { try history.lastLogDate(for: $0) },
+            connectivity: connectivity ?? services.connectivity,
             debounce: debounce))
         self.services = services
     }
@@ -36,6 +38,11 @@ struct SearchView: View {
                 viewModel.refreshLogDates()
             }
             .navigationDestination(for: MediaCandidate.self) { ItemDetailView(subject: .candidate($0), services: services) }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if viewModel.isOffline {
+                    OfflineBanner()
+                }
+            }
             .overlay(alignment: .bottom) {
                 if let toast = viewModel.toast {
                     Toast(text: toast.title, isError: toast.isError, action: editAction(for: toast))

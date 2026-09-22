@@ -13,9 +13,6 @@ struct RootView: View {
         TabView(selection: $selectedTab) {
             NavigationStack {
                 JournalView(services: services) { selectedTab = .search }
-                    #if DEBUG
-                    .safeAreaInset(edge: .bottom) { StorageBadge() }
-                    #endif
             }
             .tabItem { Label(String(localized: "tab.journal"), systemImage: "books.vertical") }
             .tag(Tab.journal)
@@ -39,23 +36,6 @@ struct RootView: View {
         return ProviderRegistry.live(secrets: BundleSecrets(), client: URLSessionHTTPClient(), appVersion: version)
     }
 }
-
-#if DEBUG
-private struct StorageBadge: View {
-    @Query private var items: [MediaItem]
-    @Query private var logs: [LogEntry]
-
-    var body: some View {
-        let version = Int(KulturstackMigrationPlan.current.versionIdentifier.major)
-        Text(String(localized: "debug.storage.badge \(version) \(items.count) \(logs.count)"))
-            .font(.caption.monospaced())
-            .foregroundStyle(Color.textSecondary)
-            .padding(.vertical, Spacing.s)
-            .frame(maxWidth: .infinity)
-            .background(.bar)
-    }
-}
-#endif
 
 #Preview {
     RootView().modelContainer(try! ModelContainerFactory.inMemory())

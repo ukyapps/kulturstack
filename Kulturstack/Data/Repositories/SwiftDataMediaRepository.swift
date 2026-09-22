@@ -43,4 +43,12 @@ struct SwiftDataMediaRepository: MediaRepository {
     func save() throws {
         try context.save()
     }
+
+    // Pas de delete(model:) en masse : les relations obligatoires le font échouer. Objet par objet, logs d'abord.
+    func deleteAll() throws {
+        for log in try context.fetch(FetchDescriptor<LogEntry>()) { context.delete(log) }
+        for ref in try context.fetch(FetchDescriptor<ExternalRef>()) { context.delete(ref) }
+        for item in try context.fetch(FetchDescriptor<MediaItem>()) { context.delete(item) }
+        try context.save()
+    }
 }

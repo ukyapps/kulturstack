@@ -8,4 +8,5 @@ protocol MediaRepository {
     func add(_ refs: [ExternalRef], to item: MediaItem) throws
     func add(_ log: LogEntry) throws
     func save() throws
+    func deleteAll() throws
 }

@@ -27,6 +27,7 @@ final class SearchViewModel {
     private var loggedDates: [String: Date] = [:]
 
     let availableKinds: [MediaKind]
+    private let connectivity: (any ConnectivityMonitoring)?
     private let useCase: SearchUseCase
     private let logNow: (MediaCandidate) throws -> UUID
     private let wishNow: (MediaCandidate) throws -> UUID
@@ -41,8 +42,10 @@ final class SearchViewModel {
     init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID = { _ in UUID() },
          wish: @escaping (MediaCandidate) throws -> UUID = { _ in UUID() },
          lastLogDate: @escaping (MediaCandidate) throws -> Date? = { _ in nil },
+         connectivity: (any ConnectivityMonitoring)? = nil,
          debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
+        self.connectivity = connectivity
         self.logNow = logNow
         self.wishNow = wish
         self.lastLogDate = lastLogDate
@@ -50,6 +53,8 @@ final class SearchViewModel {
         self.toastDuration = toastDuration
         availableKinds = MediaKind.allCases.filter { useCase.families.contains($0.searchFamily) }
     }
+
+    var isOffline: Bool { connectivity.map { !$0.isOnline } ?? false }
 
     func row(for candidate: MediaCandidate) -> SearchResultRowModel {
         SearchResultRowModel(candidate: candidate, lastLoggedAt: loggedDates[candidate.id])
