@@ -27,11 +27,12 @@ struct JournalViewRenderingTests {
             return
         }
         #expect(content.sections.count > 1)
-        #expect(content.total == 25)
+        #expect(content.total == 23)
 
         viewModel.period = .week
         viewModel.selectedKind = .podcast
         host.view.layoutIfNeeded()
         #expect(viewModel.presentation == .edge(period: .week, kind: .podcast))
+
     }
 }

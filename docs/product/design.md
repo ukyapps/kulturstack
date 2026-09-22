@@ -18,7 +18,7 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Tap = fiche · + = loggé + bandeau « Modifier » | ✅ (décision du 22/09) | #8, #9, #11 |
 | Fiche d'une œuvre | ✅ | #10, #11, #12 |
 | Modifier un log | ✅ | #9 |
-| Envie | ⏳ PR 10 | — |
+| Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ (onglet, pas chip : décision du 22/09) | #14 |
 | Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
 
 Les captures d'écran de chaque PR sont dans `docs/captures/pr-NN/`.
@@ -113,7 +113,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». « Vu le 20 sept. » / « Lu le … » sur une ligne déjà loggée (#10) ; tap = fiche, + = loggé (#11). **Manque** : appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
+> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». « Vu le 20 sept. » / « Lu le … » sur une ligne déjà loggée (#10) ; tap = fiche, + = loggé (#11), ♡ = envie (#14). **Manque** : bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
 
 - La barre a le focus dès l'ouverture, clavier levé. Recherche à partir de 2 caractères, 300 ms après la dernière frappe.
 - **Tap = fiche de l'œuvre** (aperçu si pas encore en base, avec « Logger »). **« + » au bout de la ligne = loggé** (terminé, maintenant) avec bandeau « *Dune* loggé ✓ · **Modifier** » 4 s. Tranché le 22/09 (§6.2), réalisé en #11.
@@ -148,7 +148,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). Réalisateur, durée, genres, saisons complétés chez TMDB à l'ouverture (#12). **Manque** : ♡ Envie (PR 10).
+> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). Réalisateur, durée, genres, saisons complétés chez TMDB à l'ouverture (#12) ; bouton « Envie » ♡ à côté de « Logger » (#14).
 
 - Les détails de la « poche » varient par type : durée / réalisateur pour un film, saisons pour une série, pages / éditeur pour un livre.
 - Tap sur un log → Modifier.
@@ -181,11 +181,13 @@ Kulturstack
 
 ### 3.5 Envie
 
-> **À faire (PR 10).** `LogUseCase.logNow(status: .wishlist)` est déjà testé ; le Journal affiche déjà la pastille « Envie ».
+> **Réalisé (PR #14)** — **en onglet**, pas en chip (founder, 22/09 : « je veux pas d'un chip envie dans le journal, il faut faire un 3ᵉ onglet »). Onglets : Journal · Envie · Recherche.
 
-Un filtre du Journal (chip « Envie »), pas un écran à part. Ligne = jaquette, titre, « ajouté le … », bouton « Je l'ai vu » qui crée un log terminé daté maintenant. L'envie reste dans l'historique.
+~~Un filtre du Journal (chip « Envie »), pas un écran à part.~~ Un onglet « Envie » : liste des envies **en attente** (pas encore consommées). Ligne = jaquette, titre, « Ajouté le … », bouton « Je l'ai vu » (« Je l'ai lu » pour un livre, « Je l'ai écouté » pour un disque) qui crée un log terminé daté maintenant. L'envie reste dans l'historique de la fiche mais sort de la liste. Les envies ne comptent pas dans le Journal ni ses compteurs.
 
-**Vide** : « Rien en attente », « Appuie longtemps sur un résultat de recherche pour le garder pour plus tard. »
+On garde en envie par **♡ à côté du + sur chaque résultat** de Recherche, ou par « Envie » dans la fiche.
+
+**Vide** : « Rien en attente », « Tape sur ♡ à côté d'un résultat de recherche, ou dans sa fiche, pour le garder pour plus tard. » + bouton Chercher. **Erreur** : « Impossible de charger tes envies » + Réessayer.
 
 ### 3.6 Réglages
 
@@ -261,7 +263,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ **Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.
 3. ~~**Groupement du Journal par jour ou liste plate ?**~~ **Tranché le 22/09/2026 : par jour** (#13), après la démo de la PR 7 où un log passé à hier avait « disparu » en bas de liste.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
-5. **Envie : chip du Journal ou onglet ?** Reco : chip (voir §3.5), pour ne pas multiplier les onglets avant la Bibliothèque.
+5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.
 
 ## 7. Ce qu'on ne fait pas en design
 

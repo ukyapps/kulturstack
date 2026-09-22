@@ -23,6 +23,7 @@ struct StatsUseCaseTests {
         let series = MediaItem(kind: .series, title: "Severance")
         for item in [dune, book, series] { context.insert(item) }
         let logs = [
+            try LogEntry.make(item: series, status: .wishlist, date: date(2026, 9, 22)),
             try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 22)),
             try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 21)),
             try LogEntry.make(item: book, status: .done, date: date(2026, 9, 15)),
@@ -55,6 +56,38 @@ struct StatsUseCaseTests {
         withExtendedLifetime(container) {}
     }
 
+    @Test func wishesAreNeitherCountedNorListedButKeptApart() throws {
+        let (container, rows) = try makeRows()
+        let now = date(2026, 9, 23)
+
+        #expect(StatsUseCase.count(rows, period: .all, now: now, calendar: calendar).total == 5)
+        #expect(StatsUseCase.filter(rows, period: .week, kind: .series, now: now, calendar: calendar).isEmpty)
+        let wishes = StatsUseCase.pendingWishes(rows)
+        #expect(wishes.count == 1)
+        #expect(wishes[0].kind == .series)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func aWishFulfilledLaterIsNoLongerPendingButAnOlderConsumptionDoesNotCount() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let dune = MediaItem(kind: .film, title: "Dune")
+        let messiah = MediaItem(kind: .book, title: "Le Messie de Dune")
+        for item in [dune, messiah] { context.insert(item) }
+        let logs = [
+            try LogEntry.make(item: dune, status: .wishlist, date: date(2026, 9, 10)),
+            try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 20)),
+            try LogEntry.make(item: messiah, status: .done, date: date(2026, 9, 1)),
+            try LogEntry.make(item: messiah, status: .wishlist, date: date(2026, 9, 15)),
+        ]
+        for log in logs { context.insert(log) }
+
+        let pending = StatsUseCase.pendingWishes(logs.map(JournalRowModel.init))
+
+        #expect(pending.map(\.kind) == [.book])
+        withExtendedLifetime(container) {}
+    }
+
     @Test func filterKeepsRowsOfThePeriodAndKindNewestFirst() throws {
         let (container, rows) = try makeRows()
         let now = date(2026, 9, 23)
@@ -71,7 +104,8 @@ struct StatsUseCaseTests {
         let (container, rows) = try makeRows()
         let now = date(2026, 9, 22)
 
-        let sections = StatsUseCase.groupByDay(rows, now: now, calendar: calendar)
+        let consumed = StatsUseCase.filter(rows, period: .all, kind: nil, now: now, calendar: calendar)
+        let sections = StatsUseCase.groupByDay(consumed, now: now, calendar: calendar)
 
         #expect(sections.count == 5)
         #expect(sections[0].title == String(localized: "journal.day.today"))

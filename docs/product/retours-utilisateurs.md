@@ -73,6 +73,15 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 | « Pourquoi le titre s'affiche en plus ? Parfois le titre va être trop long, non ? … Il faut pas mettre le titre du tout. » | Claude proposait de garder le titre coupé au milieu (dit lequel des cinq « Dune »). Founder : sans titre. Bandeau = « Loggé ✓ · Modifier » (#11). |
 | Fiche de Dune sans réalisateur ni genres | La recherche TMDB ne renvoie pas ces champs. Appel « détails » à l'ouverture de la fiche (#12). |
 
+## Founder — session du 2026-09-22 (Envie)
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| Les envies : à part (reco) plutôt que mélangées aux compteurs | Le Journal et ses compteurs ne montrent que ce qui a été consommé (#14). |
+| « Je veux pas d'un chip envie dans le journal, je pense qu'il faut faire un 3ᵉ onglet comme journal recherche avec envie » | Onglet Envie (#14), contre la reco chip du design §6.5. |
+| Après « Je l'ai vu », « il reste, il devrait disparaître et aller dans journal mais plus être dans envie » | Bug : je listais toutes les envies. Corrigé : en attente = pas de consommation postérieure ; testé dans les deux sens (#14). |
+| « Dans la recherche comme le petit + pour logger, il y ait le petit cœur d'envie pour ajouter direct » | ♡ à côté du + sur chaque ligne ; l'appui long est retiré (#14). |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*

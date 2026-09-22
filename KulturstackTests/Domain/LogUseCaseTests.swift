@@ -109,6 +109,32 @@ struct LogUseCaseTests {
         #expect(try counts(container) == (1, 2, 2))
     }
 
+    @Test func wishThenSeenKeepsBothLogsOnOneItem() throws {
+        let (container, useCase) = try makeUseCase()
+
+        let wish = try useCase.wish(dune)
+        #expect(wish.status == .wishlist)
+        #expect(wish.source == "manual")
+
+        let item = try #require(wish.item)
+        let seen = try useCase.logAgain(item)
+
+        #expect(seen.status == .done)
+        #expect(seen.item?.persistentModelID == item.persistentModelID)
+        #expect(try counts(container) == (1, 2, 2))
+        #expect(item.logs.map(\.status).sorted { $0.rawValue < $1.rawValue } == [.done, .wishlist])
+    }
+
+    @Test func wishOnAStoredItemAddsAWishlistLog() throws {
+        let (container, useCase) = try makeUseCase()
+        let item = try #require(try useCase.logNow(dune).item)
+
+        let wish = try useCase.wish(item)
+
+        #expect(wish.status == .wishlist)
+        #expect(try counts(container) == (1, 2, 2))
+    }
+
     @Test func repositoryFindsAnItemByItsID() throws {
         let container = try ModelContainerFactory.inMemory()
         let repository = SwiftDataMediaRepository(context: container.mainContext)

@@ -113,6 +113,32 @@ struct ItemDetailViewModelTests {
         #expect(viewModel.state == .failed)
     }
 
+    @Test func wishingACandidateStoresItWithAWishlistLog() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let viewModel = ItemDetailViewModel(subject: .candidate(dune), repository: repository, logUseCase: logUseCase)
+        viewModel.load()
+
+        viewModel.wish()
+
+        guard case .loaded(let model) = viewModel.state else {
+            Issue.record("état attendu : loaded")
+            return
+        }
+        #expect(model.logs.map(\.status) == [.wishlist])
+        #expect(try container.mainContext.fetchCount(FetchDescriptor<MediaItem>()) == 1)
+    }
+
+    @Test func wishingAStoredItemAddsAWishlistLog() throws {
+        let (container, item, viewModel) = try make()
+        viewModel.load()
+
+        viewModel.wish()
+
+        #expect(item.logs.map(\.status).contains(.wishlist))
+        #expect(item.logs.count == 2)
+        withExtendedLifetime(container) {}
+    }
+
     @Test func aFilmWithoutDetailsIsEnrichedWhenItsPageOpens() async throws {
         let (container, item, _) = try make()
         let repository = SwiftDataMediaRepository(context: container.mainContext)

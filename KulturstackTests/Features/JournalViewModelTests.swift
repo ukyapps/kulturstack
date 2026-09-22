@@ -120,11 +120,40 @@ struct JournalFilterTests {
         context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 22)))
         context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 21)))
         context.insert(try LogEntry.make(item: book, status: .done, date: date(2026, 9, 2)))
+        context.insert(try LogEntry.make(item: book, status: .wishlist, date: date(2026, 9, 22)))
         try context.save()
         let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: context),
                                          now: { self.date(2026, 9, 22) }, calendar: calendar)
         return (container, viewModel)
     }
+
+    @Test func wishesStayOutOfTheJournalAndItsCounts() async throws {
+        let (container, viewModel) = try makeViewModel()
+        await viewModel.load()
+
+        #expect(viewModel.kindCounts.map(\.count) == [2, 0])
+        viewModel.period = .all
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("présentation attendue : loaded")
+            return
+        }
+        #expect(content.total == 3)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func onlyWishesMeansAnEmptyJournal() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "Dune")
+        context.insert(item)
+        context.insert(try LogEntry.make(item: item, status: .wishlist))
+        try context.save()
+        let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: context))
+        await viewModel.load()
+
+        #expect(viewModel.presentation == .empty)
+    }
+
 
     @Test func opensOnThisWeekGroupedByDayWithCounts() async throws {
         let (container, viewModel) = try makeViewModel()

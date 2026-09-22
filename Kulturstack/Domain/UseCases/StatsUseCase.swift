@@ -14,11 +14,23 @@ enum StatsUseCase {
         return Counts(total: kept.count, byKind: byKind)
     }
 
+    // Une envie n'est pas une consommation : elle ne compte pas et n'apparaît pas dans le journal daté.
     static func filter(_ rows: [JournalRowModel], period: Period, kind: MediaKind?, now: Date, calendar: Calendar) -> [JournalRowModel] {
         let range = period.range(containing: now, calendar: calendar)
         return rows
+            .filter { $0.status != .wishlist }
             .filter { range?.contains($0.date) ?? true }
             .filter { kind == nil || $0.kind == kind }
+            .sorted { $0.date > $1.date }
+    }
+
+    // Une envie est en attente tant que l'œuvre n'a pas été consommée après ; l'envie elle-même reste dans l'historique (ADR-006).
+    static func pendingWishes(_ rows: [JournalRowModel]) -> [JournalRowModel] {
+        rows
+            .filter { $0.status == .wishlist }
+            .filter { wish in
+                !rows.contains { $0.status != .wishlist && $0.itemID == wish.itemID && $0.date >= wish.date }
+            }
             .sorted { $0.date > $1.date }
     }
 
