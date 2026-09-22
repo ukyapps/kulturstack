@@ -39,4 +39,8 @@ struct SwiftDataMediaRepository: MediaRepository {
         context.insert(log)
         try context.save()
     }
+
+    func save() throws {
+        try context.save()
+    }
 }

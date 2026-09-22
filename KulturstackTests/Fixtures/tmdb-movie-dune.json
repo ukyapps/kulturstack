@@ -1,0 +1,149 @@
+{
+  "adult": false,
+  "backdrop_path": "/zRKQW58MBEY078AxkHxEJzUskCl.jpg",
+  "budget": 165000000,
+  "genres": [
+    {
+      "id": 878,
+      "name": "Science-Fiction"
+    },
+    {
+      "id": 12,
+      "name": "Aventure"
+    }
+  ],
+  "homepage": "",
+  "id": 438631,
+  "imdb_id": "tt1160419",
+  "origin_country": [
+    "US"
+  ],
+  "original_language": "en",
+  "original_title": "Dune",
+  "overview": "L'histoire de Paul Atreides, jeune homme aussi doué que brillant, voué à connaître un destin hors du commun qui le dépasse totalement. Car, s'il veut préserver l'avenir de sa famille et de son peuple, il devra se rendre sur Dune, la planète la plus dangereuse de l'Univers. Mais aussi la seule à même de fournir la ressource la plus précieuse capable de décupler la puissance de l'Humanité. Tandis que des forces maléfiques se disputent le contrôle de cette planète, seuls ceux qui parviennent à dominer leur peur pourront survivre…",
+  "popularity": 49.3824,
+  "poster_path": "/qpyaW4xUPeIiYA5ckg5zAZFHvsb.jpg",
+  "release_date": "2021-09-15",
+  "revenue": 410668500,
+  "runtime": 155,
+  "softcore": false,
+  "status": "Released",
+  "tagline": "Au-delà de la peur, le destin attend.",
+  "title": "Dune",
+  "video": false,
+  "vote_average": 7.784,
+  "vote_count": 15568,
+  "credits": {
+    "cast": [
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 1190668,
+        "known_for_department": "Acting",
+        "name": "Timothée Chalamet",
+        "original_name": "Timothée Chalamet",
+        "popularity": 7.4287,
+        "profile_path": "/dFxpwRpmzpVfP1zjluH68DeQhyj.jpg",
+        "cast_id": 13,
+        "character": "Paul Atreides",
+        "credit_id": "5b4d01bac3a36823d803cd45",
+        "order": 0
+      },
+      {
+        "adult": false,
+        "gender": 1,
+        "id": 933238,
+        "known_for_department": "Acting",
+        "name": "Rebecca Ferguson",
+        "original_name": "Rebecca Ferguson",
+        "popularity": 11.0415,
+        "profile_path": "/ra53cM1aNmdH0aFhj8yBqPOj2fb.jpg",
+        "cast_id": 14,
+        "character": "Lady Jessica Atreides",
+        "credit_id": "5b90742fc3a368222e002f41",
+        "order": 1
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 25072,
+        "known_for_department": "Acting",
+        "name": "Oscar Isaac",
+        "original_name": "Oscar Isaac",
+        "popularity": 6.0102,
+        "profile_path": "/dW5U5yrIIPmMjRThR9KT2xH6nTz.jpg",
+        "cast_id": 53,
+        "character": "Duke Leto Atreides",
+        "credit_id": "5c50bc070e0a2612cccedcb3",
+        "order": 2
+      }
+    ],
+    "crew": [
+      {
+        "adult": false,
+        "gender": 0,
+        "id": 3482366,
+        "known_for_department": "Art",
+        "name": "Máté Papucsek",
+        "original_name": "Máté Papucsek",
+        "popularity": 0.3038,
+        "profile_path": null,
+        "credit_id": "62407386c740d90089e68d48",
+        "department": "Art",
+        "job": "Set Dresser"
+      },
+      {
+        "adult": false,
+        "gender": 0,
+        "id": 3345229,
+        "known_for_department": "Crew",
+        "name": "Patrik Zana",
+        "original_name": "Patrik Zana",
+        "popularity": 0.3096,
+        "profile_path": null,
+        "credit_id": "6265cb20fbe36f00a1e1f5e6",
+        "department": "Crew",
+        "job": "Stunts"
+      },
+      {
+        "adult": false,
+        "gender": 2,
+        "id": 137427,
+        "known_for_department": "Directing",
+        "name": "Denis Villeneuve",
+        "original_name": "Denis Villeneuve",
+        "popularity": 3.6628,
+        "profile_path": "/zdDx9Xs93UIrJFWYApYR28J8M6b.jpg",
+        "credit_id": "58920db99251412dd10093b4",
+        "department": "Directing",
+        "job": "Director"
+      },
+      {
+        "adult": false,
+        "gender": 0,
+        "id": 3521872,
+        "known_for_department": "Crew",
+        "name": "Miklos Ungvari",
+        "original_name": "Miklos Ungvari",
+        "popularity": 0.4292,
+        "profile_path": null,
+        "credit_id": "6265cb34aaec71009d93735e",
+        "department": "Crew",
+        "job": "Stunts"
+      },
+      {
+        "adult": true,
+        "gender": 0,
+        "id": 1610978,
+        "known_for_department": "Costume & Make-Up",
+        "name": "Attila Ungvári",
+        "original_name": "Attila Ungvári",
+        "popularity": 0.0,
+        "profile_path": null,
+        "credit_id": "6265cb4b1d820f00500e2d6b",
+        "department": "Crew",
+        "job": "Stunts"
+      }
+    ]
+  }
+}

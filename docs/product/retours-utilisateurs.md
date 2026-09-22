@@ -71,7 +71,7 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 | « On pourrait pas mettre le petit + de logger à la fin de chaque ligne pour logger directement ? que ce soit plus rapide ? » | Oui : + au bout de chaque résultat = loggé en un geste (#11). C'est le compromis tap = fiche / + = log. |
 | « Quand je log avec le petit bouton, ça me met plus la petite barre orange qui dit c'est loggé, modifier » | Bandeau « loggé ✓ · Modifier » remis sur le + (#11). |
 | « Pourquoi le titre s'affiche en plus ? Parfois le titre va être trop long, non ? … Il faut pas mettre le titre du tout. » | Claude proposait de garder le titre coupé au milieu (dit lequel des cinq « Dune »). Founder : sans titre. Bandeau = « Loggé ✓ · Modifier » (#11). |
-| Fiche de Dune sans réalisateur ni genres | La recherche TMDB ne renvoie pas ces champs ; il faut un appel « détails » à part. Petite PR à prévoir. |
+| Fiche de Dune sans réalisateur ni genres | La recherche TMDB ne renvoie pas ces champs. Appel « détails » à l'ouverture de la fiche (#12). |
 
 ## Autres utilisatrices
 

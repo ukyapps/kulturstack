@@ -19,13 +19,16 @@ final class ItemDetailViewModel {
     var didFailToLog = false
 
     private(set) var subject: Subject
+    private(set) var enrichmentTask: Task<Void, Never>?
     private let repository: any MediaRepository
     private let logUseCase: LogUseCase
+    private let enrich: EnrichUseCase?
 
-    init(subject: Subject, repository: any MediaRepository, logUseCase: LogUseCase) {
+    init(subject: Subject, repository: any MediaRepository, logUseCase: LogUseCase, enrich: EnrichUseCase? = nil) {
         self.subject = subject
         self.repository = repository
         self.logUseCase = logUseCase
+        self.enrich = enrich
     }
 
     // Un candidat déjà en base devient sa fiche réelle ; sinon on montre l'aperçu de la recherche.
@@ -38,16 +41,28 @@ final class ItemDetailViewModel {
                     return
                 }
                 state = .loaded(ItemDetailModel(item: item))
+                enrichIfNeeded(item)
             case .candidate(let candidate):
                 if let item = try repository.findItem(withAnyKey: candidate.externalKeys) {
                     subject = .stored(item.id)
                     state = .loaded(ItemDetailModel(item: item))
+                    enrichIfNeeded(item)
                 } else {
                     state = .loaded(ItemDetailModel(candidate: candidate))
                 }
             }
         } catch {
             state = .failed
+        }
+    }
+
+    // Une seule tentative par ouverture : si la source ne répond pas, la fiche reste comme elle est.
+    private func enrichIfNeeded(_ item: MediaItem) {
+        guard let enrich, enrichmentTask == nil, EnrichUseCase.needsEnrichment(item) else { return }
+        enrichmentTask = Task {
+            if await enrich.enrich(item), case .loaded = state {
+                state = .loaded(ItemDetailModel(item: item))
+            }
         }
     }
 

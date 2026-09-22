@@ -113,6 +113,28 @@ struct ItemDetailViewModelTests {
         #expect(viewModel.state == .failed)
     }
 
+    @Test func aFilmWithoutDetailsIsEnrichedWhenItsPageOpens() async throws {
+        let (container, item, _) = try make()
+        let repository = SwiftDataMediaRepository(context: container.mainContext)
+        let logUseCase = LogUseCase(repository: repository, dedup: DedupUseCase(repository: repository))
+        let provider = StubDetailsProvider(result: .success(MediaEnrichment(
+            creators: ["Denis Villeneuve"], details: FilmDetails(runtimeMinutes: 155, genres: ["SF"]))))
+        let enrich = EnrichUseCase(repository: repository, providers: [provider])
+        let viewModel = ItemDetailViewModel(subject: .stored(item.id), repository: repository, logUseCase: logUseCase, enrich: enrich)
+
+        viewModel.load()
+        await viewModel.enrichmentTask?.value
+
+        guard case .loaded(let model) = viewModel.state else {
+            Issue.record("état attendu : loaded")
+            return
+        }
+        #expect(model.headline.contains("Denis Villeneuve"))
+        #expect(model.headline.contains("2h35"))
+        #expect(model.facts == ["SF"])
+        #expect(provider.keys == ["tmdb:movie:438631"])
+    }
+
     @Test func logAgainAddsALogAndRefreshesTheList() throws {
         let (container, item, viewModel) = try make()
         viewModel.load()
@@ -140,4 +162,5 @@ private struct FailingMediaRepository: MediaRepository {
     func add(_ item: MediaItem, refs: [ExternalRef]) throws { throw FailingError() }
     func add(_ refs: [ExternalRef], to item: MediaItem) throws { throw FailingError() }
     func add(_ log: LogEntry) throws { throw FailingError() }
+    func save() throws { throw FailingError() }
 }

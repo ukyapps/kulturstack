@@ -16,3 +16,27 @@ struct TMDBSearchResult: Decodable {
     let releaseDate: String?
     let firstAirDate: String?
 }
+
+struct TMDBMovieDetailsResponse: Decodable {
+    struct Genre: Decodable { let name: String }
+    struct Credits: Decodable {
+        struct Crew: Decodable {
+            let name: String
+            let job: String?
+        }
+        let crew: [Crew]
+    }
+    let runtime: Int?
+    let genres: [Genre]?
+    let credits: Credits?
+}
+
+struct TMDBTVDetailsResponse: Decodable {
+    struct Genre: Decodable { let name: String }
+    struct Creator: Decodable { let name: String }
+    let numberOfSeasons: Int?
+    let numberOfEpisodes: Int?
+    let status: String?
+    let genres: [Genre]?
+    let createdBy: [Creator]?
+}

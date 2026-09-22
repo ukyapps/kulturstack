@@ -8,6 +8,8 @@ struct ProviderRegistryTests {
 
         #expect(registry.providers.map(\.id) == ["tmdb", "openlibrary"])
         #expect(registry.families == [.screen, .books])
+        #expect(registry.detailsProviders.count == 1)
+        #expect(registry.detailsProviders.first is TMDBProvider)
     }
 
     @Test func userAgentNamesTheAppAndAContact() {

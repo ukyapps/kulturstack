@@ -7,4 +7,5 @@ protocol MediaRepository {
     func add(_ item: MediaItem, refs: [ExternalRef]) throws
     func add(_ refs: [ExternalRef], to item: MediaItem) throws
     func add(_ log: LogEntry) throws
+    func save() throws
 }
