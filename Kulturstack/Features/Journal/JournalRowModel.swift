@@ -3,6 +3,7 @@ import Foundation
 struct JournalRowModel: Identifiable, Equatable {
     let id: UUID
     let itemID: UUID?
+    let kind: MediaKind
     let title: String
     let subtitle: String
     let date: Date
@@ -15,6 +16,7 @@ struct JournalRowModel: Identifiable, Equatable {
         let kind = log.item?.kind ?? .film
         id = log.id
         itemID = log.item?.id
+        self.kind = kind
         title = log.item?.title ?? ""
         subtitle = Self.subtitle(kind: kind, year: log.item?.year, creator: log.item?.creators.first)
         date = log.date

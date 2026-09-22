@@ -100,6 +100,112 @@ struct JournalViewModelTests {
 private struct StubError: Error {}
 
 @MainActor
+struct JournalFilterTests {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Paris")!
+        return calendar
+    }
+
+    private func date(_ year: Int, _ month: Int, _ day: Int) -> Date {
+        calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12))!
+    }
+
+    private func makeViewModel() throws -> (ModelContainer, JournalViewModel) {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let dune = MediaItem(kind: .film, title: "Dune")
+        let book = MediaItem(kind: .book, title: "Dune")
+        for item in [dune, book] { context.insert(item) }
+        context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 22)))
+        context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 21)))
+        context.insert(try LogEntry.make(item: book, status: .done, date: date(2026, 9, 2)))
+        try context.save()
+        let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: context),
+                                         now: { self.date(2026, 9, 22) }, calendar: calendar)
+        return (container, viewModel)
+    }
+
+    @Test func opensOnThisWeekGroupedByDayWithCounts() async throws {
+        let (container, viewModel) = try makeViewModel()
+        await viewModel.load()
+
+        #expect(viewModel.period == .week)
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("présentation attendue : loaded")
+            return
+        }
+        #expect(content.total == 2)
+        #expect(content.sections.map(\.title) == [String(localized: "journal.day.today"), String(localized: "journal.day.yesterday")])
+        #expect(viewModel.kindCounts.map(\.kind) == [.film, .book])
+        #expect(viewModel.kindCounts.map(\.count) == [2, 0])
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func periodAndKindCombine() async throws {
+        let (container, viewModel) = try makeViewModel()
+        await viewModel.load()
+
+        viewModel.period = .month
+        viewModel.selectedKind = .book
+
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("présentation attendue : loaded")
+            return
+        }
+        #expect(content.total == 1)
+        #expect(content.sections.flatMap(\.rows).map(\.date) == [date(2026, 9, 2)])
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func aFilterWithoutResultIsAnEdgeNotAnEmptyJournal() async throws {
+        let (container, viewModel) = try makeViewModel()
+        await viewModel.load()
+
+        viewModel.selectedKind = .book
+
+        #expect(viewModel.presentation == .edge(period: .week, kind: .book))
+        #expect(viewModel.kindCounts.map(\.kind) == [.film, .book])
+
+        viewModel.showAll()
+
+        #expect(viewModel.period == .all)
+        #expect(viewModel.selectedKind == nil)
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("présentation attendue : loaded")
+            return
+        }
+        #expect(content.total == 3)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func noLogsAtAllIsEmptyWhateverTheFilter() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: container.mainContext))
+        await viewModel.load()
+        viewModel.selectedKind = .book
+
+        #expect(viewModel.presentation == .empty)
+    }
+
+    @Test func aFailureStaysAFailure() async {
+        let viewModel = JournalViewModel(repository: FailingLogRepository())
+        await viewModel.load()
+        viewModel.period = .all
+
+        #expect(viewModel.presentation == .failed)
+    }
+}
+
+@MainActor
+private struct FailingLogRepository: LogRepository {
+    func fetchAll() async throws -> [LogEntry] { throw StubError() }
+    func find(id: UUID) throws -> LogEntry? { throw StubError() }
+    func save() throws { throw StubError() }
+    func delete(_ log: LogEntry) throws { throw StubError() }
+}
+
+@MainActor
 private final class StubLogRepository: LogRepository {
     var result: Result<[LogEntry], Error>
 
