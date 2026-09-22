@@ -15,8 +15,8 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Barre d'onglets Journal / Recherche | ✅ | #7 |
 | Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
 | Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), « Vu le … » sur une ligne déjà loggée (PR 8), ♡ Envie (PR 10) | #7 |
-| Tap = loggé + bandeau | ✅ | #8, #9 |
-| Fiche d'une œuvre | ⏳ PR 8 | — |
+| Tap = loggé + bandeau | ✅ · ⏳ remplacé par tap = fiche (PR 8b, décision du 22/09) | #8, #9 |
+| Fiche d'une œuvre | ✅ · ⏳ depuis la Recherche (PR 8b), détails TMDB (PR à part) | #10 |
 | Modifier un log | ✅ | #9 |
 | Envie | ⏳ PR 10 | — |
 | Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
@@ -86,13 +86,13 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; appui long → Modifier / Supprimer (PR #9). **Manque** : groupement par jour, segments de période et chips de type avec compteurs, tap → fiche (PR 8-9).
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10). **Manque** : groupement par jour, segments de période et chips de type avec compteurs (PR 9).
 
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
 - **Edge** : « Aucun livre cette semaine » + « Voir tout ».
 - **Erreur** : « Impossible de charger ton journal » + « Réessayer ».
-- Tap sur une ligne → Fiche de l'œuvre. Appui long → Modifier le log / Supprimer.
+- ~~Tap sur une ligne → Fiche de l'œuvre. Appui long → Modifier le log / Supprimer.~~ **Tranché le 22/09 (§6.6)** : tap → feuille d'édition ; appui long → Voir la fiche / Supprimer.
 
 ### 3.2 Recherche
 
@@ -113,10 +113,10 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». **Manque** : « Vu le … » sur une ligne déjà loggée (PR 8), appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
+> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». « Vu le 20 sept. » / « Lu le … » sur une ligne déjà loggée (#10). **Manque** : tap = fiche (PR 8b), appui long / ♡ = Envie (PR 10), bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
 
 - La barre a le focus dès l'ouverture, clavier levé. Recherche à partir de 2 caractères, 300 ms après la dernière frappe.
-- **Tap = loggé** (statut terminé, maintenant). Bandeau en bas : « *Dune (2021)* loggé ✓ · **Modifier** » pendant 4 s.
+- ~~**Tap = loggé** (statut terminé, maintenant). Bandeau en bas : « *Dune (2021)* loggé ✓ · **Modifier** » pendant 4 s.~~ **Retranché le 22/09 (§6.2) : tap = fiche de l'œuvre**, avec un bouton « Logger » dans la fiche, y compris pour un résultat pas encore en base (PR 8b).
 - **Appui long** (ou icône ♡ en bout de ligne) = Envie.
 - Si l'œuvre a déjà été loggée : la ligne l'indique (« Vu le 12 mars ») et le tap logge **quand même** — c'est un revisionnage. On ne bloque jamais.
 - **Vide initial** : « Tape un titre » avec trois suggestions de ce qu'on peut chercher.
@@ -148,7 +148,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **À faire (PR 8).** Les données sont prêtes : poche `FilmDetails` / `SeriesDetails` / `BookDetails` encodée à la création de la fiche, logs reliés à la fiche.
+> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. **Manque** : ♡ Envie (PR 10) ; réalisateur / durée / genres des films (appel détails TMDB à ajouter) ; ouverture depuis la Recherche (PR 8b).
 
 - Les détails de la « poche » varient par type : durée / réalisateur pour un film, saisons pour une série, pages / éditeur pour un livre.
 - Tap sur un log → Modifier.
@@ -257,7 +257,8 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 ## 6. Questions d'ergonomie à trancher (avec la founder, à l'écran)
 
 1. ~~**Recherche = onglet ou bouton « + » flottant sur le Journal ?**~~ **Tranché le 21/09/2026 : onglet** (founder). On reverra si le « + » s'impose à l'usage.
-2. ~~**Le tap logge immédiatement ou après un court délai annulable ?**~~ **Tranché le 21/09/2026 : immédiat** + bandeau (founder). On mesure les erreurs à l'usage.
+2. ~~**Le tap logge immédiatement ou après un court délai annulable ?**~~ Tranché le 21/09/2026 : immédiat + bandeau. **Retranché le 22/09/2026 après usage : tap sur un résultat = fiche de l'œuvre, on logge depuis la fiche** (founder : « dans la recherche, je peux pas accéder à la fiche avant de logger un truc, c'est pas logique »). Claude a proposé un bouton ⓘ ou un appui long pour garder le tap = loggé ; la founder a préféré la fiche. Le log reste à 2 taps sans saisie. À faire en PR 8b.
+6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ **Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.
 3. **Groupement du Journal par jour ou liste plate ?** Reco : par jour, ça rend les « cette semaine » lisibles.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. **Envie : chip du Journal ou onglet ?** Reco : chip (voir §3.5), pour ne pas multiplier les onglets avant la Bibliothèque.
