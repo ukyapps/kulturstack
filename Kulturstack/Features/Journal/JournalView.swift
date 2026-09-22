@@ -5,12 +5,13 @@ struct JournalView: View {
     @State private var viewModel: JournalViewModel
     @State private var editing: LogReference?
     @State private var deleting: LogReference?
-    private let editUseCase: EditLogUseCase
+    @State private var showingItem: ItemReference?
+    private let services: AppServices
     private let onSearch: () -> Void
 
-    init(repository: any LogRepository, onSearch: @escaping () -> Void = {}) {
-        _viewModel = State(initialValue: JournalViewModel(repository: repository))
-        editUseCase = EditLogUseCase(repository: repository)
+    init(services: AppServices, onSearch: @escaping () -> Void = {}) {
+        _viewModel = State(initialValue: JournalViewModel(repository: services.logRepository))
+        self.services = services
         self.onSearch = onSearch
     }
 
@@ -21,7 +22,8 @@ struct JournalView: View {
             .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
                 Task { await viewModel.load() }
             }
-            .sheet(item: $editing) { LogEditView(logID: $0.id, useCase: editUseCase) }
+            .sheet(item: $editing) { LogEditView(logID: $0.id, services: services) }
+            .navigationDestination(item: $showingItem) { ItemDetailView(itemID: $0.id, services: services) }
             .confirmationDialog(String(localized: "log.edit.delete.confirm.title"), isPresented: isDeleting,
                                 titleVisibility: .visible, presenting: deleting) { reference in
                 Button(String(localized: "common.delete"), role: .destructive) {
@@ -62,15 +64,23 @@ struct JournalView: View {
             )
         case .loaded(let rows):
             List(rows) { row in
-                JournalRow(model: row)
-                    .contextMenu {
-                        Button(String(localized: "common.edit"), systemImage: "pencil") {
-                            editing = LogReference(id: row.id)
-                        }
-                        Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
-                            deleting = LogReference(id: row.id)
+                Button {
+                    editing = LogReference(id: row.id)
+                } label: {
+                    JournalRow(model: row)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(String(localized: "journal.row.hint"))
+                .contextMenu {
+                    if let itemID = row.itemID {
+                        Button(String(localized: "journal.row.showItem"), systemImage: "info.circle") {
+                            showingItem = ItemReference(id: itemID)
                         }
                     }
+                    Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
+                        deleting = LogReference(id: row.id)
+                    }
+                }
             }
             .listStyle(.plain)
             .refreshable { await viewModel.load() }

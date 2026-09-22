@@ -43,3 +43,16 @@ extension MediaKind {
         }
     }
 }
+
+extension MediaKind {
+    // « Vu le 12 mars » : le verbe suit le type.
+    func loggedLabel(on date: Date) -> String {
+        let day = date.formatted(.dateTime.day().month())
+        switch self {
+        case .film, .series, .concert, .theatre, .exhibition: return String(localized: "search.row.logged.seen \(day)")
+        case .book: return String(localized: "search.row.logged.read \(day)")
+        case .album, .podcast: return String(localized: "search.row.logged.listened \(day)")
+        case .game: return String(localized: "search.row.logged.played \(day)")
+        }
+    }
+}

@@ -11,8 +11,7 @@ struct SearchViewRenderingTests {
             MockProvider(id: "openlibrary", kinds: [.book], result: .failure(HTTPError.status(503))),
         ])
         let container = try ModelContainerFactory.inMemory()
-        let editUseCase = EditLogUseCase(repository: SwiftDataLogRepository(context: container.mainContext))
-        let searchView = SearchView(useCase: useCase, logNow: { _ in UUID() }, editUseCase: editUseCase, debounce: .zero)
+        let searchView = SearchView(useCase: useCase, services: AppServices(context: container.mainContext), debounce: .zero)
         let host = UIHostingController(rootView: NavigationStack { searchView })
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         window.rootViewController = host

@@ -62,6 +62,14 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 | « Modifier » sur le bandeau ouvre « une autre feuille » — celle du nouveau log, pas du log édité avant | Expliqué : chaque tap crée un log. Renforce le besoin de « Vu le … » (PR 8). |
 | « J'aimerais que quand je clique dessus juste ça s'ouvre, pas besoin de dire modifier et tout. À terme. » | **À trancher avant la PR 8.** Le design prévoit tap → fiche de l'œuvre, appui long → modifier. Pistes : (a) tap → feuille d'édition directement, la fiche accessible depuis la feuille ; (b) tap → fiche avec le log en tête, éditable sur place. Reco à venir avec la PR 8. |
 
+## Founder — session du 2026-09-22 (fiche d'une œuvre)
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| A — édition directe au tap sur une ligne du Journal | Fait en PR 8 : tap = feuille ; titre de la feuille → fiche ; appui long → Voir la fiche / Supprimer. Design §6.6. |
+| « Dans recherche je voudrais qu'un tap ça ouvre la fiche, et double tap ça se log » puis « si je suis dans la recherche, je peux pas accéder à la fiche avant de logger un truc, c'est pas logique » | Le double tap est écarté (pas un geste iOS, retarde chaque tap). Trois options proposées : ⓘ sur la ligne (reco), appui long, tap = fiche. **Founder : tap = fiche, on logge depuis la fiche.** Remplace « tap = loggé » du 21/09. Design §6.2, PR 8b. |
+| Fiche de Dune sans réalisateur ni genres | La recherche TMDB ne renvoie pas ces champs ; il faut un appel « détails » à part. Petite PR à prévoir. |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*

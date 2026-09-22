@@ -4,9 +4,14 @@ struct LogEditView: View {
     @State private var viewModel: LogEditViewModel
     @State private var isConfirmingDelete = false
     @Environment(\.dismiss) private var dismiss
+    private let services: AppServices
+    private let showsItemLink: Bool
 
-    init(logID: UUID, useCase: EditLogUseCase) {
-        _viewModel = State(initialValue: LogEditViewModel(logID: logID, useCase: useCase))
+    // showsItemLink = false quand la feuille est déjà ouverte depuis la fiche : pas de fiche dans la fiche.
+    init(logID: UUID, services: AppServices, showsItemLink: Bool = true) {
+        _viewModel = State(initialValue: LogEditViewModel(logID: logID, useCase: services.editUseCase))
+        self.services = services
+        self.showsItemLink = showsItemLink
     }
 
     var body: some View {
@@ -26,6 +31,7 @@ struct LogEditView: View {
                         }
                     }
                 }
+                .navigationDestination(for: ItemReference.self) { ItemDetailView(itemID: $0.id, services: services) }
         }
         .onAppear { viewModel.load() }
     }
@@ -56,8 +62,16 @@ struct LogEditView: View {
     private var form: some View {
         Form {
             Section {
-                Text(viewModel.title)
-                    .font(.headline)
+                if showsItemLink, let itemID = viewModel.itemID {
+                    NavigationLink(value: ItemReference(id: itemID)) {
+                        Text(viewModel.title)
+                            .font(.headline)
+                    }
+                    .accessibilityHint(String(localized: "log.edit.item.hint"))
+                } else {
+                    Text(viewModel.title)
+                        .font(.headline)
+                }
             }
             Section {
                 DatePicker(String(localized: "log.edit.date"), selection: $viewModel.date)

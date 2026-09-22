@@ -4,12 +4,17 @@ struct SearchView: View {
     @State private var viewModel: SearchViewModel
     @State private var editing: LogReference?
     @FocusState private var isSearchFocused: Bool
-    private let editUseCase: EditLogUseCase
+    private let services: AppServices
 
-    init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID, editUseCase: EditLogUseCase,
-         debounce: Duration = .milliseconds(300)) {
-        _viewModel = State(initialValue: SearchViewModel(useCase: useCase, logNow: logNow, debounce: debounce))
-        self.editUseCase = editUseCase
+    init(useCase: SearchUseCase, services: AppServices, debounce: Duration = .milliseconds(300)) {
+        let logUseCase = services.logUseCase
+        let history = services.logHistory
+        _viewModel = State(initialValue: SearchViewModel(
+            useCase: useCase,
+            logNow: { try logUseCase.logNow($0).id },
+            lastLogDate: { try history.lastLogDate(for: $0) },
+            debounce: debounce))
+        self.services = services
     }
 
     #if DEBUG
@@ -33,7 +38,7 @@ struct SearchView: View {
                 }
             }
             .animation(.default, value: viewModel.toast)
-            .sheet(item: $editing) { LogEditView(logID: $0.id, useCase: editUseCase) }
+            .sheet(item: $editing) { LogEditView(logID: $0.id, services: services) }
     }
 
     private func editAction(for toast: SearchViewModel.Toast) -> Toast.Action? {
@@ -106,7 +111,7 @@ struct SearchView: View {
                 Button {
                     viewModel.log(candidate)
                 } label: {
-                    SearchResultRow(model: SearchResultRowModel(candidate: candidate))
+                    SearchResultRow(model: viewModel.row(for: candidate))
                 }
                 .buttonStyle(.plain)
                 .accessibilityHint(String(localized: "search.row.hint"))

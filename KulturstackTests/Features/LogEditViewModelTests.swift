@@ -25,6 +25,7 @@ struct LogEditViewModelTests {
 
         #expect(viewModel.state == .ready)
         #expect(viewModel.title == "Dune (2021)")
+        #expect(viewModel.itemID == log.item?.id)
         #expect(viewModel.date == log.date)
         #expect(viewModel.status == .done)
         #expect(viewModel.rating == 8)

@@ -12,6 +12,7 @@ final class LogEditViewModel {
 
     private(set) var state: State = .loading
     private(set) var title = ""
+    private(set) var itemID: UUID?
     private(set) var allowedStatuses: [LogStatus] = []
     private(set) var didFail = false
     var date = Date.now
@@ -36,6 +37,7 @@ final class LogEditViewModel {
             }
             self.log = log
             title = Self.title(of: log.item)
+            itemID = log.item?.id
             allowedStatuses = (log.item?.kind ?? .film).allowedStatuses
             date = log.date
             status = log.status

@@ -15,6 +15,13 @@ struct LogUseCase {
         return log
     }
 
+    @discardableResult
+    func logAgain(_ item: MediaItem, now: Date = .now) throws -> LogEntry {
+        let log = try LogEntry.make(item: item, status: .done, date: now, source: "manual")
+        try repository.add(log)
+        return log
+    }
+
     private func makeItem(from candidate: MediaCandidate) throws -> MediaItem {
         let item = MediaItem(kind: candidate.kind, title: candidate.title, originalTitle: candidate.originalTitle,
                              year: candidate.year, creators: candidate.creators, summary: candidate.summary,
