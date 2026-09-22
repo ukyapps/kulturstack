@@ -13,7 +13,7 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Écran | État | PR |
 |---|---|---|
 | Barre d'onglets Journal / Recherche | ✅ | #7 |
-| Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
+| Journal — liste, état vide (+ CTA Chercher), état d'erreur, edge | ✅ groupé par jour, segments période, chips par type, compteurs | #4, #7, #13 |
 | Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), ♡ Envie (PR 10) | #7, #10 |
 | Tap = fiche · + = loggé + bandeau « Modifier » | ✅ (décision du 22/09) | #8, #9, #11 |
 | Fiche d'une œuvre | ✅ | #10, #11, #12 |
@@ -86,7 +86,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10). **Manque** : groupement par jour, segments de période et chips de type avec compteurs (PR 9).
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10) ; segments Semaine · Mois · Année · Tout avec compteur dans l'actif, chips par type avec compteur, groupé par jour, edge « Pas de livres cette semaine » + Voir tout (#13).
 
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
@@ -259,7 +259,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 1. ~~**Recherche = onglet ou bouton « + » flottant sur le Journal ?**~~ **Tranché le 21/09/2026 : onglet** (founder). On reverra si le « + » s'impose à l'usage.
 2. ~~**Le tap logge immédiatement ou après un court délai annulable ?**~~ Tranché le 21/09/2026 : immédiat + bandeau. **Retranché le 22/09/2026 après usage : tap sur un résultat = fiche de l'œuvre, on logge depuis la fiche** (founder : « dans la recherche, je peux pas accéder à la fiche avant de logger un truc, c'est pas logique »). Claude a proposé un bouton ⓘ ou un appui long pour garder le tap = loggé ; la founder a préféré la fiche. Puis, pendant la démo de la PR 8b, la founder a demandé **un « + » au bout de chaque ligne** pour logger en un geste : tap = fiche, + = loggé + bandeau « Modifier ». Réalisé en #11.
 6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ **Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.
-3. **Groupement du Journal par jour ou liste plate ?** Reco : par jour, ça rend les « cette semaine » lisibles.
+3. ~~**Groupement du Journal par jour ou liste plate ?**~~ **Tranché le 22/09/2026 : par jour** (#13), après la démo de la PR 7 où un log passé à hier avait « disparu » en bas de liste.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. **Envie : chip du Journal ou onglet ?** Reco : chip (voir §3.5), pour ne pas multiplier les onglets avant la Bibliothèque.
 

@@ -15,6 +15,10 @@ struct JournalView: View {
         self.onSearch = onSearch
     }
 
+    #if DEBUG
+    var viewModelForTesting: JournalViewModel { viewModel }
+    #endif
+
     var body: some View {
         content
             .navigationTitle(String(localized: "app.name"))
@@ -43,7 +47,7 @@ struct JournalView: View {
     }
 
     @ViewBuilder private var content: some View {
-        switch viewModel.state {
+        switch viewModel.presentation {
         case .loading:
             ProgressView()
         case .empty:
@@ -62,28 +66,92 @@ struct JournalView: View {
                     Task { await viewModel.load() }
                 }
             )
-        case .loaded(let rows):
-            List(rows) { row in
-                Button {
-                    editing = LogReference(id: row.id)
-                } label: {
-                    JournalRow(model: row)
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint(String(localized: "journal.row.hint"))
-                .contextMenu {
-                    if let itemID = row.itemID {
-                        Button(String(localized: "journal.row.showItem"), systemImage: "info.circle") {
-                            showingItem = ItemReference(id: itemID)
-                        }
-                    }
-                    Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
-                        deleting = LogReference(id: row.id)
-                    }
+        case .edge(let period, let kind):
+            VStack(spacing: 0) {
+                filters(total: 0)
+                EmptyState(
+                    icon: "line.3.horizontal.decrease.circle",
+                    title: String(localized: "journal.edge.title"),
+                    message: edgeMessage(period: period, kind: kind),
+                    action: .init(title: String(localized: "journal.edge.showAll")) { viewModel.showAll() }
+                )
+            }
+        case .loaded(let content):
+            VStack(spacing: 0) {
+                filters(total: content.total)
+                list(content.sections)
+            }
+        }
+    }
+
+    private func filters(total: Int) -> some View {
+        let kinds = viewModel.kindCounts
+        return VStack(spacing: Spacing.s) {
+            Picker(String(localized: "journal.period"), selection: $viewModel.period) {
+                ForEach(Period.allCases, id: \.self) { period in
+                    Text(period == viewModel.period ? String(localized: "journal.segment \(period.label) \(total)") : period.label)
+                        .tag(period)
                 }
             }
-            .listStyle(.plain)
-            .refreshable { await viewModel.load() }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, Spacing.m)
+            if !kinds.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.s) {
+                        Chip(title: String(localized: "chip.all"), isSelected: viewModel.selectedKind == nil) {
+                            viewModel.selectedKind = nil
+                        }
+                        ForEach(kinds, id: \.kind) { entry in
+                            Chip(title: String(localized: "journal.chip \(entry.kind.pluralLabel) \(entry.count)"),
+                                 isSelected: viewModel.selectedKind == entry.kind) {
+                                viewModel.selectedKind = entry.kind
+                            }
+                        }
+                    }
+                    .padding(.horizontal, Spacing.m)
+                }
+            }
         }
+        .padding(.vertical, Spacing.s)
+    }
+
+    private func edgeMessage(period: Period, kind: MediaKind?) -> String {
+        if let kind {
+            return String(localized: "journal.edge.message \(kind.pluralLabel.lowercased()) \(period.phrase)")
+        }
+        return String(localized: "journal.edge.message.all \(period.phrase)")
+    }
+
+    private func list(_ sections: [JournalDaySection]) -> some View {
+        List {
+            ForEach(sections) { section in
+                Section {
+                    ForEach(section.rows) { row in
+                        Button {
+                            editing = LogReference(id: row.id)
+                        } label: {
+                            JournalRow(model: row)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(String(localized: "journal.row.hint"))
+                        .contextMenu {
+                            if let itemID = row.itemID {
+                                Button(String(localized: "journal.row.showItem"), systemImage: "info.circle") {
+                                    showingItem = ItemReference(id: itemID)
+                                }
+                            }
+                            Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
+                                deleting = LogReference(id: row.id)
+                            }
+                        }
+                    }
+                } header: {
+                    SectionHeader(title: section.title)
+                        .listRowInsets(EdgeInsets())
+                }
+            }
+        }
+        .listStyle(.plain)
+        .refreshable { await viewModel.load() }
     }
 }

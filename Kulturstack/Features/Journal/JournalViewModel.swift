@@ -10,14 +10,65 @@ final class JournalViewModel {
         case failed
     }
 
+    enum Presentation: Equatable {
+        case loading
+        case empty
+        case failed
+        case edge(period: Period, kind: MediaKind?)
+        case loaded(JournalContent)
+    }
+
     private(set) var state: State = .loading
+    var period: Period = .week
+    var selectedKind: MediaKind?
     var didFailToDelete = false
     private let repository: any LogRepository
     private let editUseCase: EditLogUseCase
+    private let now: () -> Date
+    private let calendar: Calendar
 
-    init(repository: any LogRepository) {
+    init(repository: any LogRepository, now: @escaping () -> Date = { .now }, calendar: Calendar = .current) {
         self.repository = repository
+        self.now = now
+        self.calendar = calendar
         editUseCase = EditLogUseCase(repository: repository)
+    }
+
+    // Vide (rien loggé) ≠ edge (filtre sans résultat) ≠ erreur : trois rendus distincts.
+    var presentation: Presentation {
+        switch state {
+        case .loading: return .loading
+        case .empty: return .empty
+        case .failed: return .failed
+        case .loaded(let rows):
+            let now = now()
+            let kept = StatsUseCase.filter(rows, period: period, kind: selectedKind, now: now, calendar: calendar)
+            guard !kept.isEmpty else { return .edge(period: period, kind: selectedKind) }
+            return .loaded(JournalContent(sections: StatsUseCase.groupByDay(kept, now: now, calendar: calendar), total: kept.count))
+        }
+    }
+
+    // Les chips restent visibles en edge : c'est par eux qu'on en sort. Un type jamais loggé n'a pas de chip.
+    var kindCounts: [JournalContent.KindCount] {
+        guard case .loaded(let rows) = state else { return [] }
+        let counts = StatsUseCase.count(rows, period: period, now: now(), calendar: calendar)
+        return MediaKind.allCases
+            .filter { kind in rows.contains { $0.kind == kind } }
+            .map { JournalContent.KindCount(kind: $0, count: counts.byKind[$0] ?? 0) }
+    }
+
+    func showAll() {
+        period = .all
+        selectedKind = nil
+    }
+
+    func load() async {
+        do {
+            let logs = try await repository.fetchAll()
+            state = logs.isEmpty ? .empty : .loaded(logs.map(JournalRowModel.init))
+        } catch {
+            state = .failed
+        }
     }
 
     func delete(id: UUID) async {
@@ -27,15 +78,6 @@ final class JournalViewModel {
             await load()
         } catch {
             didFailToDelete = true
-        }
-    }
-
-    func load() async {
-        do {
-            let logs = try await repository.fetchAll()
-            state = logs.isEmpty ? .empty : .loaded(logs.map(JournalRowModel.init))
-        } catch {
-            state = .failed
         }
     }
 }

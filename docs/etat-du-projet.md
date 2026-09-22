@@ -8,11 +8,11 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et l'**écran Recherche** (deux onglets, TMDB + OpenLibrary en parallèle, sections par famille, chips) **le log en 1 tap** (tap sur un résultat → fiche créée ou retrouvée par ses clés externes, log « terminé » daté maintenant, bandeau « loggé ✓ », le Journal se met à jour) **l'édition d'un log** (feuille : date + raccourcis, demi-étoiles, statut limité au type, commentaire, suppression ; tap sur une ligne du Journal) et **la fiche d'une œuvre** (jaquette, détails par type, résumé, tous les logs, « Logger » ; ouverte au tap sur un résultat de Recherche, même pas encore en base) et **le + au bout de chaque résultat** qui logge en un geste avec « Vu le … » et bandeau « Modifier » ; la fiche d'un film ou d'une série se **complète chez TMDB** à l'ouverture (réalisateur, durée, genres, saisons). 158 tests. **Le cœur du produit marche** ; il manque les filtres du Journal (PR 9), Envie (PR 10), les réglages (PR 11).
+Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et l'**écran Recherche** (deux onglets, TMDB + OpenLibrary en parallèle, sections par famille, chips) **le log en 1 tap** (tap sur un résultat → fiche créée ou retrouvée par ses clés externes, log « terminé » daté maintenant, bandeau « loggé ✓ », le Journal se met à jour) **l'édition d'un log** (feuille : date + raccourcis, demi-étoiles, statut limité au type, commentaire, suppression ; tap sur une ligne du Journal) et **la fiche d'une œuvre** (jaquette, détails par type, résumé, tous les logs, « Logger » ; ouverte au tap sur un résultat de Recherche, même pas encore en base) et **le + au bout de chaque résultat** qui logge en un geste avec « Vu le … » et bandeau « Modifier » ; la fiche d'un film ou d'une série se **complète chez TMDB** à l'ouverture (réalisateur, durée, genres, saisons) ; le **Journal se filtre** par Semaine · Mois · Année · Tout et par type, avec compteurs, groupé par jour. 172 tests. **Le cœur du produit marche** ; il manque Envie (PR 10) et les réglages (PR 11).
 
 ## 2. Features — planifié vs livré
 
-### Tranche 1 — Le log magique (en cours, 11 PRs sur 14)
+### Tranche 1 — Le log magique (en cours, 12 PRs sur 14)
 
 | PR | Feature | État |
 |---|---|---|
@@ -27,8 +27,8 @@ Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient le
 | 8 | Fiche d'une œuvre | ✅ PR #10 (2026-09-22) |
 | 8b | Fiche depuis la Recherche (tap = fiche, + = loggé) | ✅ PR #11 (2026-09-22) |
 | 8c | Détails TMDB (réalisateur, durée, genres, saisons) à l'ouverture de la fiche | ✅ PR #12 (2026-09-22) |
-| 9 | Journal par période et par type, compteurs | ⏳ prochaine |
-| 10 | Envie | — |
+| 9 | Journal par période et par type, compteurs, groupé par jour | ✅ PR #13 (2026-09-22) |
+| 10 | Envie | ⏳ prochaine |
 | 11 | Réglages, À propos, Confidentialité, finitions | — |
 | — | TestFlight | — |
 
@@ -72,9 +72,11 @@ Kulturstack/
 │       └── SwiftDataMediaRepository.swift  findItem(withAnyKey:) via #Predicate sur ExternalRef.key ; find(itemID:) ; add item + refs ; add refs ; add log ; save
 ├── Features/
 │   ├── Journal/
-│   │   ├── JournalView.swift         4 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · liste ; tap → feuille d'édition ; appui long → Voir la fiche / Supprimer (confirmation)
-│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; delete(id:) + didFailToDelete
-│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, titre, sous-titre, date, statut, note, jaquette)
+│   │   ├── JournalView.swift         5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Semaine · n » + chips « Films · n » ; tap → feuille d'édition ; appui long → Voir la fiche / Supprimer (confirmation)
+│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; period (défaut semaine) + selectedKind → presentation (… | edge | loaded(JournalContent)) ; kindCounts ; showAll() ; delete(id:) ; now / calendar injectables
+│   │   ├── JournalContent.swift      sections par jour + total ; KindCount
+│   │   ├── JournalDaySection.swift   id = début du jour, titre (Aujourd'hui / Hier / date), rows
+│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette)
 │   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
 │   ├── Search/
 │   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; + → log ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
@@ -96,6 +98,7 @@ Kulturstack/
 │   │   └── ItemReference.swift       l'id qu'une vue garde pour ouvrir la fiche
 │   └── Shared/
 │       ├── MediaKind+Presentation.swift   label, pluralLabel, symbole SF, loggedLabel(on:) « Vu le / Lu le / Écouté le / Joué le »
+│       ├── Period+Presentation.swift      label (Semaine…) + phrase (« cette semaine », « ce mois-ci »…)
 │       ├── LogStatus+Presentation.swift   label localisé par statut
 │       └── SearchFamily+Presentation.swift  label localisé par famille
 ├── Debug/                            compilé hors Release
@@ -105,6 +108,7 @@ Kulturstack/
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
+│   │   ├── Period.swift              week · month · year · all ; range(containing:calendar:) semaine du lundi, [début, fin)
 │   │   ├── LogStatus.swift           wishlist · inProgress · done · dropped
 │   │   ├── MediaItem.swift           la fiche : champs communs + detailsData (poche) ; relations externalRefs / logs
 │   │   ├── ExternalRef.swift         clé unique "provider:value"
@@ -124,6 +128,7 @@ Kulturstack/
 │   │   ├── MediaCandidate.swift      résultat de recherche ; identité = clé externe principale
 │   │   └── SearchSection.swift       famille + SectionState (loading · loaded · empty · failed(reason)) ; SearchError.timeout
 │   ├── UseCases/
+│   │   ├── StatsUseCase.swift        count (T-16 : des logs, pas des fiches) · filter(période, type) · groupByDay (Aujourd'hui, Hier, dates)
 │   │   ├── EnrichUseCase.swift       needsEnrichment(item) ; enrich(item) → Bool, meilleur effort, garde les créateurs existants
 │   │   ├── EditLogUseCase.swift      log(id:) · update(date, status, rating, note) validé par LogRules, commentaire blanc → nil · delete
 │   │   ├── LogHistoryUseCase.swift   lastLogDate(for: candidate) = date du dernier log non-envie de la fiche partageant une clé
@@ -149,13 +154,13 @@ Kulturstack/
     └── Assets.xcassets               AccentColor, AppIcon (vide)
 ```
 
-**Pas encore là** : filtres et groupement par jour du Journal (PR 9) ; `Settings` (PR 11) ; bandeau hors-ligne (PR 11).
+**Pas encore là** : Envie (PR 10) ; `Settings` (PR 11) ; bandeau hors-ligne (PR 11). Filtrage du Journal en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs.
 
 **Écart au TDD 01** : les *protocoles* de repositories sont dans `Domain/Repositories/` (pas `Data/`) pour que `Domain/UseCases/` n'importe rien de `Data/`. Les implémentations SwiftData restent dans `Data/`.
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 158, tous verts
+## 4. Tests — 172, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -172,6 +177,10 @@ Kulturstack/
 | `ItemDetailViewRenderingTests` | 1 | la fiche se rend en fiche, en aperçu et en « introuvable » |
 | `SearchResultRowModelTests` | 2 (paramétrés : 10 cas) | chaque type a une pastille avec la date ; pas de date → pas de pastille |
 | `EditLogUseCaseTests` | 6 | find par id ; update persiste date / statut / note / commentaire trimé ; blanc → nil ; statut interdit refusé ; note hors plage refusée ; delete garde la fiche |
+| `PeriodTests` | 5 (paramétrés : 7 cas) | semaine du lundi au dimanche quelle que soit la locale ; mois et année entiers ; tout = sans bornes ; dimanche 23:59:59 dedans, lundi 00:00 dehors ; labels |
+| `StatsUseCaseTests` | 3 | **T-16** un film revu compte 2, par période et par type ; filter période × type du plus récent ; groupement Aujourd'hui / Hier / dates |
+| `JournalFilterTests` | 5 | ouvre sur la semaine, groupé par jour, chips avec compteurs (0 compris) ; période × type ; filtre sans résultat = edge (chips conservés) puis Voir tout ; aucun log = vide quel que soit le filtre ; erreur reste erreur |
+| `JournalViewRenderingTests` | 1 | l'écran se rend en liste groupée (seed : 25 logs) et en edge |
 | `JournalViewModelTests` | 8 | loading au départ ; vide ; chargé ; erreur ; reprise après erreur ; **l'état survit à la suppression des logs** (régression du crash) ; delete(id:) recharge ; échec de suppression signalé |
 | `LogEditViewModelTests` | 9 | load remplit le formulaire (+ itemID) ; titre sans année ; statuts du type (film, livre) ; introuvable ; erreur de lecture ; save écrit ; save invalide → didFail sans rien changer ; delete ; raccourci de date |
 | `LogEditViewRenderingTests` | 2 | la feuille se rend en formulaire et en « introuvable » ; le picker se rend pour chaque note |
@@ -194,9 +203,9 @@ Kulturstack/
 | `LogUseCaseTests` | 8 | logAgain = log done maintenant sur la même fiche ; find(itemID:) ; premier log = fiche + refs + poche + log done/manual/maintenant ; **T-04** deux fois le même candidat → 1 fiche, 2 logs ; **T-05** clé partagée → même fiche, clés nouvelles ajoutées ; œuvres différentes → fiches différentes ; Envie accepté, statut interdit refusé ; `findItem(withAnyKey:)` |
 | `SearchUseCaseTests` | 8 | loading pour chaque famille puis settle ; **T-07** panne isolée ; **T-09** le rapide n'attend pas le lent ; **T-08** annulation → providers annulés, rien de périmé ; timeout → failed ; vide → empty ; retry n'appelle que la famille ; ordre canonique des familles |
 
-Couverture : `Domain/` 95 %, `Data/` 97 %, `Features/` 88 %, `DesignSystem/` 85 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
+Couverture : `Domain/` 95 %, `Data/` 97 %, `Features/` 90 %, `DesignSystem/` 86 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
-Tests du plan pas encore écrits : T-16 (stats, PR 9), T-17 (conversion des notes, T3).
+Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 5. Infrastructure
 
@@ -235,6 +244,6 @@ Tests du plan pas encore écrits : T-16 (stats, PR 9), T-17 (conversion des note
 
 **Founder** : réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : PR 9 — Journal par période (Semaine · Mois · Année · Tout) et par type, compteurs, groupé par jour, trois rendus vide / edge / erreur, T-16 (`StatsUseCase`).
+**Prochaine session** : PR 10 — Envie (appui long / ♡ sur un résultat → log `wishlist`, chip « Envie » du Journal avec son `EmptyState`, « Je l'ai vu » → log terminé, l'envie reste). Décider si les envies sortent des compteurs.
 
-**Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; journal groupé par jour (la démo de la PR 7 plaide pour : un log qui change de date « disparaît » en bas de liste) ; Envie en chip. **Tranché le 22/09** : tap Journal = édition ; tap Recherche = fiche, + = loggé.
+**Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; Envie en chip. **Tranché le 22/09** : journal groupé par jour (#13). **Tranché le 22/09** : tap Journal = édition ; tap Recherche = fiche, + = loggé.
