@@ -30,7 +30,7 @@ Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient le
 | 9 | Journal par période et par type, compteurs, groupé par jour | ✅ PR #13 (2026-09-22) |
 | 10 | Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ PR #14 (2026-09-22) |
 | 11 | Réglages, À propos, Confidentialité, Tout effacer, hors-ligne, icône | ✅ PR #15 (2026-09-22) |
-| — | TestFlight | ⏳ prochaine étape |
+| — | Sur l'iPhone (câble, Personal Team) puis TestFlight | ⏳ commencé le 22/09 : iPhone détecté, compte Xcode pas encore ajouté |
 
 ### Tranches suivantes (rien de commencé)
 
@@ -261,8 +261,8 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : réserver les domaines · compte Apple Developer actif pour TestFlight · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : réserver les domaines · utiliser l'app quelques jours et noter les retours · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : **jalon TestFlight** (checklist du plan : compte développeur, signature, archive, upload, notes de test, étiquette « Données non collectées »). Puis écrire `docs/plans/tranche-2.md` (épisodes).
+**Prochaine session** : **reprendre le jalon « sur l'iPhone »** à l'étape 1 de `docs/journal/2026-09-22-jalon-iphone.md` — identifiant Apple dans Xcode (Personal Team gratuite, décision founder : pas de TestFlight ni de compte développeur tout de suite), signature automatique dans `project.yml`, installation par câble, **premier vrai lancement sur base vide**. Puis quelques jours d'usage réel, retours, et seulement ensuite `docs/plans/tranche-2.md` (épisodes).
 
 **Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; Envie en chip. **Tranché le 22/09** : journal groupé par jour (#13). **Tranché le 22/09** : tap Journal = édition ; tap Recherche = fiche, + = loggé.
