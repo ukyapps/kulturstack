@@ -34,9 +34,8 @@ struct Toast: View {
 
 #Preview {
     VStack {
-        Toast(text: "Dune loggé ✓")
-        Toast(text: "Dune loggé ✓", action: .init(title: "Modifier") {})
-        Toast(text: "Everything Everywhere All at Once loggé ✓", action: .init(title: "Modifier") {})
-        Toast(text: "Impossible de logger Dune", isError: true)
+        Toast(text: "Loggé ✓")
+        Toast(text: "Loggé ✓", action: .init(title: "Modifier") {})
+        Toast(text: "Impossible de logger. Réessaie.", isError: true)
     }
 }

@@ -11,6 +11,8 @@ statut: PR 8b ouverte (#11), review locale PASS
 1. **Tap sur un résultat = fiche de l'œuvre**, même pas encore en base (aperçu avec « Logger »).
 2. **Un « + » au bout de chaque ligne logge en un geste** — idée de la founder pendant la démo : « on pourrait pas mettre le petit + de logger à la fin de chaque ligne ? que ce soit plus rapide ». C'est le compromis qui garde le log en un tap tout en ouvrant la fiche au tap. Le bandeau « loggé ✓ · Modifier » revient sur le + (« ça me met plus la petite barre orange… qu'on avait avant »).
 
+3. **Bandeau sans titre** : « Loggé ✓ · Modifier ». Claude proposait de garder le titre (coupé au milieu) pour dire lequel des cinq « Dune » vient d'être loggé ; la founder a tranché sans titre — la pastille « Vu le … » sur la ligne joue ce rôle.
+
 ## Ce qui a été fait
 
 - PR #10 (fiche) fusionnée.

@@ -52,7 +52,7 @@ struct SearchViewModelTests {
 
         #expect(logged.ids == ["tmdb:movie:1"])
         #expect(viewModel.row(for: film).lastLoggedAt != nil)
-        #expect(viewModel.toast?.title.contains("Dune") == true)
+        #expect(viewModel.toast?.title.isEmpty == false)
         #expect(viewModel.toast?.isError == false)
         #expect(viewModel.toast?.logID == logID)
         try await Task.sleep(for: .milliseconds(150))

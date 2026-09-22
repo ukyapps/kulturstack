@@ -57,9 +57,9 @@ final class SearchViewModel {
         do {
             let logID = try logNow(candidate)
             loggedDates[candidate.id] = .now
-            show(Toast(title: String(localized: "search.toast.logged \(candidate.title)"), isError: false, logID: logID))
+            show(Toast(title: String(localized: "search.toast.logged"), isError: false, logID: logID))
         } catch {
-            show(Toast(title: String(localized: "search.toast.failed \(candidate.title)"), isError: true))
+            show(Toast(title: String(localized: "search.toast.failed"), isError: true))
         }
     }
 
