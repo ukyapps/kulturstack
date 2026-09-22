@@ -16,7 +16,7 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Journal — liste, état vide (+ CTA Chercher), état d'erreur | ✅ liste plate datée · ⏳ groupement par jour, filtres période / type, compteurs (PR 9) | #4, #7 |
 | Recherche — barre, sections, chips, trois vides, section en erreur | ✅ · ⏳ bandeau hors-ligne (PR 11), ♡ Envie (PR 10) | #7, #10 |
 | Tap = fiche · + = loggé + bandeau « Modifier » | ✅ (décision du 22/09) | #8, #9, #11 |
-| Fiche d'une œuvre | ✅ · ⏳ détails TMDB des films (PR 8c) | #10, #11 |
+| Fiche d'une œuvre | ✅ | #10, #11, #12 |
 | Modifier un log | ✅ | #9 |
 | Envie | ⏳ PR 10 | — |
 | Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
@@ -148,7 +148,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). **Manque** : ♡ Envie (PR 10) ; réalisateur / durée / genres des films (PR 8c).
+> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). Réalisateur, durée, genres, saisons complétés chez TMDB à l'ouverture (#12). **Manque** : ♡ Envie (PR 10).
 
 - Les détails de la « poche » varient par type : durée / réalisateur pour un film, saisons pour une série, pages / éditeur pour un livre.
 - Tap sur un log → Modifier.
