@@ -24,10 +24,12 @@ final class SearchViewModel {
     var selectedKind: MediaKind?
     private(set) var sections: [SearchSection] = []
     private(set) var toast: Toast?
+    private var loggedDates: [String: Date] = [:]
 
     let availableKinds: [MediaKind]
     private let useCase: SearchUseCase
     private let logNow: (MediaCandidate) throws -> UUID
+    private let lastLogDate: (MediaCandidate) throws -> Date?
     private let debounce: Duration
     private let toastDuration: Duration
     private var debounceTask: Task<Void, Never>?
@@ -36,17 +38,24 @@ final class SearchViewModel {
     private var activeQuery = ""
 
     init(useCase: SearchUseCase, logNow: @escaping (MediaCandidate) throws -> UUID,
+         lastLogDate: @escaping (MediaCandidate) throws -> Date? = { _ in nil },
          debounce: Duration = .milliseconds(300), toastDuration: Duration = .seconds(4)) {
         self.useCase = useCase
         self.logNow = logNow
+        self.lastLogDate = lastLogDate
         self.debounce = debounce
         self.toastDuration = toastDuration
         availableKinds = MediaKind.allCases.filter { useCase.families.contains($0.searchFamily) }
     }
 
+    func row(for candidate: MediaCandidate) -> SearchResultRowModel {
+        SearchResultRowModel(candidate: candidate, lastLoggedAt: loggedDates[candidate.id])
+    }
+
     func log(_ candidate: MediaCandidate) {
         do {
             let logID = try logNow(candidate)
+            loggedDates[candidate.id] = .now
             show(Toast(title: String(localized: "search.toast.logged \(candidate.title)"), isError: false, logID: logID))
         } catch {
             show(Toast(title: String(localized: "search.toast.failed \(candidate.title)"), isError: true))
@@ -110,7 +119,16 @@ final class SearchViewModel {
         }
     }
 
+    // Une lecture de la base qui rate ne doit pas faire tomber la recherche : la ligne perd juste son « Vu le … ».
+    private func rememberLogDates(of section: SearchSection) {
+        guard case .loaded(let candidates) = section.state else { return }
+        for candidate in candidates {
+            loggedDates[candidate.id] = (try? lastLogDate(candidate)) ?? nil
+        }
+    }
+
     private func upsert(_ section: SearchSection) {
+        rememberLogDates(of: section)
         if let index = sections.firstIndex(where: { $0.family == section.family }) {
             sections[index] = section
         } else {

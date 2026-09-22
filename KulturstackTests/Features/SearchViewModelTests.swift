@@ -45,6 +45,29 @@ struct SearchViewModelTests {
 
     private final class Logged { var ids: [String] = [] }
 
+    @Test func aCandidateAlreadyLoggedShowsWhenAndATapUpdatesIt() async throws {
+        let yesterday = Date.now.addingTimeInterval(-86_400)
+        let dates = Dates(byID: ["tmdb:movie:1": yesterday])
+        let tmdb = MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film, series]))
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: [tmdb]),
+                                        logNow: { dates.byID[$0.id] = .now; return UUID() },
+                                        lastLogDate: { dates.byID[$0.id] }, debounce: .zero)
+
+        viewModel.query = "dune"
+        try await settle(viewModel)
+
+        #expect(viewModel.row(for: film).lastLoggedAt == yesterday)
+        #expect(viewModel.row(for: film).loggedLabel?.isEmpty == false)
+        #expect(viewModel.row(for: series).lastLoggedAt == nil)
+        #expect(viewModel.row(for: series).loggedLabel == nil)
+
+        viewModel.log(series)
+
+        #expect(viewModel.row(for: series).lastLoggedAt != nil)
+    }
+
+    private final class Dates { var byID: [String: Date]; init(byID: [String: Date]) { self.byID = byID } }
+
     private func settle(_ viewModel: SearchViewModel) async throws {
         for _ in 0..<200 {
             if !viewModel.sections.isEmpty, viewModel.sections.allSatisfy({ $0.state != .loading }) { return }

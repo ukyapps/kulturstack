@@ -8,9 +8,10 @@ struct RootView: View {
     @State private var selectedTab = Tab.journal
 
     var body: some View {
+        let services = AppServices(context: context)
         TabView(selection: $selectedTab) {
             NavigationStack {
-                JournalView(repository: SwiftDataLogRepository(context: context)) { selectedTab = .search }
+                JournalView(services: services) { selectedTab = .search }
                     #if DEBUG
                     .safeAreaInset(edge: .bottom) { StorageBadge() }
                     #endif
@@ -19,17 +20,11 @@ struct RootView: View {
             .tag(Tab.journal)
 
             NavigationStack {
-                SearchView(useCase: SearchUseCase(providers: providers), logNow: { try logUseCase.logNow($0).id },
-                           editUseCase: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+                SearchView(useCase: SearchUseCase(providers: providers), services: services)
             }
             .tabItem { Label(String(localized: "tab.search"), systemImage: "magnifyingglass") }
             .tag(Tab.search)
         }
-    }
-
-    private var logUseCase: LogUseCase {
-        let repository = SwiftDataMediaRepository(context: context)
-        return LogUseCase(repository: repository, dedup: DedupUseCase(repository: repository))
     }
 
     private var providers: [any MetadataProvider] {

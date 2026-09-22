@@ -13,10 +13,10 @@ struct LogEditViewRenderingTests {
         let log = try LogEntry.make(item: item, status: .inProgress, rating: 7, note: "En cours")
         context.insert(log)
         try context.save()
-        let useCase = EditLogUseCase(repository: SwiftDataLogRepository(context: context))
+        let services = AppServices(context: context)
 
         for logID in [log.id, UUID()] {
-            let view = LogEditView(logID: logID, useCase: useCase)
+            let view = LogEditView(logID: logID, services: services)
             let host = UIHostingController(rootView: view)
             let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
             window.rootViewController = host

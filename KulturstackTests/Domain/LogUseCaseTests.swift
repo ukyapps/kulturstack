@@ -94,6 +94,31 @@ struct LogUseCaseTests {
         #expect(try counts(container).logs == 1)
     }
 
+    @Test func logAgainAddsADoneLogDatedNowToAnExistingItem() throws {
+        let (container, useCase) = try makeUseCase()
+        let first = try useCase.logNow(dune)
+        let item = try #require(first.item)
+        let later = Date.now.addingTimeInterval(60)
+
+        let again = try useCase.logAgain(item, now: later)
+
+        #expect(again.item?.persistentModelID == item.persistentModelID)
+        #expect(again.status == .done)
+        #expect(again.date == later)
+        #expect(again.source == "manual")
+        #expect(try counts(container) == (1, 2, 2))
+    }
+
+    @Test func repositoryFindsAnItemByItsID() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let repository = SwiftDataMediaRepository(context: container.mainContext)
+        let item = MediaItem(kind: .film, title: "Dune")
+        try repository.add(item, refs: [])
+
+        #expect(try repository.find(itemID: item.id)?.title == "Dune")
+        #expect(try repository.find(itemID: UUID()) == nil)
+    }
+
     @Test func repositoryFindsAnItemByAnyOfItsKeys() throws {
         let container = try ModelContainerFactory.inMemory()
         let repository = SwiftDataMediaRepository(context: container.mainContext)

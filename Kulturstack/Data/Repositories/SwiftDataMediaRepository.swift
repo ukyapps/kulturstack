@@ -12,6 +12,12 @@ struct SwiftDataMediaRepository: MediaRepository {
         return try context.fetch(descriptor).first?.item
     }
 
+    func find(itemID: UUID) throws -> MediaItem? {
+        var descriptor = FetchDescriptor<MediaItem>(predicate: #Predicate { $0.id == itemID })
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
     func add(_ item: MediaItem, refs: [ExternalRef]) throws {
         context.insert(item)
         for ref in refs {
