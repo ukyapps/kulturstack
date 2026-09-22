@@ -19,7 +19,7 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Fiche d'une œuvre | ✅ | #10, #11, #12 |
 | Modifier un log | ✅ | #9 |
 | Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ (onglet, pas chip : décision du 22/09) | #14 |
-| Réglages, À propos, Confidentialité | ⏳ PR 11 (le menu DEBUG y déménage) | — |
+| Réglages, Confidentialité, À propos, Tout effacer | ✅ | #15 |
 
 Les captures d'écran de chaque PR sont dans `docs/captures/pr-NN/`.
 
@@ -113,7 +113,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». « Vu le 20 sept. » / « Lu le … » sur une ligne déjà loggée (#10) ; tap = fiche, + = loggé (#11), ♡ = envie (#14). **Manque** : bandeau hors-ligne (PR 11), « Ajouter à la main » (T7).
+> **Réalisé (PR #7, #8)** : onglet Recherche, barre avec focus et clavier levé, 2 caractères, debounce 300 ms, sections Films & séries / Livres à états indépendants (spinner dans l'en-tête, résultats, « Aucun résultat », « Livres indisponibles · Réessayer »), chips Tous · Films · Séries · Livres côté client, vide initial « Tape un titre », « Aucun résultat pour “xyz” », edge « Rien dans ce type · Tout voir », **tap = loggé** avec bandeau 4 s et bouton « Modifier » (#9). Ligne = jaquette + titre + « Type · année · créateur ». « Vu le 20 sept. » / « Lu le … » sur une ligne déjà loggée (#10) ; tap = fiche, + = loggé (#11), ♡ = envie (#14). Bandeau hors-ligne (#15). **Manque** : « Ajouter à la main » (T7).
 
 - La barre a le focus dès l'ouverture, clavier levé. Recherche à partir de 2 caractères, 300 ms après la dernière frappe.
 - **Tap = fiche de l'œuvre** (aperçu si pas encore en base, avec « Logger »). **« + » au bout de la ligne = loggé** (terminé, maintenant) avec bandeau « *Dune* loggé ✓ · **Modifier** » 4 s. Tranché le 22/09 (§6.2), réalisé en #11.
@@ -191,7 +191,7 @@ On garde en envie par **♡ à côté du + sur chaque résultat** de Recherche, 
 
 ### 3.6 Réglages
 
-> **À faire (PR 11).** Le menu DEBUG (« Remplir données démo » / « Tout effacer » / « Test recherche TMDB ») vit pour l'instant derrière une coccinelle dans la barre du Journal.
+> **Réalisé (PR #15)** : ⚙︎ dans la barre du Journal → Langue (suit le système, lien vers les Réglages iOS), Confidentialité, À propos (version, logo TMDB + mention, OpenLibrary), Tout effacer (double confirmation), section DEBUG hors Release avec le badge de base. Import / Export attend T3. Bandeau hors-ligne dans la Recherche.
 
 Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), **Tout effacer** (rouge, double confirmation), Confidentialité (deux paragraphes), À propos (version, attributions TMDB avec logo, OpenLibrary). En DEBUG uniquement : « Remplir données démo » / « Tout effacer (démo) » et le badge « Base V1 · n fiches · n logs ».
 
