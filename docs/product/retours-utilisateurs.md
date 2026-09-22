@@ -68,6 +68,9 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 |---|---|
 | A — édition directe au tap sur une ligne du Journal | Fait en PR 8 : tap = feuille ; titre de la feuille → fiche ; appui long → Voir la fiche / Supprimer. Design §6.6. |
 | « Dans recherche je voudrais qu'un tap ça ouvre la fiche, et double tap ça se log » puis « si je suis dans la recherche, je peux pas accéder à la fiche avant de logger un truc, c'est pas logique » | Le double tap est écarté (pas un geste iOS, retarde chaque tap). Trois options proposées : ⓘ sur la ligne (reco), appui long, tap = fiche. **Founder : tap = fiche, on logge depuis la fiche.** Remplace « tap = loggé » du 21/09. Design §6.2, PR 8b. |
+| « On pourrait pas mettre le petit + de logger à la fin de chaque ligne pour logger directement ? que ce soit plus rapide ? » | Oui : + au bout de chaque résultat = loggé en un geste (#11). C'est le compromis tap = fiche / + = log. |
+| « Quand je log avec le petit bouton, ça me met plus la petite barre orange qui dit c'est loggé, modifier » | Bandeau « loggé ✓ · Modifier » remis sur le + (#11). |
+| « Pourquoi le titre s'affiche en plus ? Parfois le titre va être trop long, non ? … Il faut pas mettre le titre du tout. » | Claude proposait de garder le titre coupé au milieu (dit lequel des cinq « Dune »). Founder : sans titre. Bandeau = « Loggé ✓ · Modifier » (#11). |
 | Fiche de Dune sans réalisateur ni genres | La recherche TMDB ne renvoie pas ces champs ; il faut un appel « détails » à part. Petite PR à prévoir. |
 
 ## Autres utilisatrices

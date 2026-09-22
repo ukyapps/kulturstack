@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 struct SearchView: View {
@@ -30,6 +31,10 @@ struct SearchView: View {
             .searchFocused($isSearchFocused)
             .autocorrectionDisabled()
             .onAppear { isSearchFocused = true }
+            .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+                viewModel.refreshLogDates()
+            }
+            .navigationDestination(for: MediaCandidate.self) { ItemDetailView(subject: .candidate($0), services: services) }
             .overlay(alignment: .bottom) {
                 if let toast = viewModel.toast {
                     Toast(text: toast.title, isError: toast.isError, action: editAction(for: toast))
@@ -108,12 +113,9 @@ struct SearchView: View {
             }
         case .loaded(let candidates):
             ForEach(candidates) { candidate in
-                Button {
-                    viewModel.log(candidate)
-                } label: {
-                    SearchResultRow(model: viewModel.row(for: candidate))
+                NavigationLink(value: candidate) {
+                    SearchResultRow(model: viewModel.row(for: candidate)) { viewModel.log(candidate) }
                 }
-                .buttonStyle(.plain)
                 .accessibilityHint(String(localized: "search.row.hint"))
             }
         }

@@ -15,7 +15,8 @@ struct Toast: View {
             Image(systemName: isError ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
             Text(text)
                 .font(.subheadline.weight(.medium))
-                .lineLimit(2)
+                .lineLimit(1)
+                .truncationMode(.middle)
             if let action {
                 Spacer(minLength: Spacing.s)
                 Button(action.title, action: action.handler)
@@ -33,8 +34,8 @@ struct Toast: View {
 
 #Preview {
     VStack {
-        Toast(text: "Dune loggé ✓")
-        Toast(text: "Dune loggé ✓", action: .init(title: "Modifier") {})
-        Toast(text: "Impossible de logger Dune", isError: true)
+        Toast(text: "Loggé ✓")
+        Toast(text: "Loggé ✓", action: .init(title: "Modifier") {})
+        Toast(text: "Impossible de logger. Réessaie.", isError: true)
     }
 }

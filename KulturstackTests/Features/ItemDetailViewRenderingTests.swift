@@ -5,7 +5,7 @@ import Testing
 
 @MainActor
 struct ItemDetailViewRenderingTests {
-    @Test func rendersTheDetailAndTheMissingState() throws {
+    @Test func rendersTheDetailThePreviewAndTheMissingState() throws {
         let container = try ModelContainerFactory.inMemory()
         let repository = SwiftDataMediaRepository(context: container.mainContext)
         let item = MediaItem(kind: .book, title: "Piranesi", year: 2020, creators: ["Susanna Clarke"], summary: "Un homme…")
@@ -14,8 +14,9 @@ struct ItemDetailViewRenderingTests {
         try repository.add(try LogEntry.make(item: item, status: .done, rating: 9))
         let services = AppServices(context: container.mainContext)
 
-        for itemID in [item.id, UUID()] {
-            let view = ItemDetailView(itemID: itemID, services: services)
+        let candidate = MockProvider.candidate("tmdb:movie:2", kind: .film, title: "Dune")
+        for subject in [ItemDetailViewModel.Subject.stored(item.id), .stored(UUID()), .candidate(candidate)] {
+            let view = ItemDetailView(subject: subject, services: services)
             let host = UIHostingController(rootView: NavigationStack { view })
             let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
             window.rootViewController = host

@@ -6,10 +6,14 @@ struct ItemDetailView: View {
     @State private var isSummaryExpanded = false
     private let services: AppServices
 
-    init(itemID: UUID, services: AppServices) {
-        _viewModel = State(initialValue: ItemDetailViewModel(itemID: itemID, repository: services.mediaRepository,
+    init(subject: ItemDetailViewModel.Subject, services: AppServices) {
+        _viewModel = State(initialValue: ItemDetailViewModel(subject: subject, repository: services.mediaRepository,
                                                              logUseCase: services.logUseCase))
         self.services = services
+    }
+
+    init(itemID: UUID, services: AppServices) {
+        self.init(subject: .stored(itemID), services: services)
     }
 
     var body: some View {
@@ -48,8 +52,11 @@ struct ItemDetailView: View {
         ScrollView {
             VStack(spacing: Spacing.l) {
                 header(model)
-                Button(String(localized: "detail.logAgain"), systemImage: "plus.circle.fill") { viewModel.logAgain() }
-                    .buttonStyle(.borderedProminent)
+                Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
+                    viewModel.log()
+                }
+                .buttonStyle(.borderedProminent)
+                .sensoryFeedback(.success, trigger: model.logs.count)
                 logs(model.logs)
                 if let source = model.source {
                     Text(String(localized: "detail.source \(source)"))

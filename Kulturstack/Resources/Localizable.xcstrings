@@ -409,6 +409,22 @@
         }
       }
     },
+    "detail.log": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log it"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logger"
+          }
+        }
+      }
+    },
     "detail.log.hint": {
       "localizations": {
         "en": {
@@ -1582,13 +1598,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A film, a series or a book. Tap a result: it’s logged, dated now."
+            "value": "A film, a series or a book. Tap a result to see its page, or its + to log it right away."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un film, une série ou un livre. Tape sur un résultat : c’est loggé, daté maintenant."
+            "value": "Un film, une série ou un livre. Tape sur un résultat pour voir sa fiche, ou sur son + pour le logger tout de suite."
           }
         }
       }
@@ -1662,13 +1678,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Logs this work, dated now"
+            "value": "Opens the work’s page"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Logge cette œuvre, datée maintenant"
+            "value": "Ouvre la fiche de l’œuvre"
+          }
+        }
+      }
+    },
+    "search.row.log": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log it now"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logger maintenant"
           }
         }
       }
@@ -1769,34 +1801,34 @@
         }
       }
     },
-    "search.toast.failed %@": {
+    "search.toast.failed": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Couldn’t log %@"
+            "value": "Couldn’t log it. Try again."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossible de logger %@"
+            "value": "Impossible de logger. Réessaie."
           }
         }
       }
     },
-    "search.toast.logged %@": {
+    "search.toast.logged": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ logged ✓"
+            "value": "Logged ✓"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ loggé ✓"
+            "value": "Loggé ✓"
           }
         }
       }
