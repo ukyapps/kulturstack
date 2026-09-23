@@ -19,7 +19,7 @@ final class JournalViewModel {
     }
 
     private(set) var state: State = .loading
-    var period: Period = .week
+    var period: Period = .all
     var selectedKind: MediaKind?
     var didFailToDelete = false
     private let repository: any LogRepository

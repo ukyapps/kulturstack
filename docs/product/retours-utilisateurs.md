@@ -82,6 +82,20 @@ L'utilisatrice principale est la founder. Chaque retour est noté tel quel, avec
 | Après « Je l'ai vu », « il reste, il devrait disparaître et aller dans journal mais plus être dans envie » | Bug : je listais toutes les envies. Corrigé : en attente = pas de consommation postérieure ; testé dans les deux sens (#14). |
 | « Dans la recherche comme le petit + pour logger, il y ait le petit cœur d'envie pour ajouter direct » | ♡ à côté du + sur chaque ligne ; l'appui long est retiré (#14). |
 
+## Founder — session du 2026-09-23 (premiers jours d'usage réel, sur son iPhone)
+
+Sept retours d'un coup, après avoir vécu avec l'app. Triés en quatre PRs ; l'ordre suit ce qui gêne au quotidien.
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| « Y'a un bug, j'ai log la planète sauvage, mais ça n'apparaît pas dans mon journal. Pourtant quand je le recherche c'est bien loggé avec la bonne date et mon commentaire. » | **Pas une perte de données** : le log existait, mais le Journal s'ouvrait sur **Semaine** et elle avait daté le log hors de cette semaine. Rien ne le disait. Corrigé (PR 18) : le Journal s'ouvre sur **Tout**, et les segments deviennent Tout · Semaine · Mois · Année. |
+| « Dans journal, quand je fais un tap sur un film que j'ai vu, je voudrais que ça ouvre la fiche du film, et que j'aie une option pour modifier depuis la fiche » | Fait (PR 18) : tap = la fiche ; on modifie un log depuis la fiche (déjà le cas) ou par appui long sur la ligne. **Inverse la décision du 22/09** (tap = feuille d'édition) — l'usage a tranché. Même geste dans l'onglet Envie, pour ne pas avoir deux règles. |
+| « Quand j'enregistre une fiche, très bien de mettre la date, mais pas l'heure c'est un peu abusé. » | Le sélecteur de date proposait date **+ heure** alors que l'heure ne s'affiche nulle part. À corriger (PR 19). |
+| « Quand j'ouvre une fiche, et que je clique sur log, ça m'ouvre pas le log avec ma note et tout, ça log juste. Je voudrais qu'on ouvre le log avec le détail notes et tout. L'option log en un clic est dispo que depuis la recherche pour aller vite. » | D'accord : le 1-tap reste le `+` de la Recherche ; « Logger » depuis la fiche ouvrira le formulaire (date, demi-étoiles, statut, commentaire). PR 19. |
+| « La recherche fonctionne que sur les titres ? Pas les auteurs ou les artistes ? Ex : si je mets wes anderson, je n'ai pas tous les films de Wes Anderson. » | Confirmé pour les films et séries : TMDB renvoie bien les personnes, mais on ne gardait que les titres. À faire (PR 20) : une recherche par personne ramène sa filmographie. |
+| « La recherche par artiste a l'air de fonctionner si je le fais par auteur pour la partie livre donc. » | Exact : OpenLibrary cherche nativement dans les auteurs. Rien à faire côté livres. |
+| « On peut enregistrer les trucs en double, on devrait pas, c'est une fois un film, même si on peut l'avoir revu, on peut mettre sur la même fiche qu'on l'a revu mais voilà » | Il n'y a **jamais deux fiches** (dédup par clé externe, ADR-004) : ce sont deux **logs** de la même œuvre, ce qui est voulu pour un revisionnage. Ce qui manque, c'est l'avertissement. Proposé (PR 21) : le `+` sur une œuvre déjà loggée demande « Déjà vu le … — logger à nouveau ? ». À confirmer après quelques jours avec les autres corrections. |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*

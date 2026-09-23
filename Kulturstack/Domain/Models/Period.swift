@@ -1,7 +1,8 @@
 import Foundation
 
 enum Period: CaseIterable, Sendable {
-    case week, month, year, all
+    // « Tout » d'abord : le Journal s'ouvre dessus, filtrer vient après.
+    case all, week, month, year
 
     // La semaine commence le lundi quelle que soit la locale ; « all » n'a pas de bornes.
     func range(containing now: Date, calendar: Calendar) -> Range<Date>? {
