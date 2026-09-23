@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-22
+maj: 2026-09-23
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,7 +8,11 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient les **fondations** (projet Xcode, design system, schéma V1 + migration), le **Journal** (liste des logs, états vide / erreur, seed DEBUG) et l'**écran Recherche** (deux onglets, TMDB + OpenLibrary en parallèle, sections par famille, chips) **le log en 1 tap** (tap sur un résultat → fiche créée ou retrouvée par ses clés externes, log « terminé » daté maintenant, bandeau « loggé ✓ », le Journal se met à jour) **l'édition d'un log** (feuille : date + raccourcis, demi-étoiles, statut limité au type, commentaire, suppression ; tap sur une ligne du Journal) et **la fiche d'une œuvre** (jaquette, détails par type, résumé, tous les logs, « Logger » ; ouverte au tap sur un résultat de Recherche, même pas encore en base) et **le + au bout de chaque résultat** qui logge en un geste avec « Vu le … » et bandeau « Modifier » ; la fiche d'un film ou d'une série se **complète chez TMDB** à l'ouverture (réalisateur, durée, genres, saisons) ; le **Journal se filtre** par Semaine · Mois · Année · Tout et par type, avec compteurs, groupé par jour ; l'onglet **Envie** garde ce qu'on veut voir (♡ sur un résultat ou dans la fiche, « Je l'ai vu » le fait passer au Journal) ; **Réglages** (Confidentialité, À propos avec attributions, Tout effacer en double confirmation), bandeau hors-ligne, icône provisoire. 195 tests. **La Tranche 1 est complète** ; prochaine étape : TestFlight.
+**La Tranche 1 est terminée et l'app tourne sur l'iPhone de la founder** (installée par câble le 23/09, signature personnelle valable 7 jours — `make device` pour réinstaller). 195 tests verts, 17 PRs fusionnées.
+
+Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle) ; **le logger en un geste** avec le `+` d'un résultat, ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log (date, demi-étoiles, statut, commentaire) ; **relire son Journal** groupé par jour, filtré par Semaine · Mois · Année · Tout et par type, avec compteurs ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
+
+**Prochaine étape : l'usage réel.** La founder utilise l'app quelques jours ; ses retours décideront de la suite (Tranche 2 « épisodes », ou corrections d'abord). Rien ne se publie sans son action.
 
 ## 2. Features — planifié vs livré
 
@@ -30,7 +34,8 @@ Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient le
 | 9 | Journal par période et par type, compteurs, groupé par jour | ✅ PR #13 (2026-09-22) |
 | 10 | Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ PR #14 (2026-09-22) |
 | 11 | Réglages, À propos, Confidentialité, Tout effacer, hors-ligne, icône | ✅ PR #15 (2026-09-22) |
-| — | Sur l'iPhone (câble, Personal Team) puis TestFlight | ⏳ commencé le 22/09 : iPhone détecté, compte Xcode pas encore ajouté |
+| — | Sur l'iPhone (câble, Personal Team) | ✅ 23/09 — installée et lancée sur l'iPhone de la founder |
+| — | TestFlight (compte développeur payant) | ⏳ quand d'autres testeuses seront nécessaires |
 
 ### Tranches suivantes (rien de commencé)
 
@@ -237,6 +242,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | CI | `tests.yml` : macos-26, Xcode 26.3, `make test`, ~5 min. **Vert.** |
 | Review | **locale**, par Claude, avant chaque push (CLAUDE.md § Review locale). Plus de review en CI (ADR-012). |
 | Secrets GitHub | aucun |
+| Signature | équipe personnelle gratuite (app valable 7 jours, `make device` pour réinstaller) ; `DEVELOPMENT_TEAM` dans le Trousseau, jamais dans le dépôt |
 | Secrets locaux | Trousseau `kulturstack` : `TMDB_READ_TOKEN` posé le 21/09 (usage personnel déclaré à TMDB — à renégocier si monétisation). `Config/Secrets.xcconfig` généré, gitignoré. |
 | Outils locaux | Xcode 26.3, Swift 6.2, XcodeGen 2.46, simulateur iPhone 17 Pro (iOS 26.2), hook pre-commit installé. Repo dans `~/Documents/kulturstack` (déplacé du Bureau le 21/09) |
 | Identité git | `ukyapps` + email noreply |
@@ -263,8 +269,15 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : réserver les domaines · utiliser l'app quelques jours et noter les retours · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **utiliser l'app et noter ce qui coince** (le plus important) · fusionner la PR #17 · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : **reprendre le jalon « sur l'iPhone »** à l'étape 1 de `docs/journal/2026-09-22-jalon-iphone.md` — identifiant Apple dans Xcode (Personal Team gratuite, décision founder : pas de TestFlight ni de compte développeur tout de suite), signature automatique dans `project.yml`, installation par câble, **premier vrai lancement sur base vide**. Puis quelques jours d'usage réel, retours, et seulement ensuite `docs/plans/tranche-2.md` (épisodes).
+**Prochaine session — par où commencer**
 
-**Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; Envie en chip. **Tranché le 22/09** : journal groupé par jour (#13). **Tranché le 22/09** : tap Journal = édition ; tap Recherche = fiche, + = loggé.
+1. Demander à la founder ce qu'elle a constaté **en usage réel** et l'écrire dans `docs/product/retours-utilisateurs.md` (c'est la matière la plus précieuse du projet).
+2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
+3. Trier les retours : corrections d'abord (petites PRs), puis seulement `docs/plans/tranche-2.md` (épisodes de séries).
+4. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
+
+**Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
+
+**Tranché le 22/09 à l'écran** : tap sur une ligne du Journal = édition · tap sur un résultat = fiche, `+` = loggé, ♡ = envie · Journal groupé par jour · Envie en onglet (pas en chip), hors des compteurs.

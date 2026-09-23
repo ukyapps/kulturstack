@@ -1,7 +1,7 @@
 ---
 type: journal
 dates: 2026-09-22 (début d'après-midi)
-statut: Tranche 1 complète (14/14 PRs fusionnées) — jalon « sur l'iPhone » commencé, pas terminé
+statut: Tranche 1 complète (14/14 PRs fusionnées) — app installée sur l'iPhone de la founder le 23/09
 ---
 
 # Session 14 — Fin de la Tranche 1, jalon iPhone (interrompu)
@@ -22,19 +22,29 @@ statut: Tranche 1 complète (14/14 PRs fusionnées) — jalon « sur l'iPhone »
 - Xcode ouvert avec le projet. **L'iPhone (« iPhone de Fanny ») est détecté par le Mac**, en cours d'appairage.
 - **Pas encore fait** : ajouter un identifiant Apple dans Xcode → Settings → Accounts (la liste est vide au moment de clore), donc pas de signature configurée (`0 valid identities`), pas de `DEVELOPMENT_TEAM` dans `project.yml`, pas d'installation.
 
+## Suite, le 23/09 — l'app tourne sur l'iPhone
+
+Étapes réellement faites : identifiant Apple **personnel** (gratuit) ajouté dans Xcode → certificat « Apple Development » créé → mode développeur activé sur l'iPhone → build signé → `devicectl device install` → l'app s'ouvre après « Se fier » au profil (Réglages → Général → VPN et gestion de l'appareil).
+
+Pièges rencontrés :
+1. Xcode Settings introuvable : la barre de menus montre l'app active, il faut d'abord mettre Xcode au premier plan (ou ⌘,).
+2. Première tentative de signature : « You already have a current Development certificate or a pending certificate request », puis « Your team has no devices ». Les deux se résolvent en relançant une fois l'iPhone connecté et déverrouillé.
+3. `xcodebuild -destination id=...` attend l'**identifiant matériel** (`00008150-…`), pas l'UUID de `devicectl` (`F6A9436F-…`). D'où `generic/platform=iOS` pour compiler et l'UUID devicectl pour installer.
+4. Le nom de l'équipe personnelle (« Jean Claude Hasson (Personal Team) ») ne correspond pas au nom du compte : Apple fige le nom d'une Personal Team à sa création et ne la renomme jamais. **Purement interne** — invisible dans l'app. Le nom public viendra du compte développeur payant, à vérifier avant l'App Store.
+
+`make device` compile et installe sur l'iPhone branché en une commande. `DEVELOPMENT_TEAM` vit dans `Config/Secrets.xcconfig` (gitignoré), pas dans le dépôt public.
+
 ## À faire — prochaine session (reprendre ici)
 
-1. **Xcode → Settings → Accounts → + → Apple ID** avec l'identifiant iCloud de la founder (gratuit). Vérifier qu'une ligne « Personal Team » apparaît.
-2. Claude : mettre `DEVELOPMENT_TEAM` + `CODE_SIGN_STYLE: Automatic` dans `project.yml`, `make generate`.
-3. iPhone branché, déverrouillé, « Faire confiance à cet ordinateur » ; activer **Mode développeur** (Réglages iOS → Confidentialité et sécurité → Mode développeur) si iOS le demande.
-4. Dans Xcode : choisir « iPhone de Fanny » comme destination, ▶︎ Run. Première fois : sur l'iPhone, Réglages → Général → VPN et gestion de l'appareil → faire confiance au profil.
-5. **Premier vrai lancement sur base vide** : vérifier l'`EmptyState` de chaque écran (Journal, Envie, Recherche), puis logger un vrai film.
-6. La founder utilise l'app quelques jours ; on reprend avec ses retours réels avant d'écrire `docs/plans/tranche-2.md` (épisodes).
+1. Recueillir les retours d'usage réel de la founder (écrans vides vus sur l'iPhone, premier vrai log) → `docs/product/retours-utilisateurs.md`.
+2. Réinstaller avec `make device` quand les 7 jours de la signature personnelle expirent.
+3. Ensuite seulement : `docs/plans/tranche-2.md` (épisodes), ou TestFlight avec le compte développeur payant si la founder veut d'autres testeuses.
 
 ## À faire — founder
 
 - [ ] Réserver `kulturstack.com` + `kulturstack.app`.
 - [ ] Noter, en utilisant l'app, ce qui coince et ce qui manque (dans `retours-utilisateurs.md` à la prochaine session).
+- [ ] (avant l'App Store) vérifier le nom affiché du compte développeur payant.
 
 ## Bilan de la journée du 22/09
 

@@ -79,3 +79,13 @@ Les tests n'appellent pas le réseau : la CI passe `TMDB_READ_TOKEN=ci-placehold
 | 7 | Anthropic | proxy, avec compteur de coût par appareil et quota |
 
 Un secret qui a transité en clair (chat, log, commit) est **à faire tourner** immédiatement.
+
+## Valeurs locales qui ne sont pas des secrets
+
+`DEVELOPMENT_TEAM` (identifiant de l'équipe de signature Apple) passe par le **même mécanisme** que les secrets : Trousseau → `scripts/secrets.sh` → `Config/Secrets.xcconfig` (gitignoré). Ce n'est pas un secret — il apparaît dans tout profil de provisionnement — mais c'est un **identifiant personnel**, et le dépôt est public. Le `.xcodeproj` étant généré, rien n'en sort.
+
+```bash
+security add-generic-password -s kulturstack -a DEVELOPMENT_TEAM -w <TEAM_ID>
+```
+
+Seules les compilations pour un iPhone réel en ont besoin : ni le simulateur, ni la CI. Sans lui, `make build` et `make test` marchent ; `make device` échoue à la signature.
