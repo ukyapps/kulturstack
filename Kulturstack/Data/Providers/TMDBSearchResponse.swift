@@ -7,6 +7,9 @@ struct TMDBSearchResponse: Decodable {
 struct TMDBSearchResult: Decodable {
     let id: Int
     let mediaType: String
+    let popularity: Double?
+    let knownForDepartment: String?
+    let job: String?
     let title: String?
     let name: String?
     let originalTitle: String?
@@ -15,6 +18,12 @@ struct TMDBSearchResult: Decodable {
     let posterPath: String?
     let releaseDate: String?
     let firstAirDate: String?
+}
+
+// Les crédits d'une personne : mêmes champs qu'un résultat de recherche, en deux listes.
+struct TMDBPersonCreditsResponse: Decodable {
+    let cast: [TMDBSearchResult]?
+    let crew: [TMDBSearchResult]?
 }
 
 struct TMDBMovieDetailsResponse: Decodable {

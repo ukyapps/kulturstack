@@ -55,6 +55,100 @@ struct TMDBProviderTests {
         #expect(ids == ["tmdb:movie:438631", "tmdb:tv:90228", "tmdb:movie:693134"])
     }
 
+    // Retour du 23/09 : « si je mets wes anderson, je n'ai pas tous les films de Wes Anderson ».
+    @Test func aPersonSearchBringsBackTheirWorksMostPopularFirst() async throws {
+        let client = try personClient()
+
+        let candidates = try await makeProvider(client: client).search("wes anderson")
+
+        #expect(candidates.map(\.id) == ["tmdb:movie:120467", "tmdb:movie:399170", "tmdb:movie:83666",
+                                         "tmdb:movie:536437", "tmdb:tv:4444", "tmdb:movie:999999"])
+        #expect(candidates.first?.title == "The Grand Budapest Hotel")
+        #expect(candidates.first?.year == 2014)
+    }
+
+    @Test func theWorksOfAPersonAreAskedOnceInTheRightLanguage() async throws {
+        let client = try personClient()
+
+        _ = try await makeProvider(client: client).search("wes anderson")
+
+        #expect(client.calls.count == 2)
+        let credits = try #require(URLComponents(url: client.calls[1].url, resolvingAgainstBaseURL: false))
+        #expect(credits.path == "/3/person/5655/combined_credits")
+        #expect(credits.queryItems?.first { $0.name == "language" }?.value == "fr-FR")
+        #expect(client.calls[1].headers["Authorization"] == "Bearer tok")
+    }
+
+    // La filmographie est un bonus : si elle ne répond pas, la recherche par titre tient toujours.
+    @Test func aFailingFilmographyLeavesTheTitleMatches() async throws {
+        let client = StubHTTPClient(routes: [
+            "search/multi": .success(try Fixtures.data("tmdb-search-multi-wes-anderson")),
+            "combined_credits": .failure(HTTPError.status(500)),
+        ])
+
+        let candidates = try await makeProvider(client: client).search("wes anderson")
+
+        #expect(candidates.map(\.id) == ["tmdb:movie:399170", "tmdb:movie:999999"])
+    }
+
+    // « dune » ramène aussi des homonymes (Aggy Dune…) loin dans la liste : leurs films n'ont rien à faire là.
+    @Test func aTitleSearchDoesNotGoLookingForPeople() async throws {
+        let client = StubHTTPClient(data: try Fixtures.data("tmdb-search-multi-dune"))
+
+        let candidates = try await makeProvider(client: client).search("dune")
+
+        #expect(client.calls.count == 1)
+        #expect(candidates.count == 13)
+    }
+
+    @Test func aFilmographyIsCappedAndKeepsTheMostPopular() async throws {
+        let works = (1...30).map {
+            #"{"id":\#($0),"title":"Film \#($0)","media_type":"movie","popularity":\#($0).0,"release_date":"2020-01-01"}"#
+        }.joined(separator: ",")
+        let client = StubHTTPClient(routes: [
+            "search/multi": .success(Data(#"{"results":[{"id":5655,"name":"X","media_type":"person"}]}"#.utf8)),
+            "combined_credits": .success(Data("{\"crew\":[\(works)]}".utf8)),
+        ])
+
+        let candidates = try await makeProvider(client: client).search("x")
+
+        #expect(candidates.count == 20)
+        #expect(candidates.first?.id == "tmdb:movie:30")
+        #expect(candidates.last?.id == "tmdb:movie:11")
+    }
+
+    // Un réalisateur ramène ce qu'il a réalisé, pas « Tous en scène » où il double un personnage.
+    @Test func aDirectorBringsBackWhatTheyDirectedNotWhatTheyActedIn() async throws {
+        let client = try personClient()
+
+        let candidates = try await makeProvider(client: client).search("wes anderson")
+
+        #expect(!candidates.contains { $0.id == "tmdb:movie:1234567" })
+    }
+
+    @Test func anActorBringsBackWhatTheyPlayedIn() async throws {
+        let client = StubHTTPClient(routes: [
+            "search/multi": .success(Data(#"""
+            {"results":[{"id":1,"name":"Bill Murray","media_type":"person","known_for_department":"Acting"}]}
+            """#.utf8)),
+            "combined_credits": .success(Data(#"""
+            {"cast":[{"id":153,"title":"Lost in Translation","media_type":"movie","popularity":16.0,"release_date":"2003-09-12"}],
+             "crew":[{"id":777,"title":"Un film qu'il a produit","media_type":"movie","popularity":99.0,"job":"Producer","release_date":"2010-01-01"}]}
+            """#.utf8)),
+        ])
+
+        let candidates = try await makeProvider(client: client).search("bill murray")
+
+        #expect(candidates.map(\.id) == ["tmdb:movie:153"])
+    }
+
+    private func personClient() throws -> StubHTTPClient {
+        StubHTTPClient(routes: [
+            "search/multi": .success(try Fixtures.data("tmdb-search-multi-wes-anderson")),
+            "combined_credits": .success(try Fixtures.data("tmdb-person-credits-wes-anderson")),
+        ])
+    }
+
     @Test func requestCarriesQueryLanguageAndBearerToken() async throws {
         let client = StubHTTPClient(data: Data(#"{"page":1,"results":[]}"#.utf8))
 
