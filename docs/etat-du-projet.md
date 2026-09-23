@@ -69,8 +69,8 @@ Kulturstack/
 │   │   └── URLSessionHTTPClient.swift  timeout 8 s, non-2xx → HTTPError.status
 │   ├── Providers/
 │   │   ├── ProviderRegistry.swift    live(secrets:client:appVersion:) = [TMDB, OpenLibrary] ; detailsProviders ; userAgent(appVersion:)
-│   │   ├── TMDBProvider.swift        search/multi fr-FR|en-US, Bearer, garde movie + tv, clés tmdb:movie:<id> / tmdb:tv:<id>, affiches w342 ; details(forKey:) → movie/{id}+credits, tv/{id}
-│   │   ├── TMDBSearchResponse.swift  DTO Decodable (snake_case) + TMDBMovieDetailsResponse / TMDBTVDetailsResponse
+│   │   ├── TMDBProvider.swift        search/multi fr-FR|en-US, Bearer, garde movie + tv, clés tmdb:movie:<id> / tmdb:tv:<id>, affiches w342 ; **une personne dans les 3 premiers résultats → person/{id}/combined_credits filtré par son métier (Directing → job Director, Acting → cast), 20 œuvres max, les plus populaires d'abord ; en tête = son œuvre passe devant les titres** ; details(forKey:) → movie/{id}+credits, tv/{id}
+│   │   ├── TMDBSearchResponse.swift  DTO Decodable (snake_case) + TMDBPersonCreditsResponse (cast / crew) + TMDBMovieDetailsResponse / TMDBTVDetailsResponse
 │   │   ├── OpenLibraryProvider.swift search.json, User-Agent « Kulturstack/<v> (+repo) », clés ol:work:<id> + isbn13:<…> (max 20), couverture -M, BookDetails
 │   │   └── OpenLibrarySearchResponse.swift  DTO
 │   └── Repositories/
@@ -78,12 +78,13 @@ Kulturstack/
 │       └── SwiftDataMediaRepository.swift  findItem(withAnyKey:) via #Predicate sur ExternalRef.key ; find(itemID:) ; add item + refs ; add refs ; add log ; save ; deleteAll (objet par objet)
 ├── Features/
 │   ├── Journal/
-│   │   ├── JournalView.swift         ⚙︎ → Réglages ; 5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Semaine · n » + chips « Films · n » ; tap → feuille d'édition ; appui long → Voir la fiche / Supprimer (confirmation)
-│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; period (défaut semaine) + selectedKind → presentation (… | edge | loaded(JournalContent)) ; kindCounts ; showAll() ; delete(id:) ; now / calendar injectables
+│   │   ├── JournalView.swift         ⚙︎ → Réglages ; 5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Tout · n » + chips « Films · n » ; tap → la fiche de l'œuvre ; appui long → Modifier / Supprimer (confirmation)
+│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; period (défaut tout) + selectedKind → presentation (… | edge | loaded(JournalContent)) ; kindCounts ; showAll() ; delete(id:) ; now / calendar injectables
 │   │   ├── JournalContent.swift      sections par jour + total ; KindCount
 │   │   ├── JournalDaySection.swift   id = début du jour, titre (Aujourd'hui / Hier / date), rows
-│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette)
-│   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
+│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette) ; tapAction
+│   │   ├── JournalRowTap.swift       ce qu'un tap ouvre : showItem(fiche), ou edit(log) si la fiche a disparu
+│   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + pastille statut + aperçu du commentaire (2 lignes) + étoiles ; pas de date, elle est dans l'en-tête du jour
 │   ├── Search/
 │   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; bandeau hors-ligne (safeAreaInset) ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; ♡ → envie, + → log ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
 │   │   ├── SearchViewModel.swift     query (didSet → debounce 300 ms), sections, selectedKind, presentation ; log(candidate) → logNow injecté + pastille + toast 4 s ; wish(candidate) → toast ; lastLogDate injecté → row(for:) ; refreshLogDates()
@@ -91,8 +92,9 @@ Kulturstack/
 │   │   ├── SearchResultRow.swift     MediaRow avec pastille « Vu le … » + boutons ♡ et + (borderless) en accessoire
 │   │   └── KindChips.swift           « Tous » + un chip par type des familles enregistrées
 │   ├── LogEdit/
-│   │   ├── LogEditView.swift         feuille : titre « Dune (2021) » (lien vers la fiche), date + raccourcis, StarRatingPicker, statut segmenté, commentaire, supprimer ; 4 rendus (chargement · formulaire · introuvable · erreur)
-│   │   ├── LogEditViewModel.swift    load() → champs éditables + itemID ; save() / delete() → Bool + didFail ; allowedStatuses du type
+│   │   ├── LogEditView.swift         feuille : titre « Dune (2021) » (lien vers la fiche), date **sans heure** + raccourcis, StarRatingPicker, statut segmenté, commentaire, supprimer (modification seulement) ; deux initializers : logID = modifier, target = créer ; 4 rendus (chargement · formulaire · introuvable · erreur)
+│   │   ├── LogEditViewModel.swift    deux modes : modifier un log, ou en créer un (Creation = target + repository + LogUseCase) ; load() → champs éditables + itemID, rien n'est écrit en création ; save() / delete() → Bool + didFail ; isCreating ; allowedStatuses du type
+│   │   ├── LogTarget.swift           ce qu'un nouveau log vise : item(id) ou candidate(résultat de recherche)
 │   │   ├── DateShortcut.swift        today · yesterday · weekend (samedi le plus récent), heure conservée
 │   │   └── LogReference.swift        l'id qu'une vue garde pour ouvrir la feuille (jamais le @Model)
 │   ├── Settings/
@@ -101,12 +103,12 @@ Kulturstack/
 │   │   ├── PrivacyView.swift         « Ce qui sort de ton iPhone » / « Ce qui reste chez toi » (TDD 07)
 │   │   └── AboutView.swift           version + build, tagline, logo TMDB (SVG) + mention obligatoire, OpenLibrary
 │   ├── Wishlist/
-│   │   ├── WishlistView.swift        onglet Envie : liste des envies en attente, vide « Rien en attente » + Chercher, erreur ; tap → feuille ; appui long → fiche / supprimer
+│   │   ├── WishlistView.swift        onglet Envie : liste des envies en attente, vide « Rien en attente » + Chercher, erreur ; tap → la fiche ; appui long → Modifier / Supprimer
 │   │   ├── WishlistViewModel.swift   state = loading | empty | loaded([JournalRowModel]) | failed ; markSeen(id:) = logAgain(item) ; delete(id:)
 │   │   └── WishRow.swift             jaquette + titre + sous-titre + « Ajouté le … » + bouton « Je l'ai vu / lu / écouté »
 │   ├── ItemDetail/
-│   │   ├── ItemDetailView.swift      jaquette 120, titre (année), headline, faits, résumé repliable (« Plus »), « Logger » / « Logger à nouveau » (haptique) + « Envie » ♡, TES LOGS (tap → feuille), source ; 4 rendus (chargement · fiche · introuvable · erreur)
-│   │   ├── ItemDetailViewModel.swift Subject = stored(id) | candidate ; load() (candidat déjà en base → fiche réelle ; enrichissement TMDB si la poche est vide) / log() / wish() ; state = loading | loaded | missing | failed
+│   │   ├── ItemDetailView.swift      jaquette 120, titre (année), headline, faits, résumé repliable (« Plus »), « Logger » / « Logger à nouveau » → **ouvre le formulaire** (date, note, statut, commentaire) + « Envie » ♡ (direct), TES LOGS (tap → feuille), source ; 4 rendus (chargement · fiche · introuvable · erreur)
+│   │   ├── ItemDetailViewModel.swift Subject = stored(id) | candidate ; load() (candidat déjà en base → fiche réelle ; enrichissement TMDB si la poche est vide) / logTarget (ce que le formulaire vise) / wish() ; state = loading | loaded | missing | failed
 │   │   ├── ItemDetailModel.swift     instantané valeur, init(item:) ou init(candidate:) : headline « Type · 2h35 · créateur », facts par type (genres / saisons · épisodes / pages · éditeur · sujets), logs triés, source (TMDB, OpenLibrary, IMDb, Trakt)
 │   │   ├── ItemLogRowModel.swift     instantané valeur d'un log de la fiche
 │   │   ├── ItemLogRow.swift          date + pastille statut + étoiles + chevron + commentaire (2 lignes)
@@ -123,7 +125,7 @@ Kulturstack/
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
-│   │   ├── Period.swift              week · month · year · all ; range(containing:calendar:) semaine du lundi, [début, fin)
+│   │   ├── Period.swift              all · week · month · year (« Tout » en premier) ; range(containing:calendar:) semaine du lundi, [début, fin)
 │   │   ├── LogStatus.swift           wishlist · inProgress · done · dropped
 │   │   ├── MediaItem.swift           la fiche : champs communs + detailsData (poche) ; relations externalRefs / logs
 │   │   ├── ExternalRef.swift         clé unique "provider:value"
@@ -135,7 +137,7 @@ Kulturstack/
 │   │   ├── LogRepository.swift       fetchAll() · find(id:) · save() · delete(_:)
 │   │   └── MediaRepository.swift     findItem(withAnyKey:) · find(itemID:) · add(item, refs:) · add(refs, to:) · add(log) · save()
 │   ├── Rules/
-│   │   ├── LogRules.swift            validate(status:for:) · validate(rating:)
+│   │   ├── LogRules.swift            validate(status:for:) · validate(rating:) · note(_:) commentaire blanc → nil
 │   │   └── DomainError.swift
 │   ├── Network/
 │   │   └── ConnectivityMonitoring.swift  protocole @Observable : isOnline
@@ -148,11 +150,11 @@ Kulturstack/
 │   │   ├── StatsUseCase.swift        count (T-16 : des logs, pas des fiches, envies exclues) · filter(période, type) · groupByDay (Aujourd'hui, Hier, dates) · pendingWishes (envie sans consommation postérieure)
 │   │   ├── WipeUseCase.swift         wipe() = repository.deleteAll() — droit à l'effacement (TDD 07)
 │   │   ├── EnrichUseCase.swift       needsEnrichment(item) ; enrich(item) → Bool, meilleur effort, garde les créateurs existants
-│   │   ├── EditLogUseCase.swift      log(id:) · update(date, status, rating, note) validé par LogRules, commentaire blanc → nil · delete
+│   │   ├── EditLogUseCase.swift      log(id:) · update(date, status, rating, note) validé par LogRules · delete
 │   │   ├── LogHistoryUseCase.swift   lastLogDate(for: candidate) = date du dernier log non-envie de la fiche partageant une clé
 │   │   ├── SearchUseCase.swift       search(_:) → AsyncStream<SearchSection> : loading pour chaque famille, puis TaskGroup, timeout 8 s par provider, annulation propagée ; retry(_:family:)
 │   │   ├── DedupUseCase.swift        existingItem(for: candidate) = fiche partageant AU MOINS une clé externe (ADR-004)
-│   │   └── LogUseCase.swift          logNow(candidate, status: .done) : valide le statut, retrouve ou crée la fiche (+ poche encodée + refs), ajoute les clés manquantes, crée le log source « manual » ; logAgain(item) ; wish(candidate) / wish(item)
+│   │   └── LogUseCase.swift          logNow(candidate, status:now:rating:note:) : valide le statut, retrouve ou crée la fiche (+ poche encodée + refs), ajoute les clés manquantes, puis log(item, …) qui crée le log source « manual » ; logAgain(item) ; wish(candidate) / wish(item)
 │   └── Schema/
 │       ├── KulturstackSchemaV1.swift 3 modèles ; typealias MediaItem / ExternalRef / LogEntry
 │       └── KulturstackMigrationPlan.swift  schemas [V1], stages [], current
@@ -178,7 +180,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 195, tous verts
+## 4. Tests — 212, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -191,11 +193,11 @@ Kulturstack/
 | `SwiftDataLogRepositoryTests` | 2 | tri du plus récent au plus ancien ; base vide → liste vide |
 | `LogHistoryUseCaseTests` | 3 | jamais loggé → nil ; le plus récent gagne ; une envie ne compte pas |
 | `ItemDetailModelTests` | 8 (paramétrés : 11 cas) | aperçu d'un candidat sans log, source du provider ; headline film (type · 2h35 · réalisateur) + genres ; film sans détails ; saisons · épisodes ; pages · éditeur · 3 sujets max ; logs du plus récent au plus ancien ; source TMDB / OpenLibrary / « TMDB, IMDb » / nil |
-| `ItemDetailViewModelTests` | 10 | ♡ sur un candidat → fiche + log envie ; ♡ sur une fiche → log envie ; un film sans détails est enrichi à l'ouverture ; chargé ; introuvable ; erreur ; logger à nouveau ; candidat pas en base → aperçu sans rien écrire ; candidat déjà en base → sa fiche et ses logs ; logger un candidat deux fois → 1 fiche, 2 logs |
+| `ItemDetailViewModelTests` | 8 | ♡ sur un candidat → fiche + log envie ; ♡ sur une fiche → log envie ; un film sans détails est enrichi à l'ouverture ; chargé ; introuvable ; erreur ; candidat pas en base → aperçu sans rien écrire ; candidat déjà en base → sa fiche et ses logs. *(logger est passé au formulaire, couvert par `LogEditViewModelTests`)* |
 | `ItemDetailViewRenderingTests` | 1 | la fiche se rend en fiche, en aperçu et en « introuvable » |
 | `SearchResultRowModelTests` | 2 (paramétrés : 10 cas) | chaque type a une pastille avec la date ; pas de date → pas de pastille |
 | `EditLogUseCaseTests` | 6 | find par id ; update persiste date / statut / note / commentaire trimé ; blanc → nil ; statut interdit refusé ; note hors plage refusée ; delete garde la fiche |
-| `PeriodTests` | 5 (paramétrés : 7 cas) | semaine du lundi au dimanche quelle que soit la locale ; mois et année entiers ; tout = sans bornes ; dimanche 23:59:59 dedans, lundi 00:00 dehors ; labels |
+| `PeriodTests` | 6 (paramétrés : 8 cas) | semaine du lundi au dimanche quelle que soit la locale ; mois et année entiers ; tout = sans bornes ; dimanche 23:59:59 dedans, lundi 00:00 dehors ; **« Tout » en premier** ; labels |
 | `StatsUseCaseTests` | 5 | **T-16** un film revu compte 2, par période et par type ; envies ni comptées ni listées ; envie vue après → plus en attente, vue avant → reste ; filter période × type du plus récent ; groupement Aujourd'hui / Hier / dates |
 | `WipeUseCaseTests` | 2 | tout effacer → 0 fiche, 0 log, 0 ref ; base vide OK |
 | `SettingsViewModelTests` | 3 | wipe réussi ; échec signalé ; ligne de version |
@@ -203,20 +205,20 @@ Kulturstack/
 | `OfflineBannerTests` | 1 | hors ligne → isOffline, retour en ligne → plus |
 | `WishlistViewModelTests` | 5 | liste les envies seules ; aucune → vide ; « Je l'ai vu » ajoute un log terminé, l'envie reste dans l'historique et sort de la liste ; supprimer ; erreur |
 | `WishlistViewRenderingTests` | 1 | l'onglet se rend en liste (seed : 2 envies) et en vide |
-| `JournalFilterTests` | 7 | envies hors du journal et des compteurs ; que des envies = journal vide ; ouvre sur la semaine, groupé par jour, chips avec compteurs (0 compris) ; période × type ; filtre sans résultat = edge (chips conservés) puis Voir tout ; aucun log = vide quel que soit le filtre ; erreur reste erreur |
+| `JournalFilterTests` | 8 | envies hors du journal et des compteurs ; que des envies = journal vide ; **ouvre sur tout**, groupé par jour, chips avec compteurs ; **un log daté avant cette semaine est visible à l'ouverture** (retour du 23/09) ; période × type ; filtre sans résultat = edge (chips conservés) puis Voir tout ; aucun log = vide quel que soit le filtre ; erreur reste erreur |
 | `JournalViewRenderingTests` | 1 | l'écran se rend en liste groupée (seed : 25 logs) et en edge |
 | `JournalViewModelTests` | 8 | loading au départ ; vide ; chargé ; erreur ; reprise après erreur ; **l'état survit à la suppression des logs** (régression du crash) ; delete(id:) recharge ; échec de suppression signalé |
-| `LogEditViewModelTests` | 9 | load remplit le formulaire (+ itemID) ; titre sans année ; statuts du type (film, livre) ; introuvable ; erreur de lecture ; save écrit ; save invalide → didFail sans rien changer ; delete ; raccourci de date |
-| `LogEditViewRenderingTests` | 2 | la feuille se rend en formulaire et en « introuvable » ; le picker se rend pour chaque note |
+| `LogEditViewModelTests` | 13 | load remplit le formulaire (+ itemID) ; titre sans année ; statuts du type (film, livre) ; introuvable ; erreur de lecture ; save écrit ; save invalide → didFail sans rien changer ; delete ; raccourci de date ; **création : le formulaire s'ouvre vierge sans rien écrire ; enregistrer écrit une fois avec les valeurs du formulaire ; sur un candidat, l'œuvre n'est stockée qu'à l'enregistrement et jamais deux fois ; œuvre disparue → introuvable** |
+| `LogEditViewRenderingTests` | 3 | la feuille se rend en formulaire et en « introuvable » ; **le formulaire de création se rend sans rien écrire** ; le picker se rend pour chaque note |
 | `DateShortcutTests` | 4 (paramétrés : 8 cas) | aujourd'hui = maintenant ; hier garde l'heure ; « ce week-end » = samedi le plus récent (mer., lun., dim., sam., ven.) ; labels |
 | `StarRatingPickerTests` | 3 (paramétrés : 6 cas) | tap = valeur ; re-tap = sans note ; étoile × moitié → 1…10 |
-| `JournalRowModelTests` | 4 | livre → auteur, film → année, repli, champs recopiés |
-| `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
+| `JournalRowModelTests` | 6 | livre → auteur, film → année, repli, champs recopiés ; tap → la fiche, log orphelin → modification ; **commentaire recopié, commentaire blanc → aucun** |
+| `JournalRowRenderingTests` | 2 | la ligne se rend avec et sans note (UIHostingController) ; **un commentaire rend la ligne plus haute** |
 | `MediaKindPresentationTests` | 4 (paramétrés : 19 cas) | chaque type (singulier, pluriel, « Je l'ai vu / lu… »), statut et famille a un label, FR et EN |
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
 | `SecretsTests` | 5 (paramétrés : 7 cas) | **T-13** manquant → message avec la commande ; blanc / « $(…) » = manquant ; valeur trimée ; bundle sans clé ; `MockSecrets` |
 | `URLSessionHTTPClientTests` | 3 | en-têtes + timeout 8 s + GET (via `StubURLProtocol`) ; 401 → `HTTPError.status` ; panne réseau propagée |
-| `TMDBProviderTests` | 10 (paramétrés : 13 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale |
+| `TMDBProviderTests` | 17 (paramétrés : 20 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale ; **une recherche de personne ramène sa filmographie, la plus populaire d'abord ; filmographie demandée une fois, bonne langue, jeton ; filmographie en panne → les titres restent ; une recherche de titre ne va pas chercher de personne (homonymes de « dune ») ; 20 œuvres au plus, les plus populaires ; un réalisateur ramène ce qu'il a réalisé ; une actrice ce qu'elle a joué** |
 | `MediaCandidateTests` | 1 | identité = clé externe |
 | `OpenLibraryProviderTests` | 5 | **T-11** fixture réelle → 20 livres, `ol:work:` + `isbn13:` (13 chiffres, max 20) ; `BookDetails` ; **T-12** User-Agent + requête ; 503 propagé ; livres seulement |
 | `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary], familles [écran, livres], detailsProviders = [TMDB] ; User-Agent nomme l'app et un contact |
@@ -224,7 +226,7 @@ Kulturstack/
 | `EnrichUseCaseTests` | 5 (paramétrés : 10 cas) | remplit créateurs + poche et enregistre ; créateurs existants gardés ; panne → rien ne change ; clé inconnue → sauté ; needsEnrichment par type |
 | `SearchViewModelTests` | 15 | ♡ → wish + toast portant l'id, pas de pastille ; ligne déjà loggée → « Vu le … », refreshLogDates la met à jour ; + → logNow + pastille + toast (portant l'id du log) qui s'efface, échec → toast d'erreur sans id ; idle sous 2 caractères ; une section par famille ; **debounce → un seul appel avec la dernière saisie** ; effacer → idle ; filtre par type (candidats filtrés, familles étrangères masquées) ; filtre sans résultat = edge ; rien nulle part = aucun résultat ; section en erreur visible à côté des résultats ; retry ciblé ; chips = types des familles ; sous-titre |
 | `SearchViewRenderingTests` | 2 | l'écran traverse ses 4 rendus dans une UIWindow ; chips, en-tête et ligne se rendent |
-| `LogUseCaseTests` | 10 | envie puis vu = 2 logs sur 1 fiche ; envie sur une fiche existante ; logAgain = log done maintenant sur la même fiche ; find(itemID:) ; premier log = fiche + refs + poche + log done/manual/maintenant ; **T-04** deux fois le même candidat → 1 fiche, 2 logs ; **T-05** clé partagée → même fiche, clés nouvelles ajoutées ; œuvres différentes → fiches différentes ; Envie accepté, statut interdit refusé ; `findItem(withAnyKey:)` |
+| `LogUseCaseTests` | 12 | **un log porte la date, la note et le commentaire qu'on lui donne (blanc → nil)** ; **un candidat loggé porte les mêmes champs** ; envie puis vu = 2 logs sur 1 fiche ; envie sur une fiche existante ; logAgain = log done maintenant sur la même fiche ; find(itemID:) ; premier log = fiche + refs + poche + log done/manual/maintenant ; **T-04** deux fois le même candidat → 1 fiche, 2 logs ; **T-05** clé partagée → même fiche, clés nouvelles ajoutées ; œuvres différentes → fiches différentes ; Envie accepté, statut interdit refusé ; `findItem(withAnyKey:)` |
 | `SearchUseCaseTests` | 8 | loading pour chaque famille puis settle ; **T-07** panne isolée ; **T-09** le rapide n'attend pas le lent ; **T-08** annulation → providers annulés, rien de périmé ; timeout → failed ; vide → empty ; retry n'appelle que la famille ; ordre canonique des familles |
 
 Couverture : `Domain/` 96 %, `Data/` 97 %, `Features/` 87 %, `DesignSystem/` 86 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.

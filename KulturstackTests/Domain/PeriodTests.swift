@@ -45,6 +45,10 @@ struct PeriodTests {
         #expect(week.contains(date(2026, 9, 21)))
     }
 
+    @Test func allComesFirstThenWeekMonthYear() {
+        #expect(Period.allCases == [.all, .week, .month, .year])
+    }
+
     @Test func everyPeriodHasALabel() {
         for period in Period.allCases {
             #expect(!period.label.isEmpty)

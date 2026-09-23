@@ -57,24 +57,6 @@ struct ItemDetailViewModelTests {
         #expect(model.logs.count == 1)
     }
 
-    @Test func loggingACandidateCreatesTheItemOnceAndListsItsLogs() throws {
-        let (container, repository, logUseCase) = try makeEmpty()
-        let viewModel = ItemDetailViewModel(subject: .candidate(dune), repository: repository, logUseCase: logUseCase)
-        viewModel.load()
-
-        viewModel.log()
-        viewModel.log()
-
-        guard case .loaded(let model) = viewModel.state else {
-            Issue.record("état attendu : loaded")
-            return
-        }
-        #expect(model.logs.count == 2)
-        #expect(model.logs.allSatisfy { $0.status == .done })
-        #expect(try container.mainContext.fetchCount(FetchDescriptor<MediaItem>()) == 1)
-        #expect(try container.mainContext.fetchCount(FetchDescriptor<LogEntry>()) == 2)
-    }
-
     @Test func loadGivesASnapshotOfTheItem() throws {
         let (container, _, viewModel) = try make()
         #expect(viewModel.state == .loading)
@@ -161,22 +143,6 @@ struct ItemDetailViewModelTests {
         #expect(provider.keys == ["tmdb:movie:438631"])
     }
 
-    @Test func logAgainAddsALogAndRefreshesTheList() throws {
-        let (container, item, viewModel) = try make()
-        viewModel.load()
-
-        viewModel.log()
-
-        guard case .loaded(let model) = viewModel.state else {
-            Issue.record("état attendu : loaded")
-            return
-        }
-        #expect(model.logs.count == 2)
-        #expect(model.logs[0].status == .done)
-        #expect(item.logs.count == 2)
-        #expect(viewModel.didFailToLog == false)
-        withExtendedLifetime(container) {}
-    }
 }
 
 private struct FailingError: Error {}

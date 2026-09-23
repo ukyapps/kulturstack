@@ -11,4 +11,10 @@ enum LogRules {
         guard let rating else { return }
         guard ratingRange.contains(rating) else { throw DomainError.ratingOutOfRange(rating) }
     }
+
+    // Un commentaire d'espaces n'est pas un commentaire.
+    static func note(_ raw: String?) -> String? {
+        let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
+    }
 }

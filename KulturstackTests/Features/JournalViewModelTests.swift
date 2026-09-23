@@ -131,8 +131,7 @@ struct JournalFilterTests {
         let (container, viewModel) = try makeViewModel()
         await viewModel.load()
 
-        #expect(viewModel.kindCounts.map(\.count) == [2, 0])
-        viewModel.period = .all
+        #expect(viewModel.kindCounts.map(\.count) == [2, 1])
         guard case .loaded(let content) = viewModel.presentation else {
             Issue.record("présentation attendue : loaded")
             return
@@ -155,19 +154,42 @@ struct JournalFilterTests {
     }
 
 
-    @Test func opensOnThisWeekGroupedByDayWithCounts() async throws {
+    // Un journal s'ouvre sur tout ce qu'on a loggé : filtrer est un geste, pas un défaut.
+    @Test func opensOnEverythingGroupedByDayWithCounts() async throws {
         let (container, viewModel) = try makeViewModel()
         await viewModel.load()
 
-        #expect(viewModel.period == .week)
+        #expect(viewModel.period == .all)
         guard case .loaded(let content) = viewModel.presentation else {
             Issue.record("présentation attendue : loaded")
             return
         }
-        #expect(content.total == 2)
-        #expect(content.sections.map(\.title) == [String(localized: "journal.day.today"), String(localized: "journal.day.yesterday")])
+        #expect(content.total == 3)
+        #expect(Array(content.sections.map(\.title).prefix(2)) == [String(localized: "journal.day.today"), String(localized: "journal.day.yesterday")])
+        #expect(content.sections.count == 3)
         #expect(viewModel.kindCounts.map(\.kind) == [.film, .book])
-        #expect(viewModel.kindCounts.map(\.count) == [2, 0])
+        #expect(viewModel.kindCounts.map(\.count) == [2, 1])
+        withExtendedLifetime(container) {}
+    }
+
+    // Le retour du 23/09 : un log daté hors de la semaine courante avait l'air perdu.
+    @Test func aLogDatedBeforeThisWeekShowsUpWhenTheJournalOpens() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "La Planète sauvage")
+        context.insert(item)
+        context.insert(try LogEntry.make(item: item, status: .done, date: date(2026, 8, 30)))
+        try context.save()
+        let viewModel = JournalViewModel(repository: SwiftDataLogRepository(context: context),
+                                         now: { self.date(2026, 9, 22) }, calendar: calendar)
+
+        await viewModel.load()
+
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("présentation attendue : loaded")
+            return
+        }
+        #expect(content.total == 1)
         withExtendedLifetime(container) {}
     }
 
@@ -191,6 +213,7 @@ struct JournalFilterTests {
         let (container, viewModel) = try makeViewModel()
         await viewModel.load()
 
+        viewModel.period = .week
         viewModel.selectedKind = .book
 
         #expect(viewModel.presentation == .edge(period: .week, kind: .book))

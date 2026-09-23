@@ -1,0 +1,5 @@
+{"page":1,"results":[
+{"adult":false,"id":5655,"name":"Wes Anderson","original_name":"Wes Anderson","media_type":"person","popularity":9.4,"gender":2,"known_for_department":"Directing","profile_path":"/9BP1VqVQxZJnPjF2qZqgbDkmMjq.jpg","known_for":[{"adult":false,"id":120467,"title":"The Grand Budapest Hotel","media_type":"movie","popularity":40.1,"release_date":"2014-02-26"}]},
+{"adult":false,"id":399170,"title":"L'Île aux chiens","original_title":"Isle of Dogs","overview":"Au Japon, dans un futur proche, tous les chiens sont exilés sur une île poubelle.","poster_path":"/isle.jpg","media_type":"movie","original_language":"en","genre_ids":[16,12,35],"popularity":30.2,"release_date":"2018-03-23","vote_average":7.8,"vote_count":6000},
+{"adult":false,"id":999999,"title":"Wes Anderson : la substance du style","original_title":"The Substance of Style","overview":"Un essai vidéo sur la mise en scène de Wes Anderson.","poster_path":"/style.jpg","media_type":"movie","original_language":"en","genre_ids":[99],"popularity":1.2,"release_date":"2014-05-01","vote_average":6.4,"vote_count":12}
+],"total_pages":1,"total_results":3}
