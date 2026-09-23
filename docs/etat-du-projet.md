@@ -64,8 +64,8 @@ Kulturstack/
 │   │   └── URLSessionHTTPClient.swift  timeout 8 s, non-2xx → HTTPError.status
 │   ├── Providers/
 │   │   ├── ProviderRegistry.swift    live(secrets:client:appVersion:) = [TMDB, OpenLibrary] ; detailsProviders ; userAgent(appVersion:)
-│   │   ├── TMDBProvider.swift        search/multi fr-FR|en-US, Bearer, garde movie + tv, clés tmdb:movie:<id> / tmdb:tv:<id>, affiches w342 ; details(forKey:) → movie/{id}+credits, tv/{id}
-│   │   ├── TMDBSearchResponse.swift  DTO Decodable (snake_case) + TMDBMovieDetailsResponse / TMDBTVDetailsResponse
+│   │   ├── TMDBProvider.swift        search/multi fr-FR|en-US, Bearer, garde movie + tv, clés tmdb:movie:<id> / tmdb:tv:<id>, affiches w342 ; **une personne dans les 3 premiers résultats → person/{id}/combined_credits filtré par son métier (Directing → job Director, Acting → cast), 20 œuvres max, les plus populaires d'abord ; en tête = son œuvre passe devant les titres** ; details(forKey:) → movie/{id}+credits, tv/{id}
+│   │   ├── TMDBSearchResponse.swift  DTO Decodable (snake_case) + TMDBPersonCreditsResponse (cast / crew) + TMDBMovieDetailsResponse / TMDBTVDetailsResponse
 │   │   ├── OpenLibraryProvider.swift search.json, User-Agent « Kulturstack/<v> (+repo) », clés ol:work:<id> + isbn13:<…> (max 20), couverture -M, BookDetails
 │   │   └── OpenLibrarySearchResponse.swift  DTO
 │   └── Repositories/
@@ -175,7 +175,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 205, tous verts
+## 4. Tests — 212, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -213,7 +213,7 @@ Kulturstack/
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
 | `SecretsTests` | 5 (paramétrés : 7 cas) | **T-13** manquant → message avec la commande ; blanc / « $(…) » = manquant ; valeur trimée ; bundle sans clé ; `MockSecrets` |
 | `URLSessionHTTPClientTests` | 3 | en-têtes + timeout 8 s + GET (via `StubURLProtocol`) ; 401 → `HTTPError.status` ; panne réseau propagée |
-| `TMDBProviderTests` | 10 (paramétrés : 13 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale |
+| `TMDBProviderTests` | 17 (paramétrés : 20 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale ; **une recherche de personne ramène sa filmographie, la plus populaire d'abord ; filmographie demandée une fois, bonne langue, jeton ; filmographie en panne → les titres restent ; une recherche de titre ne va pas chercher de personne (homonymes de « dune ») ; 20 œuvres au plus, les plus populaires ; un réalisateur ramène ce qu'il a réalisé ; une actrice ce qu'elle a joué** |
 | `MediaCandidateTests` | 1 | identité = clé externe |
 | `OpenLibraryProviderTests` | 5 | **T-11** fixture réelle → 20 livres, `ol:work:` + `isbn13:` (13 chiffres, max 20) ; `BookDetails` ; **T-12** User-Agent + requête ; 503 propagé ; livres seulement |
 | `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary], familles [écran, livres], detailsProviders = [TMDB] ; User-Agent nomme l'app et un contact |
