@@ -1,6 +1,6 @@
 ---
 type: design
-statut: v1.2 — 2026-09-22 — tous les écrans de la Tranche 1 réalisés et validés à l'écran ; décisions du 22/09 intégrées (tap = fiche, + / ♡, onglet Envie)
+statut: v1.2 — 2026-09-22 — tous les écrans de la Tranche 1 réalisés et validés sur simulateur ; décisions du 22/09 intégrées (tap = fiche, + / ♡, onglet Envie) ; validation sur iPhone réel à venir
 propriétaire: founder
 ---
 
