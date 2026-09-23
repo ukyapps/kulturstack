@@ -45,6 +45,36 @@ struct LogUseCaseTests {
         #expect(try counts(container) == (1, 1, 2))
     }
 
+    // Le formulaire « Logger » de la fiche pose tout d'un coup : date choisie, note, commentaire.
+    @Test func aLogCarriesTheDateRatingAndCommentGivenToIt() throws {
+        let (container, useCase) = try makeUseCase()
+        let item = MediaItem(kind: .film, title: "La Planète sauvage", year: 1973)
+        container.mainContext.insert(item)
+        let seen = Date(timeIntervalSince1970: 1_700_000_000)
+
+        let log = try useCase.log(item, status: .done, date: seen, rating: 9, note: "  La copie restaurée  ")
+
+        #expect(log.item?.id == item.id)
+        #expect(log.date == seen)
+        #expect(log.rating == 9)
+        #expect(log.note == "La copie restaurée")
+        #expect(try useCase.log(item, note: "   ").note == nil)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func loggingACandidateCarriesTheSameFields() throws {
+        let (container, useCase) = try makeUseCase()
+        let seen = Date(timeIntervalSince1970: 1_700_000_000)
+
+        let log = try useCase.logNow(dune, status: .done, now: seen, rating: 7, note: "Vu en IMAX")
+
+        #expect(log.date == seen)
+        #expect(log.rating == 7)
+        #expect(log.note == "Vu en IMAX")
+        #expect(try counts(container) == (items: 1, logs: 1, refs: 2))
+        withExtendedLifetime(container) {}
+    }
+
     @Test func loggingTheSameCandidateTwiceGivesOneItemAndTwoLogs() throws {
         let (container, useCase) = try makeUseCase()
 

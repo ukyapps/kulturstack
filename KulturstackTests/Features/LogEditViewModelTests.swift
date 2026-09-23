@@ -67,6 +67,90 @@ struct LogEditViewModelTests {
         #expect(viewModel.state == .failed)
     }
 
+    // « Logger » depuis la fiche ouvre ce formulaire : rien n'est écrit avant « Enregistrer ».
+    @Test func creatingForAStoredItemFillsTheFormWithoutWritingAnything() throws {
+        let (container, item, viewModel) = try makeCreation()
+
+        viewModel.load()
+
+        #expect(viewModel.state == .ready)
+        #expect(viewModel.isCreating)
+        #expect(viewModel.title == "Dune (2021)")
+        #expect(viewModel.status == .done)
+        #expect(viewModel.rating == nil)
+        #expect(viewModel.note == "")
+        #expect(viewModel.allowedStatuses == item.kind.allowedStatuses)
+        #expect(try container.mainContext.fetchCount(FetchDescriptor<LogEntry>()) == 0)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func savingANewLogWritesItOnceWithTheFormValues() throws {
+        let (container, item, viewModel) = try makeCreation()
+        viewModel.load()
+        let seen = Date.now.addingTimeInterval(-86_400)
+        viewModel.date = seen
+        viewModel.rating = 9
+        viewModel.note = "  La copie restaurée  "
+
+        #expect(viewModel.save())
+
+        let logs = try container.mainContext.fetch(FetchDescriptor<LogEntry>())
+        #expect(logs.count == 1)
+        #expect(logs.first?.item?.id == item.id)
+        #expect(logs.first?.date == seen)
+        #expect(logs.first?.rating == 9)
+        #expect(logs.first?.note == "La copie restaurée")
+        #expect(viewModel.didFail == false)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func creatingForACandidateStoresTheWorkOnlyOnSaveAndNeverTwice() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let candidate = MediaCandidate(
+            id: "tmdb:movie:16337", kind: .film, title: "La Planète sauvage", originalTitle: nil, year: 1973,
+            creators: [], coverURL: nil, summary: nil, externalKeys: ["tmdb:movie:16337"],
+            details: FilmDetails(), providerID: "tmdb")
+
+        for _ in 0..<2 {
+            let viewModel = makeCreation(context: context, target: .candidate(candidate))
+            viewModel.load()
+            #expect(viewModel.title == "La Planète sauvage (1973)")
+            #expect(viewModel.save())
+        }
+
+        #expect(try context.fetchCount(FetchDescriptor<MediaItem>()) == 1)
+        #expect(try context.fetchCount(FetchDescriptor<LogEntry>()) == 2)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func creatingForAWorkThatNoLongerExistsIsMissing() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let viewModel = makeCreation(context: container.mainContext, target: .item(UUID()))
+
+        viewModel.load()
+
+        #expect(viewModel.state == .missing)
+        withExtendedLifetime(container) {}
+    }
+
+    private func makeCreation() throws -> (ModelContainer, MediaItem, LogEditViewModel) {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "Dune", year: 2021)
+        context.insert(item)
+        try context.save()
+        return (container, item, makeCreation(context: context, target: .item(item.id)))
+    }
+
+    private func makeCreation(context: ModelContext, target: LogTarget) -> LogEditViewModel {
+        let repository = SwiftDataMediaRepository(context: context)
+        return LogEditViewModel(target: target,
+                                useCase: EditLogUseCase(repository: SwiftDataLogRepository(context: context)),
+                                repository: repository,
+                                logUseCase: LogUseCase(repository: repository, dedup: DedupUseCase(repository: repository)))
+    }
+
     @Test func saveWritesTheFormBack() throws {
         let (container, log, useCase) = try makeLog()
         let viewModel = LogEditViewModel(logID: log.id, useCase: useCase)

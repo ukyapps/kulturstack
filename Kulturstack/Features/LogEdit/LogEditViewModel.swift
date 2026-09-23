@@ -10,6 +10,13 @@ final class LogEditViewModel {
         case failed
     }
 
+    // Créer un log demande plus que le modifier : l'œuvre visée et de quoi l'enregistrer.
+    private struct Creation {
+        let target: LogTarget
+        let repository: any MediaRepository
+        let logUseCase: LogUseCase
+    }
+
     private(set) var state: State = .loading
     private(set) var title = ""
     private(set) var itemID: UUID?
@@ -20,30 +27,32 @@ final class LogEditViewModel {
     var rating: Int?
     var note = ""
 
-    let logID: UUID
+    private let logID: UUID?
     private let useCase: EditLogUseCase
+    private let creation: Creation?
     private var log: LogEntry?
+
+    var isCreating: Bool { creation != nil }
 
     init(logID: UUID, useCase: EditLogUseCase) {
         self.logID = logID
         self.useCase = useCase
+        creation = nil
+    }
+
+    init(target: LogTarget, useCase: EditLogUseCase, repository: any MediaRepository, logUseCase: LogUseCase) {
+        logID = nil
+        self.useCase = useCase
+        creation = Creation(target: target, repository: repository, logUseCase: logUseCase)
     }
 
     func load() {
         do {
-            guard let log = try useCase.log(id: logID) else {
-                state = .missing
-                return
+            if let creation {
+                try prepare(creation)
+            } else {
+                try fill()
             }
-            self.log = log
-            title = Self.title(of: log.item)
-            itemID = log.item?.id
-            allowedStatuses = (log.item?.kind ?? .film).allowedStatuses
-            date = log.date
-            status = log.status
-            rating = log.rating
-            note = log.note ?? ""
-            state = .ready
         } catch {
             state = .failed
         }
@@ -54,9 +63,13 @@ final class LogEditViewModel {
     }
 
     func save() -> Bool {
-        guard let log else { return false }
         do {
-            try useCase.update(log, date: date, status: status, rating: rating, note: note)
+            if let creation {
+                try create(creation)
+            } else {
+                guard let log else { return false }
+                try useCase.update(log, date: date, status: status, rating: rating, note: note)
+            }
             didFail = false
             return true
         } catch {
@@ -77,9 +90,53 @@ final class LogEditViewModel {
         }
     }
 
-    private static func title(of item: MediaItem?) -> String {
-        guard let item else { return "" }
-        guard let year = item.year else { return item.title }
-        return String(localized: "log.edit.work \(item.title) \(String(year))")
+    private func fill() throws {
+        guard let logID, let log = try useCase.log(id: logID) else {
+            state = .missing
+            return
+        }
+        self.log = log
+        title = Self.title(log.item?.title, year: log.item?.year)
+        itemID = log.item?.id
+        allowedStatuses = (log.item?.kind ?? .film).allowedStatuses
+        date = log.date
+        status = log.status
+        rating = log.rating
+        note = log.note ?? ""
+        state = .ready
+    }
+
+    // Un formulaire vierge : rien n'est écrit tant qu'on n'a pas enregistré.
+    private func prepare(_ creation: Creation) throws {
+        switch creation.target {
+        case .item(let id):
+            guard let item = try creation.repository.find(itemID: id) else {
+                state = .missing
+                return
+            }
+            itemID = item.id
+            title = Self.title(item.title, year: item.year)
+            allowedStatuses = item.kind.allowedStatuses
+        case .candidate(let candidate):
+            title = Self.title(candidate.title, year: candidate.year)
+            allowedStatuses = candidate.kind.allowedStatuses
+        }
+        state = .ready
+    }
+
+    private func create(_ creation: Creation) throws {
+        switch creation.target {
+        case .item(let id):
+            guard let item = try creation.repository.find(itemID: id) else { throw DomainError.itemNotFound }
+            try creation.logUseCase.log(item, status: status, date: date, rating: rating, note: note)
+        case .candidate(let candidate):
+            try creation.logUseCase.logNow(candidate, status: status, now: date, rating: rating, note: note)
+        }
+    }
+
+    private static func title(_ title: String?, year: Int?) -> String {
+        guard let title else { return "" }
+        guard let year else { return title }
+        return String(localized: "log.edit.work \(title) \(String(year))")
     }
 }

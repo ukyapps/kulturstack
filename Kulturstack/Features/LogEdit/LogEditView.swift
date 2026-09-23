@@ -14,6 +14,15 @@ struct LogEditView: View {
         self.showsItemLink = showsItemLink
     }
 
+    // Un nouveau log : le formulaire s'ouvre vierge, rien n'est écrit avant « Enregistrer ».
+    init(target: LogTarget, services: AppServices) {
+        _viewModel = State(initialValue: LogEditViewModel(target: target, useCase: services.editUseCase,
+                                                          repository: services.mediaRepository,
+                                                          logUseCase: services.logUseCase))
+        self.services = services
+        showsItemLink = false
+    }
+
     var body: some View {
         NavigationStack {
             content
@@ -74,7 +83,7 @@ struct LogEditView: View {
                 }
             }
             Section {
-                DatePicker(String(localized: "log.edit.date"), selection: $viewModel.date)
+                DatePicker(String(localized: "log.edit.date"), selection: $viewModel.date, displayedComponents: .date)
                 HStack(spacing: Spacing.s) {
                     ForEach(DateShortcut.allCases, id: \.self) { shortcut in
                         Button(shortcut.label) { viewModel.apply(shortcut) }
@@ -106,9 +115,11 @@ struct LogEditView: View {
                         .foregroundStyle(Color.red)
                 }
             }
-            Section {
-                Button(String(localized: "log.edit.delete"), role: .destructive) { isConfirmingDelete = true }
-                    .frame(maxWidth: .infinity)
+            if !viewModel.isCreating {
+                Section {
+                    Button(String(localized: "log.edit.delete"), role: .destructive) { isConfirmingDelete = true }
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .confirmationDialog(String(localized: "log.edit.delete.confirm.title"), isPresented: $isConfirmingDelete,

@@ -14,7 +14,7 @@ struct EditLogUseCase {
         log.date = date
         log.status = status
         log.rating = rating
-        log.note = Self.cleaned(note)
+        log.note = LogRules.note(note)
         try repository.save()
     }
 
@@ -22,8 +22,4 @@ struct EditLogUseCase {
         try repository.delete(log)
     }
 
-    private static func cleaned(_ note: String?) -> String? {
-        let trimmed = note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return trimmed.isEmpty ? nil : trimmed
-    }
 }

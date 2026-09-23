@@ -3,6 +3,7 @@ import SwiftUI
 struct ItemDetailView: View {
     @State private var viewModel: ItemDetailViewModel
     @State private var editing: LogReference?
+    @State private var logging: LogTarget?
     @State private var isSummaryExpanded = false
     private let services: AppServices
 
@@ -22,6 +23,9 @@ struct ItemDetailView: View {
             .onAppear { viewModel.load() }
             .sheet(item: $editing, onDismiss: { viewModel.load() }) {
                 LogEditView(logID: $0.id, services: services, showsItemLink: false)
+            }
+            .sheet(item: $logging, onDismiss: { viewModel.load() }) {
+                LogEditView(target: $0, services: services)
             }
             .alert(String(localized: "detail.logAgain.failed"), isPresented: $viewModel.didFailToLog) {}
     }
@@ -54,7 +58,7 @@ struct ItemDetailView: View {
                 header(model)
                 HStack(spacing: Spacing.s) {
                     Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
-                        viewModel.log()
+                        logging = viewModel.logTarget
                     }
                     .buttonStyle(.borderedProminent)
                     Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }

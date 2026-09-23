@@ -66,8 +66,12 @@ final class ItemDetailViewModel {
         }
     }
 
-    func log() {
-        record(stored: { try logUseCase.logAgain($0) }, candidate: { try logUseCase.logNow($0) })
+    // « Logger » ouvre le formulaire : c'est lui qui écrit, avec la date, la note et le commentaire.
+    var logTarget: LogTarget {
+        switch subject {
+        case .stored(let itemID): .item(itemID)
+        case .candidate(let candidate): .candidate(candidate)
+        }
     }
 
     func wish() {
