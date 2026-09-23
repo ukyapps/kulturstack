@@ -10,6 +10,15 @@ final class SearchViewModel {
         case noResultsForKind(MediaKind)
     }
 
+    // Ce qu'on demande avant d'ajouter un deuxième log : une œuvre se logge une fois par fois vécue.
+    struct Duplicate: Identifiable, Equatable {
+        let candidate: MediaCandidate
+        let title: String
+        let loggedLabel: String
+
+        var id: String { candidate.id }
+    }
+
     struct Toast: Equatable {
         let title: String
         let isError: Bool
@@ -24,6 +33,7 @@ final class SearchViewModel {
     var selectedKind: MediaKind?
     private(set) var sections: [SearchSection] = []
     private(set) var toast: Toast?
+    private(set) var duplicate: Duplicate?
     private var loggedDates: [String: Date] = [:]
 
     let availableKinds: [MediaKind]
@@ -61,7 +71,27 @@ final class SearchViewModel {
     }
 
     // Le « + » de la ligne : loggé tout de suite ; la pastille « Vu le … » et le bandeau « Modifier » confirment.
+    // Sauf si l'œuvre est déjà loggée : un deuxième log se demande, il ne se fait pas par accident.
     func log(_ candidate: MediaCandidate) {
+        guard let loggedAt = loggedDates[candidate.id] else {
+            record(candidate)
+            return
+        }
+        duplicate = Duplicate(candidate: candidate, title: candidate.title,
+                              loggedLabel: candidate.kind.loggedLabel(on: loggedAt))
+    }
+
+    func confirmDuplicate() {
+        guard let candidate = duplicate?.candidate else { return }
+        duplicate = nil
+        record(candidate)
+    }
+
+    func cancelDuplicate() {
+        duplicate = nil
+    }
+
+    private func record(_ candidate: MediaCandidate) {
         do {
             let logID = try logNow(candidate)
             loggedDates[candidate.id] = .now

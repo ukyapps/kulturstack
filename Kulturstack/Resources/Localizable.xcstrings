@@ -1977,6 +1977,38 @@
         }
       }
     },
+    "search.duplicate.message %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@. Logging it again adds a second log to the same work."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@. Logger à nouveau ajoute un deuxième log à la même fiche."
+          }
+        }
+      }
+    },
+    "search.duplicate.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Already in your journal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déjà dans ton journal"
+          }
+        }
+      }
+    },
     "search.filter.noResults.message %@": {
       "localizations": {
         "en": {

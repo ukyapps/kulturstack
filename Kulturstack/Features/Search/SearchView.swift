@@ -52,6 +52,17 @@ struct SearchView: View {
             }
             .animation(.default, value: viewModel.toast)
             .sheet(item: $editing) { LogEditView(logID: $0.id, services: services) }
+            .confirmationDialog(String(localized: "search.duplicate.title"), isPresented: isWarningOfDuplicate,
+                                titleVisibility: .visible, presenting: viewModel.duplicate) { _ in
+                Button(String(localized: "detail.logAgain")) { viewModel.confirmDuplicate() }
+                Button(String(localized: "common.cancel"), role: .cancel) { viewModel.cancelDuplicate() }
+            } message: { duplicate in
+                Text(String(localized: "search.duplicate.message \(duplicate.title) \(duplicate.loggedLabel)"))
+            }
+    }
+
+    private var isWarningOfDuplicate: Binding<Bool> {
+        Binding(get: { viewModel.duplicate != nil }, set: { if !$0 { viewModel.cancelDuplicate() } })
     }
 
     private func editAction(for toast: SearchViewModel.Toast) -> Toast.Action? {
