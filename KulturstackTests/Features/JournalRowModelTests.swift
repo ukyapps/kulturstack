@@ -44,6 +44,20 @@ struct JournalRowModelTests {
         }
     }
 
+    @Test @MainActor func carriesTheCommentAndIgnoresABlankOne() throws {
+        let (container, log) = try makeLog(kind: .film, year: 2021, creators: [])
+
+        log.note = "Vu au cinéma, la copie restaurée"
+        #expect(JournalRowModel(log: log).note == "Vu au cinéma, la copie restaurée")
+
+        log.note = "   \n "
+        #expect(JournalRowModel(log: log).note == nil)
+
+        log.note = nil
+        #expect(JournalRowModel(log: log).note == nil)
+        withExtendedLifetime(container) {}
+    }
+
     @Test @MainActor func aTapOpensTheWorkAndAnOrphanLogFallsBackToEditing() throws {
         let (container, log) = try makeLog(kind: .film, year: 2021, creators: [])
         let itemID = try #require(log.item?.id)

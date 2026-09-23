@@ -79,7 +79,7 @@ Kulturstack/
 │   │   ├── JournalDaySection.swift   id = début du jour, titre (Aujourd'hui / Hier / date), rows
 │   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette) ; tapAction
 │   │   ├── JournalRowTap.swift       ce qu'un tap ouvre : showItem(fiche), ou edit(log) si la fiche a disparu
-│   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
+│   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + pastille statut + aperçu du commentaire (2 lignes) + étoiles ; pas de date, elle est dans l'en-tête du jour
 │   ├── Search/
 │   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; bandeau hors-ligne (safeAreaInset) ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; ♡ → envie, + → log ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
 │   │   ├── SearchViewModel.swift     query (didSet → debounce 300 ms), sections, selectedKind, presentation ; log(candidate) → logNow injecté + pastille + toast 4 s ; wish(candidate) → toast ; lastLogDate injecté → row(for:) ; refreshLogDates()
@@ -174,7 +174,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 198, tous verts
+## 4. Tests — 200, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -206,8 +206,8 @@ Kulturstack/
 | `LogEditViewRenderingTests` | 2 | la feuille se rend en formulaire et en « introuvable » ; le picker se rend pour chaque note |
 | `DateShortcutTests` | 4 (paramétrés : 8 cas) | aujourd'hui = maintenant ; hier garde l'heure ; « ce week-end » = samedi le plus récent (mer., lun., dim., sam., ven.) ; labels |
 | `StarRatingPickerTests` | 3 (paramétrés : 6 cas) | tap = valeur ; re-tap = sans note ; étoile × moitié → 1…10 |
-| `JournalRowModelTests` | 5 | livre → auteur, film → année, repli, champs recopiés ; **tap → la fiche, log orphelin → modification** |
-| `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
+| `JournalRowModelTests` | 6 | livre → auteur, film → année, repli, champs recopiés ; tap → la fiche, log orphelin → modification ; **commentaire recopié, commentaire blanc → aucun** |
+| `JournalRowRenderingTests` | 2 | la ligne se rend avec et sans note (UIHostingController) ; **un commentaire rend la ligne plus haute** |
 | `MediaKindPresentationTests` | 4 (paramétrés : 19 cas) | chaque type (singulier, pluriel, « Je l'ai vu / lu… »), statut et famille a un label, FR et EN |
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |
 | `SecretsTests` | 5 (paramétrés : 7 cas) | **T-13** manquant → message avec la commande ; blanc / « $(…) » = manquant ; valeur trimée ; bundle sans clé ; `MockSecrets` |
