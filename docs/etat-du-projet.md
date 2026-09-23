@@ -30,7 +30,8 @@ Le cadrage est complet (12 ADRs, PRD, design, TDD, plan T1). Le code contient le
 | 9 | Journal par période et par type, compteurs, groupé par jour | ✅ PR #13 (2026-09-22) |
 | 10 | Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ PR #14 (2026-09-22) |
 | 11 | Réglages, À propos, Confidentialité, Tout effacer, hors-ligne, icône | ✅ PR #15 (2026-09-22) |
-| — | Sur l'iPhone (câble, Personal Team) puis TestFlight | ⏳ commencé le 22/09 : iPhone détecté, compte Xcode pas encore ajouté |
+| — | Sur l'iPhone (câble, Personal Team) | ✅ 23/09 — installée et lancée sur l'iPhone de la founder |
+| — | TestFlight (compte développeur payant) | ⏳ quand d'autres testeuses seront nécessaires |
 
 ### Tranches suivantes (rien de commencé)
 
@@ -235,6 +236,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | CI | `tests.yml` : macos-26, Xcode 26.3, `make test`, ~5 min. **Vert.** |
 | Review | **locale**, par Claude, avant chaque push (CLAUDE.md § Review locale). Plus de review en CI (ADR-012). |
 | Secrets GitHub | aucun |
+| Signature | équipe personnelle gratuite (app valable 7 jours, `make device` pour réinstaller) ; `DEVELOPMENT_TEAM` dans le Trousseau, jamais dans le dépôt |
 | Secrets locaux | Trousseau `kulturstack` : `TMDB_READ_TOKEN` posé le 21/09 (usage personnel déclaré à TMDB — à renégocier si monétisation). `Config/Secrets.xcconfig` généré, gitignoré. |
 | Outils locaux | Xcode 26.3, Swift 6.2, XcodeGen 2.46, simulateur iPhone 17 Pro (iOS 26.2), hook pre-commit installé. Repo dans `~/Documents/kulturstack` (déplacé du Bureau le 21/09) |
 | Identité git | `ukyapps` + email noreply |
@@ -263,6 +265,6 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 **Founder** : réserver les domaines · utiliser l'app quelques jours et noter les retours · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Prochaine session** : **reprendre le jalon « sur l'iPhone »** à l'étape 1 de `docs/journal/2026-09-22-jalon-iphone.md` — identifiant Apple dans Xcode (Personal Team gratuite, décision founder : pas de TestFlight ni de compte développeur tout de suite), signature automatique dans `project.yml`, installation par câble, **premier vrai lancement sur base vide**. Puis quelques jours d'usage réel, retours, et seulement ensuite `docs/plans/tranche-2.md` (épisodes).
+**Prochaine session** : recueillir les **retours d'usage réel** (l'app tourne sur l'iPhone de la founder depuis le 23/09) et les écrire dans `retours-utilisateurs.md`. `make device` réinstalle en une commande quand la signature personnelle expire (7 jours). Ensuite seulement : `docs/plans/tranche-2.md` (épisodes), ou TestFlight si d'autres testeuses sont nécessaires.
 
 **Questions produit ouvertes** (PRD §9, design §6) : musique écoutée vs possédée ; Envie en chip. **Tranché le 22/09** : journal groupé par jour (#13). **Tranché le 22/09** : tap Journal = édition ; tap Recherche = fiche, + = loggé.
