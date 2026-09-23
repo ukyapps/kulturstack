@@ -1,0 +1,10 @@
+{"cast":[
+{"adult":false,"id":399170,"title":"L'Île aux chiens","original_title":"Isle of Dogs","overview":"Au Japon, dans un futur proche, tous les chiens sont exilés sur une île poubelle.","poster_path":"/isle.jpg","media_type":"movie","popularity":30.2,"release_date":"2018-03-23","character":"Narrateur"},
+{"adult":false,"id":1234567,"media_type":"movie","overview":"","popularity":99.9,"release_date":"2020-01-01","character":"Lui-même"}
+],"crew":[
+{"adult":false,"id":120467,"title":"The Grand Budapest Hotel","original_title":"The Grand Budapest Hotel","overview":"Les aventures de Gustave H., concierge d'un célèbre hôtel européen.","poster_path":"/gbh.jpg","media_type":"movie","popularity":40.1,"release_date":"2014-02-26","job":"Director"},
+{"adult":false,"id":399170,"title":"L'Île aux chiens","original_title":"Isle of Dogs","overview":"Au Japon, dans un futur proche, tous les chiens sont exilés sur une île poubelle.","poster_path":"/isle.jpg","media_type":"movie","popularity":30.2,"release_date":"2018-03-23","job":"Director"},
+{"adult":false,"id":83666,"title":"Moonrise Kingdom","original_title":"Moonrise Kingdom","overview":"Deux enfants amoureux s'enfuient sur une île de Nouvelle-Angleterre.","poster_path":"/mk.jpg","media_type":"movie","popularity":25.7,"release_date":"2012-05-16","job":"Director"},
+{"adult":false,"id":536437,"title":"Asteroid City","original_title":"Asteroid City","overview":"Un congrès d'astronomie junior est bouleversé par des événements cosmiques.","poster_path":"/ac.jpg","media_type":"movie","popularity":20.3,"release_date":"2023-06-16","job":"Director"},
+{"adult":false,"id":4444,"name":"La Chronique française","original_name":"The French Dispatch Show","overview":"","poster_path":null,"media_type":"tv","popularity":5.5,"first_air_date":"2021-10-22","job":"Director"}
+]}

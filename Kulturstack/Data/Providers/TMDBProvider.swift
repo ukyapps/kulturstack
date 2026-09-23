@@ -7,6 +7,11 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
     let id = "tmdb"
     let supportedKinds: Set<MediaKind> = [.film, .series]
 
+    // Une personne loin dans la liste est un homonyme (« Aggy Dune » sur « dune ») : on ne va
+    // chercher une filmographie que si TMDB reconnaît la personne tout de suite.
+    private static let personLookupDepth = 3
+    private static let maxPersonWorks = 20
+
     private let secrets: any SecretsProviding
     private let client: any HTTPClient
     private let language: String
@@ -34,10 +39,54 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
             "Authorization": "Bearer \(token)",
             "Accept": "application/json",
         ])
+        let response = try Self.decoder().decode(TMDBSearchResponse.self, from: data)
+        let titles = response.results.compactMap { Self.candidate(from: $0) }
+        guard let person = response.results.prefix(Self.personLookupDepth).first(where: { $0.mediaType == "person" })
+        else { return titles }
+        let works = (try? await filmography(of: person, token: token)) ?? []
+        // Si TMDB met la personne en tête, c'est elle qu'on cherchait : son œuvre passe devant.
+        return response.results.first?.mediaType == "person" ? Self.merge(works, titles) : Self.merge(titles, works)
+    }
+
+    // Une œuvre qui sort des deux côtés garde sa place dans la première liste.
+    private static func merge(_ first: [MediaCandidate], _ second: [MediaCandidate]) -> [MediaCandidate] {
+        let known = Set(first.map(\.id))
+        return first + second.filter { !known.contains($0.id) }
+    }
+
+    // La filmographie de la personne, du plus populaire au moins populaire.
+    private func filmography(of person: TMDBSearchResult, token: String) async throws -> [MediaCandidate] {
+        var components = URLComponents(url: Self.baseURL.appending(path: "person/\(person.id)/combined_credits"),
+                                       resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "language", value: language)]
+        let data = try await client.get(components.url!, headers: [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json",
+        ])
+        let credits = try Self.decoder().decode(TMDBPersonCreditsResponse.self, from: data)
+        var seen = Set<String>()
+        return Self.works(credits, department: person.knownForDepartment)
+            .sorted { $0.popularity ?? 0 > $1.popularity ?? 0 }
+            .compactMap { Self.candidate(from: $0) }
+            .filter { seen.insert($0.id).inserted }
+            .prefix(Self.maxPersonWorks)
+            .map { $0 }
+    }
+
+    // Un réalisateur cherché ramène ce qu'il a réalisé, pas les films où il double un personnage ;
+    // une actrice, ce qu'elle a joué. Métier inconnu : tout, faute de mieux.
+    private static func works(_ credits: TMDBPersonCreditsResponse, department: String?) -> [TMDBSearchResult] {
+        switch department {
+        case "Directing": (credits.crew ?? []).filter { $0.job == "Director" }
+        case "Acting": credits.cast ?? []
+        default: (credits.cast ?? []) + (credits.crew ?? [])
+        }
+    }
+
+    private static func decoder() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let response = try decoder.decode(TMDBSearchResponse.self, from: data)
-        return response.results.compactMap { Self.candidate(from: $0) }
+        return decoder
     }
 
     // Clés « tmdb:movie:<id> » et « tmdb:tv:<id> » seulement ; les autres ne sont pas à nous.
@@ -54,8 +103,7 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
             "Authorization": "Bearer \(token)",
             "Accept": "application/json",
         ])
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let decoder = Self.decoder()
         if parts[1] == "movie" {
             let movie = try decoder.decode(TMDBMovieDetailsResponse.self, from: data)
             let directors = (movie.credits?.crew ?? []).filter { $0.job == "Director" }.map(\.name)
