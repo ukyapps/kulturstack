@@ -40,6 +40,13 @@ struct WishlistView: View {
             .alert(String(localized: "wishlist.seen.failed"), isPresented: $viewModel.didFailToMarkSeen) {}
     }
 
+    private func open(_ action: JournalRowTap) {
+        switch action {
+        case .showItem(let itemID): showingItem = ItemReference(id: itemID)
+        case .edit(let logID): editing = LogReference(id: logID)
+        }
+    }
+
     private var isDeleting: Binding<Bool> {
         Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })
     }
@@ -67,17 +74,15 @@ struct WishlistView: View {
         case .loaded(let rows):
             List(rows) { row in
                 Button {
-                    editing = LogReference(id: row.id)
+                    open(row.tapAction)
                 } label: {
                     WishRow(model: row) { Task { await viewModel.markSeen(id: row.id) } }
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint(String(localized: "journal.row.hint"))
+                .accessibilityHint(row.tapAction.hint)
                 .contextMenu {
-                    if let itemID = row.itemID {
-                        Button(String(localized: "journal.row.showItem"), systemImage: "info.circle") {
-                            showingItem = ItemReference(id: itemID)
-                        }
+                    Button(String(localized: "common.edit"), systemImage: "pencil") {
+                        editing = LogReference(id: row.id)
                     }
                     Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
                         deleting = LogReference(id: row.id)

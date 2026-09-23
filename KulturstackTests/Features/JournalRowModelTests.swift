@@ -44,6 +44,19 @@ struct JournalRowModelTests {
         }
     }
 
+    @Test @MainActor func aTapOpensTheWorkAndAnOrphanLogFallsBackToEditing() throws {
+        let (container, log) = try makeLog(kind: .film, year: 2021, creators: [])
+        let itemID = try #require(log.item?.id)
+
+        #expect(JournalRowModel(log: log).tapAction == .showItem(itemID))
+        #expect(JournalRowModel(log: log).tapAction.hint != JournalRowTap.edit(log.id).hint)
+
+        log.item = nil
+
+        #expect(JournalRowModel(log: log).tapAction == .edit(log.id))
+        withExtendedLifetime(container) {}
+    }
+
     @MainActor private func makeLog(kind: MediaKind, year: Int?, creators: [String], status: LogStatus = .done,
                                     rating: Int? = nil, in existing: ModelContainer? = nil) throws -> (ModelContainer, LogEntry) {
         let container = try existing ?? ModelContainerFactory.inMemory()

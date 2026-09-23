@@ -26,6 +26,10 @@ struct JournalRowModel: Identifiable, Equatable {
         symbol = kind.symbol
     }
 
+    var tapAction: JournalRowTap {
+        if let itemID { .showItem(itemID) } else { .edit(id) }
+    }
+
     private static func subtitle(kind: MediaKind, year: Int?, creator: String?) -> String {
         let yearText = year.map(String.init)
         let detail = kind == .book ? (creator ?? yearText) : (yearText ?? creator)

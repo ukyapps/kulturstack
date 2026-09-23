@@ -73,11 +73,12 @@ Kulturstack/
 │       └── SwiftDataMediaRepository.swift  findItem(withAnyKey:) via #Predicate sur ExternalRef.key ; find(itemID:) ; add item + refs ; add refs ; add log ; save ; deleteAll (objet par objet)
 ├── Features/
 │   ├── Journal/
-│   │   ├── JournalView.swift         ⚙︎ → Réglages ; 5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Semaine · n » + chips « Films · n » ; tap → feuille d'édition ; appui long → Voir la fiche / Supprimer (confirmation)
-│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; period (défaut semaine) + selectedKind → presentation (… | edge | loaded(JournalContent)) ; kindCounts ; showAll() ; delete(id:) ; now / calendar injectables
+│   │   ├── JournalView.swift         ⚙︎ → Réglages ; 5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Tout · n » + chips « Films · n » ; tap → la fiche de l'œuvre ; appui long → Modifier / Supprimer (confirmation)
+│   │   ├── JournalViewModel.swift    @Observable ; state = loading | empty | loaded([JournalRowModel]) | failed ; period (défaut tout) + selectedKind → presentation (… | edge | loaded(JournalContent)) ; kindCounts ; showAll() ; delete(id:) ; now / calendar injectables
 │   │   ├── JournalContent.swift      sections par jour + total ; KindCount
 │   │   ├── JournalDaySection.swift   id = début du jour, titre (Aujourd'hui / Hier / date), rows
-│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette)
+│   │   ├── JournalRowModel.swift     instantané VALEUR d'un log (itemID, kind, titre, sous-titre, date, statut, note, jaquette) ; tapAction
+│   │   ├── JournalRowTap.swift       ce qu'un tap ouvre : showItem(fiche), ou edit(log) si la fiche a disparu
 │   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + date + pastille statut + étoiles
 │   ├── Search/
 │   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; bandeau hors-ligne (safeAreaInset) ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; ♡ → envie, + → log ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
@@ -96,7 +97,7 @@ Kulturstack/
 │   │   ├── PrivacyView.swift         « Ce qui sort de ton iPhone » / « Ce qui reste chez toi » (TDD 07)
 │   │   └── AboutView.swift           version + build, tagline, logo TMDB (SVG) + mention obligatoire, OpenLibrary
 │   ├── Wishlist/
-│   │   ├── WishlistView.swift        onglet Envie : liste des envies en attente, vide « Rien en attente » + Chercher, erreur ; tap → feuille ; appui long → fiche / supprimer
+│   │   ├── WishlistView.swift        onglet Envie : liste des envies en attente, vide « Rien en attente » + Chercher, erreur ; tap → la fiche ; appui long → Modifier / Supprimer
 │   │   ├── WishlistViewModel.swift   state = loading | empty | loaded([JournalRowModel]) | failed ; markSeen(id:) = logAgain(item) ; delete(id:)
 │   │   └── WishRow.swift             jaquette + titre + sous-titre + « Ajouté le … » + bouton « Je l'ai vu / lu / écouté »
 │   ├── ItemDetail/
@@ -118,7 +119,7 @@ Kulturstack/
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
-│   │   ├── Period.swift              week · month · year · all ; range(containing:calendar:) semaine du lundi, [début, fin)
+│   │   ├── Period.swift              all · week · month · year (« Tout » en premier) ; range(containing:calendar:) semaine du lundi, [début, fin)
 │   │   ├── LogStatus.swift           wishlist · inProgress · done · dropped
 │   │   ├── MediaItem.swift           la fiche : champs communs + detailsData (poche) ; relations externalRefs / logs
 │   │   ├── ExternalRef.swift         clé unique "provider:value"
@@ -173,7 +174,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 195, tous verts
+## 4. Tests — 198, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -190,7 +191,7 @@ Kulturstack/
 | `ItemDetailViewRenderingTests` | 1 | la fiche se rend en fiche, en aperçu et en « introuvable » |
 | `SearchResultRowModelTests` | 2 (paramétrés : 10 cas) | chaque type a une pastille avec la date ; pas de date → pas de pastille |
 | `EditLogUseCaseTests` | 6 | find par id ; update persiste date / statut / note / commentaire trimé ; blanc → nil ; statut interdit refusé ; note hors plage refusée ; delete garde la fiche |
-| `PeriodTests` | 5 (paramétrés : 7 cas) | semaine du lundi au dimanche quelle que soit la locale ; mois et année entiers ; tout = sans bornes ; dimanche 23:59:59 dedans, lundi 00:00 dehors ; labels |
+| `PeriodTests` | 6 (paramétrés : 8 cas) | semaine du lundi au dimanche quelle que soit la locale ; mois et année entiers ; tout = sans bornes ; dimanche 23:59:59 dedans, lundi 00:00 dehors ; **« Tout » en premier** ; labels |
 | `StatsUseCaseTests` | 5 | **T-16** un film revu compte 2, par période et par type ; envies ni comptées ni listées ; envie vue après → plus en attente, vue avant → reste ; filter période × type du plus récent ; groupement Aujourd'hui / Hier / dates |
 | `WipeUseCaseTests` | 2 | tout effacer → 0 fiche, 0 log, 0 ref ; base vide OK |
 | `SettingsViewModelTests` | 3 | wipe réussi ; échec signalé ; ligne de version |
@@ -198,14 +199,14 @@ Kulturstack/
 | `OfflineBannerTests` | 1 | hors ligne → isOffline, retour en ligne → plus |
 | `WishlistViewModelTests` | 5 | liste les envies seules ; aucune → vide ; « Je l'ai vu » ajoute un log terminé, l'envie reste dans l'historique et sort de la liste ; supprimer ; erreur |
 | `WishlistViewRenderingTests` | 1 | l'onglet se rend en liste (seed : 2 envies) et en vide |
-| `JournalFilterTests` | 7 | envies hors du journal et des compteurs ; que des envies = journal vide ; ouvre sur la semaine, groupé par jour, chips avec compteurs (0 compris) ; période × type ; filtre sans résultat = edge (chips conservés) puis Voir tout ; aucun log = vide quel que soit le filtre ; erreur reste erreur |
+| `JournalFilterTests` | 8 | envies hors du journal et des compteurs ; que des envies = journal vide ; **ouvre sur tout**, groupé par jour, chips avec compteurs ; **un log daté avant cette semaine est visible à l'ouverture** (retour du 23/09) ; période × type ; filtre sans résultat = edge (chips conservés) puis Voir tout ; aucun log = vide quel que soit le filtre ; erreur reste erreur |
 | `JournalViewRenderingTests` | 1 | l'écran se rend en liste groupée (seed : 25 logs) et en edge |
 | `JournalViewModelTests` | 8 | loading au départ ; vide ; chargé ; erreur ; reprise après erreur ; **l'état survit à la suppression des logs** (régression du crash) ; delete(id:) recharge ; échec de suppression signalé |
 | `LogEditViewModelTests` | 9 | load remplit le formulaire (+ itemID) ; titre sans année ; statuts du type (film, livre) ; introuvable ; erreur de lecture ; save écrit ; save invalide → didFail sans rien changer ; delete ; raccourci de date |
 | `LogEditViewRenderingTests` | 2 | la feuille se rend en formulaire et en « introuvable » ; le picker se rend pour chaque note |
 | `DateShortcutTests` | 4 (paramétrés : 8 cas) | aujourd'hui = maintenant ; hier garde l'heure ; « ce week-end » = samedi le plus récent (mer., lun., dim., sam., ven.) ; labels |
 | `StarRatingPickerTests` | 3 (paramétrés : 6 cas) | tap = valeur ; re-tap = sans note ; étoile × moitié → 1…10 |
-| `JournalRowModelTests` | 4 | livre → auteur, film → année, repli, champs recopiés |
+| `JournalRowModelTests` | 5 | livre → auteur, film → année, repli, champs recopiés ; **tap → la fiche, log orphelin → modification** |
 | `JournalRowRenderingTests` | 1 | la ligne se rend avec et sans note (UIHostingController) |
 | `MediaKindPresentationTests` | 4 (paramétrés : 19 cas) | chaque type (singulier, pluriel, « Je l'ai vu / lu… »), statut et famille a un label, FR et EN |
 | `StarRatingTests` | 1 (paramétré : 6 cas) | 1…10 → étoiles pleines / demi |

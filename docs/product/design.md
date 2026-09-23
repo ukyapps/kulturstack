@@ -39,7 +39,7 @@ Vide (rien encore — un écran conçu, avec une invitation), erreur (ça n'a pa
 ```
 Kulturstack
 ├── Journal            ← onglet 1, écran d'accueil
-│   ├── filtre période : Semaine · Mois · Année · Tout
+│   ├── filtre période : Tout · Semaine · Mois · Année
 │   ├── filtre type    : chips (Films · Séries · Livres · …)
 │   ├── Envie          (T1)  — un filtre spécial, pas un onglet
 │   ├── Où j'en suis   (T2)  — idem
@@ -86,13 +86,13 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10) ; segments Semaine · Mois · Année · Tout avec compteur dans l'actif, chips par type avec compteur, groupé par jour, edge « Pas de livres cette semaine » + Voir tout (#13).
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10) ; segments Semaine · Mois · Année · Tout avec compteur dans l'actif, chips par type avec compteur, groupé par jour, edge « Pas de livres cette semaine » + Voir tout (#13) ; **ouverture sur Tout, segments Tout · Semaine · Mois · Année, tap → la fiche de l'œuvre, appui long → Modifier / Supprimer (#18)**.
 
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
 - **Edge** : « Aucun livre cette semaine » + « Voir tout ».
 - **Erreur** : « Impossible de charger ton journal » + « Réessayer ».
-- ~~Tap sur une ligne → Fiche de l'œuvre. Appui long → Modifier le log / Supprimer.~~ **Tranché le 22/09 (§6.6)** : tap → feuille d'édition ; appui long → Voir la fiche / Supprimer.
+- ~~Tap sur une ligne → Fiche de l'œuvre. Appui long → Modifier le log / Supprimer.~~ ~~**Tranché le 22/09 (§6.6)** : tap → feuille d'édition ; appui long → Voir la fiche / Supprimer.~~ **Retranché le 23/09 après usage réel** : tap → la fiche de l'œuvre ; appui long → Modifier / Supprimer. Le geste d'origine, revenu par l'usage (#18).
 
 ### 3.2 Recherche
 
@@ -246,7 +246,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 | `SectionHeader` | titre de section + état (spinner / erreur + réessayer) | 1 ✅ titre + spinner (#7) ; l'erreur est une ligne de section |
 | `Toast` | bandeau « Loggé ✓ · Modifier » | 1 ✅ (#8, #9) |
 | `Chip` / `KindChips` | chips de filtre par type | 1 ✅ Recherche (#7) · ⏳ Journal avec compteurs (PR 9) |
-| `PeriodSegments` | segments Semaine · Mois · Année · Tout avec compteurs | 1 ⏳ (PR 9) |
+| `PeriodSegments` | segments Tout · Semaine · Mois · Année avec compteurs | 1 ⏳ (PR 9) |
 | `EpisodeCheckbox` | case + « prochain » | 2 |
 | `BarcodeScanner` | viseur | 5 |
 
@@ -260,7 +260,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 
 1. ~~**Recherche = onglet ou bouton « + » flottant sur le Journal ?**~~ **Tranché le 21/09/2026 : onglet** (founder). On reverra si le « + » s'impose à l'usage.
 2. ~~**Le tap logge immédiatement ou après un court délai annulable ?**~~ Tranché le 21/09/2026 : immédiat + bandeau. **Retranché le 22/09/2026 après usage : tap sur un résultat = fiche de l'œuvre, on logge depuis la fiche** (founder : « dans la recherche, je peux pas accéder à la fiche avant de logger un truc, c'est pas logique »). Claude a proposé un bouton ⓘ ou un appui long pour garder le tap = loggé ; la founder a préféré la fiche. Puis, pendant la démo de la PR 8b, la founder a demandé **un « + » au bout de chaque ligne** pour logger en un geste : tap = fiche, + = loggé + bandeau « Modifier ». Réalisé en #11.
-6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ **Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.
+6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ ~~**Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.~~ **Retranché le 23/09/2026 après quelques jours d'usage : la fiche** (founder : « quand je fais un tap sur un film que j'ai vu, je voudrais que ça ouvre la fiche du film, et que j'aie une option pour modifier depuis la fiche »). Modifier reste à l'appui long, et depuis la fiche. Même geste dans l'onglet Envie (#18).
 3. ~~**Groupement du Journal par jour ou liste plate ?**~~ **Tranché le 22/09/2026 : par jour** (#13), après la démo de la PR 7 où un log passé à hier avait « disparu » en bas de liste.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.

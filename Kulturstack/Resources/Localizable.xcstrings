@@ -1102,6 +1102,22 @@
         "en": {
           "stringUnit": {
             "state": "translated",
+            "value": "Opens the work’s page"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvre la fiche de l’œuvre"
+          }
+        }
+      }
+    },
+    "journal.row.hint.edit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
             "value": "Opens this log to edit it"
           }
         },
@@ -1109,22 +1125,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ouvre ce log pour le modifier"
-          }
-        }
-      }
-    },
-    "journal.row.showItem": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show the work"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voir la fiche"
           }
         }
       }
