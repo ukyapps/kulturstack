@@ -14,17 +14,21 @@ struct JournalRow: View {
                 Text(model.subtitle)
                     .font(.subheadline)
                     .foregroundStyle(Color.textSecondary)
-                HStack(spacing: Spacing.s) {
-                    Text(model.date, format: .dateTime.day().month().year())
-                    if model.status != .done {
-                        Text(model.status.label)
-                            .padding(.horizontal, Spacing.s)
-                            .padding(.vertical, 2)
-                            .background(Color.surfaceSecondary, in: Capsule())
-                    }
+                if model.status != .done {
+                    Text(model.status.label)
+                        .font(.caption)
+                        .foregroundStyle(Color.textSecondary)
+                        .padding(.horizontal, Spacing.s)
+                        .padding(.vertical, 2)
+                        .background(Color.surfaceSecondary, in: Capsule())
                 }
-                .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                // La date du log est déjà l'en-tête de sa section : la place va au commentaire.
+                if let note = model.note {
+                    Text(note)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.textSecondary)
+                        .lineLimit(2)
+                }
             }
             Spacer(minLength: 0)
             if let rating = model.rating {

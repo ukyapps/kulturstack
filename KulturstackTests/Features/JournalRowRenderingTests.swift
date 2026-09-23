@@ -23,4 +23,27 @@ struct JournalRowRenderingTests {
             #expect(size.height > 44)
         }
     }
+
+    // Le commentaire prend la place de la date : la date du jour est déjà dans l'en-tête de section.
+    @Test @MainActor func aCommentMakesTheRowTaller() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let item = MediaItem(kind: .film, title: "La Planète sauvage", year: 1973)
+        container.mainContext.insert(item)
+        let bare = try LogEntry.make(item: item, status: .done)
+        let commented = try LogEntry.make(item: item, status: .done,
+                                          note: "Vu au cinéma dans la copie restaurée, les décors de Topor valent le détour.")
+        for log in [bare, commented] { container.mainContext.insert(log) }
+
+        let heights = [bare, commented].map { log -> CGFloat in
+            let host = UIHostingController(rootView: JournalRow(model: JournalRowModel(log: log)))
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 200))
+            window.rootViewController = host
+            window.makeKeyAndVisible()
+            host.view.layoutIfNeeded()
+            return host.sizeThatFits(in: CGSize(width: 390, height: CGFloat.greatestFiniteMagnitude)).height
+        }
+
+        #expect(heights[1] > heights[0])
+        withExtendedLifetime(container) {}
+    }
 }

@@ -9,6 +9,7 @@ struct JournalRowModel: Identifiable, Equatable {
     let date: Date
     let status: LogStatus
     let rating: Int?
+    let note: String?
     let coverURL: URL?
     let symbol: String
 
@@ -22,8 +23,14 @@ struct JournalRowModel: Identifiable, Equatable {
         date = log.date
         status = log.status
         rating = log.rating
+        note = Self.comment(log.note)
         coverURL = log.item?.coverURL
         symbol = kind.symbol
+    }
+
+    private static func comment(_ note: String?) -> String? {
+        let trimmed = note?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty ?? true) ? nil : trimmed
     }
 
     var tapAction: JournalRowTap {
