@@ -143,5 +143,5 @@ Le besoin n'est pas un tracker de plus. C'est **un seul geste, pour tout, au mom
 - Vision UX et écrans : `docs/product/design.md`
 - Cadrage technique : `docs/tdd/`
 - Décisions : `docs/decisions/`
-- Plan courant : `docs/plans/tranche-1.md`
+- Plan livré : `docs/plans/tranche-1.md` · proposé : `docs/plans/tranche-2.md`
 - Journal de bord : `docs/journal/`
