@@ -6,11 +6,20 @@ struct LogUseCase {
     let dedup: DedupUseCase
 
     @discardableResult
-    func logNow(_ candidate: MediaCandidate, status: LogStatus = .done, now: Date = .now) throws -> LogEntry {
+    func logNow(_ candidate: MediaCandidate, status: LogStatus = .done, now: Date = .now,
+                rating: Int? = nil, note: String? = nil) throws -> LogEntry {
         try LogRules.validate(status: status, for: candidate.kind)
         let item = try dedup.existingItem(for: candidate) ?? makeItem(from: candidate)
         try addMissingRefs(of: candidate, to: item)
-        let log = try LogEntry.make(item: item, status: status, date: now, source: "manual")
+        return try log(item, status: status, date: now, rating: rating, note: note)
+    }
+
+    // Le formulaire « Logger » de la fiche : date, note et commentaire posés d'un coup.
+    @discardableResult
+    func log(_ item: MediaItem, status: LogStatus = .done, date: Date = .now,
+             rating: Int? = nil, note: String? = nil) throws -> LogEntry {
+        let log = try LogEntry.make(item: item, status: status, date: date, rating: rating,
+                                    note: LogRules.note(note), source: "manual")
         try repository.add(log)
         return log
     }
@@ -30,9 +39,7 @@ struct LogUseCase {
 
     @discardableResult
     func logAgain(_ item: MediaItem, now: Date = .now) throws -> LogEntry {
-        let log = try LogEntry.make(item: item, status: .done, date: now, source: "manual")
-        try repository.add(log)
-        return log
+        try log(item, status: .done, date: now)
     }
 
     private func makeItem(from candidate: MediaCandidate) throws -> MediaItem {

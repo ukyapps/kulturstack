@@ -26,6 +26,24 @@ struct LogEditViewRenderingTests {
         }
     }
 
+    @Test func rendersTheCreationForm() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let item = MediaItem(kind: .film, title: "La Planète sauvage", year: 1973)
+        context.insert(item)
+        try context.save()
+
+        let host = UIHostingController(rootView: LogEditView(target: .item(item.id), services: AppServices(context: context)))
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        host.view.layoutIfNeeded()
+
+        #expect(host.view.bounds.height > 0)
+        #expect(try context.fetchCount(FetchDescriptor<LogEntry>()) == 0)
+        withExtendedLifetime(container) {}
+    }
+
     @Test func pickerRendersEveryRating() {
         for rating in [nil, 1, 5, 10] {
             let host = UIHostingController(rootView: StarRatingPicker(rating: .constant(rating)))
