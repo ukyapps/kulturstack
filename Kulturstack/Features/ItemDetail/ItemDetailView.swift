@@ -65,6 +65,9 @@ struct ItemDetailView: View {
                         .buttonStyle(.bordered)
                 }
                 .sensoryFeedback(.success, trigger: model.logs.count)
+                if model.kind.hasEpisodes, let itemID = viewModel.storedItemID {
+                    SeasonsSection(itemID: itemID, services: services)
+                }
                 logs(model.logs)
                 if let source = model.source {
                     Text(String(localized: "detail.source \(source)"))

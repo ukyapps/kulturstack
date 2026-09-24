@@ -9,7 +9,8 @@ struct RootView: View {
 
     var body: some View {
         let registry = providerRegistry
-        let services = AppServices(context: context, detailsProviders: registry.detailsProviders)
+        let services = AppServices(context: context, detailsProviders: registry.detailsProviders,
+                                   episodeProviders: registry.episodeProviders)
         TabView(selection: $selectedTab) {
             NavigationStack {
                 JournalView(services: services) { selectedTab = .search }
