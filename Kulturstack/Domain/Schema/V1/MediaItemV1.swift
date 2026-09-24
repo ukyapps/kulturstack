@@ -1,7 +1,10 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV2 {
+// Copie figée du modèle tel qu'il était en V1 — elle décrit la base déjà installée sur
+// l'iPhone de la founder. On ne la modifie plus : c'est contre elle que T-01 migre.
+// Seules les propriétés stockées comptent ici ; les règles et le confort vivent dans la V2.
+extension KulturstackSchemaV1 {
     @Model
     final class MediaItem {
         @Attribute(.unique) var id: UUID
@@ -19,7 +22,6 @@ extension KulturstackSchemaV2 {
 
         @Relationship(deleteRule: .cascade, inverse: \ExternalRef.item) var externalRefs: [ExternalRef]
         @Relationship(deleteRule: .cascade, inverse: \LogEntry.item) var logs: [LogEntry]
-        @Relationship(deleteRule: .cascade, inverse: \Season.item) var seasons: [Season]
 
         init(kind: MediaKind, title: String, originalTitle: String? = nil, year: Int? = nil,
              creators: [String] = [], summary: String? = nil, coverURL: URL? = nil) {
@@ -31,31 +33,12 @@ extension KulturstackSchemaV2 {
             self.creators = creators
             self.summary = summary
             self.coverURL = coverURL
-            self.detailsVersion = DetailsCodec.currentVersion
+            self.detailsVersion = 1
             self.detailsData = nil
             self.createdAt = .now
             self.updatedAt = .now
             self.externalRefs = []
             self.logs = []
-            self.seasons = []
-        }
-
-        var kind: MediaKind {
-            get { MediaKind(rawValue: kindRaw) ?? .film }
-            set { kindRaw = newValue.rawValue }
-        }
-
-        var orderedSeasons: [Season] { seasons.sorted { $0.number < $1.number } }
-
-        var details: (any DetailsPayload)? {
-            guard let detailsData else { return nil }
-            return try? DetailsCodec.decode(kind: kind, from: detailsData)
-        }
-
-        func setDetails(_ payload: some DetailsPayload) throws {
-            detailsData = try DetailsCodec.encode(payload)
-            detailsVersion = DetailsCodec.currentVersion
-            updatedAt = .now
         }
     }
 }
