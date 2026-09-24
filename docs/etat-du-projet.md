@@ -8,11 +8,11 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**La Tranche 1 est terminée et l'app tourne sur l'iPhone de la founder** (installée par câble le 23/09, signature personnelle valable 7 jours — `make device` pour réinstaller). 195 tests verts, 17 PRs fusionnées.
+**La Tranche 1 est livrée, l'app tourne sur l'iPhone de la founder, et elle a servi.** Installée par câble le 23/09 (signature personnelle valable 7 jours — `make device` pour réinstaller). Deux jours d'usage réel ont produit **sept retours**, tous traités le même jour en cinq PRs (#18 → #22). 215 tests verts, 23 PRs fusionnées.
 
-Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle) ; **le logger en un geste** avec le `+` d'un résultat, ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log (date, demi-étoiles, statut, commentaire) ; **relire son Journal** groupé par jour, filtré par Semaine · Mois · Année · Tout et par type, avec compteurs ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
+Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
-**Prochaine étape : l'usage réel.** La founder utilise l'app quelques jours ; ses retours décideront de la suite (Tranche 2 « épisodes », ou corrections d'abord). Rien ne se publie sans son action.
+**Prochaine étape : la Tranche 2 (épisodes), planifiée mais pas commencée** — `docs/plans/tranche-2.md`, cinq PRs, en attente du feu vert de la founder et d'une question d'ergonomie (§ 8). Rien ne se publie sans son action.
 
 ## 2. Features — planifié vs livré
 
@@ -37,11 +37,26 @@ Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (T
 | — | Sur l'iPhone (câble, Personal Team) | ✅ 23/09 — installée et lancée sur l'iPhone de la founder |
 | — | TestFlight (compte développeur payant) | ⏳ quand d'autres testeuses seront nécessaires |
 
-### Tranches suivantes (rien de commencé)
+### Corrections d'usage — après les premiers jours sur iPhone (23/09)
+
+Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utilisateurs.md`.
+
+| Retour | Correction | État |
+|---|---|---|
+| « Un log n'apparaît pas dans mon journal » (il était hors de la semaine filtrée) | Le Journal s'ouvre sur **Tout** ; segments Tout · Semaine · Mois · Année | ✅ #18 |
+| « Un tap devrait ouvrir la fiche du film » | Tap = la fiche ; modifier passe à l'appui long (Journal **et** Envie) | ✅ #18 |
+| « À la place de la date en petit, un aperçu du commentaire » | La ligne montre 2 lignes de commentaire ; la date reste l'en-tête du jour | ✅ #19 |
+| « La date oui, mais pas l'heure » | Sélecteur au jour près ; l'heure reste stockée pour ordonner une même journée | ✅ #20 |
+| « Logger depuis la fiche devrait ouvrir le log avec les notes » | « Logger » ouvre le formulaire ; rien n'est écrit avant « Enregistrer » | ✅ #20 |
+| « wes anderson ne me donne pas ses films » | Une personne reconnue par TMDB ramène sa filmographie, filtrée par son métier | ✅ #21 |
+| « On peut enregistrer les trucs en double » | Le `+` sur une œuvre déjà loggée demande confirmation | ✅ #22 |
+| « La recherche par auteur marche pour les livres » | Rien à faire : OpenLibrary cherche nativement dans les auteurs | — |
+
+### Tranches suivantes (planifiées, rien de codé)
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (séries, podcasts), « où j'en suis », statuts en cours / abandonné | non |
+| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis », statuts en cours / abandonné — **plan écrit : `docs/plans/tranche-2.md`** | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -265,19 +280,25 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/product/retours-utilisateurs.md` | ce que la founder (et plus tard d'autres) a dit, et ce qu'on en a fait | avant de trancher |
 | `docs/tdd/01…07` | architecture, modèle, protocoles, sources, tests, secrets, RGPD | avant de coder une couche |
 | `docs/decisions/001…012` | les ADRs | quand on se demande « pourquoi » |
-| `docs/plans/tranche-1.md` | les 12 PRs de T1 | avant chaque PR |
+| `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
+| `docs/plans/tranche-2.md` | les 5 PRs de T2 (proposée, pas commencée) | avant chaque PR de T2 |
 
 ## 8. Ouvert / à faire
 
-**Founder** : **utiliser l'app et noter ce qui coince** (le plus important) · fusionner la PR #17 · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **trancher où vit « où j'en suis »** (design § 6, question 7 — reco : un bandeau en haut du Journal) · **dire si la Tranche 2 démarre** · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
-1. Demander à la founder ce qu'elle a constaté **en usage réel** et l'écrire dans `docs/product/retours-utilisateurs.md` (c'est la matière la plus précieuse du projet).
+1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
 2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. Trier les retours : corrections d'abord (petites PRs), puis seulement `docs/plans/tranche-2.md` (épisodes de séries).
-4. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
+3. Si la founder lance la T2 : `docs/plans/tranche-2.md`, PR 12 (schéma V2). **Sa base contient maintenant ses vrais logs** — la migration se vérifie sur son iPhone avant fusion, pas seulement en mémoire. Basculer aussi le § « Périmètre courant » de `CLAUDE.md`.
+4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
+5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
 
-**Tranché le 22/09 à l'écran** : tap sur une ligne du Journal = édition · tap sur un résultat = fiche, `+` = loggé, ♡ = envie · Journal groupé par jour · Envie en onglet (pas en chip), hors des compteurs.
+**Tranché le 22/09 à l'écran** : tap sur un résultat = fiche, `+` = loggé, ♡ = envie · Journal groupé par jour · Envie en onglet (pas en chip), hors des compteurs.
+
+**Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
+
+**Question d'ergonomie ouverte** : où vit « où j'en suis » (T2) — design § 6, question 7.

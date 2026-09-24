@@ -1,6 +1,6 @@
 ---
 type: design
-statut: v1.2 — 2026-09-22 — tous les écrans de la Tranche 1 réalisés et validés sur simulateur ; décisions du 22/09 intégrées (tap = fiche, + / ♡, onglet Envie) ; validation sur iPhone réel à venir
+statut: v1.3 — 2026-09-23 — Tranche 1 livrée, installée sur l'iPhone de la founder et **vécue** ; les sept retours du premier usage réel sont intégrés (#18 → #22) ; une question ouverte pour la T2 (§6.7)
 propriétaire: founder
 ---
 
@@ -8,7 +8,7 @@ propriétaire: founder
 
 Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est dans le PRD, le *comment technique* dans `docs/tdd/`. L'ergonomie fine se valide à l'écran, maquette par maquette, en Tranche 1 — chaque écran ci-dessous porte un encadré **Réalisé** qui dit ce qui est dans l'app et ce qui manque encore.
 
-## 0. Où en est l'interface (21/09/2026)
+## 0. Où en est l'interface (23/09/2026)
 
 | Écran | État | PR |
 |---|---|---|
@@ -20,6 +20,18 @@ Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est
 | Modifier un log | ✅ | #9 |
 | Envie — onglet, ♡ sur un résultat et dans la fiche, « Je l'ai vu » | ✅ (onglet, pas chip : décision du 22/09) | #14 |
 | Réglages, Confidentialité, À propos, Tout effacer | ✅ | #15 |
+
+**Après deux jours d'usage réel sur iPhone** (23/09) — sept retours, cinq PRs :
+
+| Ce qui a bougé | Pourquoi | PR |
+|---|---|---|
+| Le Journal s'ouvre sur **Tout** ; segments Tout · Semaine · Mois · Année | Un log daté hors de la semaine avait l'air perdu | #18 |
+| Tap sur une ligne = **la fiche** ; modifier passe à l'appui long (Journal et Envie) | Demande de la founder, retour au geste d'origine du design | #18 |
+| La ligne montre **l'aperçu du commentaire** à la place de la date | La date est déjà l'en-tête du jour, juste au-dessus | #19 |
+| Le sélecteur de date ne propose plus d'heure | « Pas l'heure, c'est un peu abusé » | #20 |
+| « Logger » depuis la fiche **ouvre le formulaire** ; rien n'est écrit avant « Enregistrer » | Le 1-tap reste le `+` de la Recherche, pour aller vite | #20 |
+| Chercher un réalisateur ou une actrice ramène **sa filmographie** | « wes anderson » ne donnait aucun de ses films | #21 |
+| Le `+` sur une œuvre déjà loggée **demande confirmation** | Un deuxième log ne doit pas se faire par accident | #22 |
 
 Les captures d'écran de chaque PR sont dans `docs/captures/pr-NN/`.
 
@@ -41,10 +53,10 @@ Kulturstack
 ├── Journal            ← onglet 1, écran d'accueil
 │   ├── filtre période : Tout · Semaine · Mois · Année
 │   ├── filtre type    : chips (Films · Séries · Livres · …)
-│   ├── Envie          (T1)  — un filtre spécial, pas un onglet
-│   ├── Où j'en suis   (T2)  — idem
+│   ├── Envie          (T1)  — finalement un onglet, pas un chip (founder, 22/09)
+│   ├── Où j'en suis   (T2)  — emplacement à trancher (§ 6, question 7)
 │   └── → Fiche d'une œuvre → Modifier un log
-├── Recherche          ← onglet 2, ou bouton flottant « + » (à trancher, voir §6)
+├── Recherche          ← onglet 2 (tranché le 21/09 : onglet, pas de « + » flottant)
 │   ├── sections par famille : Films & séries · Livres · Disques · Podcasts · Jeux · Live
 │   ├── chips de filtre après la saisie
 │   └── « Aucun résultat ? Ajouter à la main » (T7)
@@ -86,7 +98,7 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10) ; segments Semaine · Mois · Année · Tout avec compteur dans l'actif, chips par type avec compteur, groupé par jour, edge « Pas de livres cette semaine » + Voir tout (#13) ; **ouverture sur Tout, segments Tout · Semaine · Mois · Année, tap → la fiche de l'œuvre, appui long → Modifier / Supprimer (#18)** ; **l'aperçu du commentaire (2 lignes) remplace la date sur la ligne, qui est déjà l'en-tête de sa section (#19)**. **Depuis la fiche, « Logger » ouvre le formulaire au lieu d'enregistrer sec, et le sélecteur de date ne propose plus d'heure (#20)**.
+> **Réalisé (PR #4, #7, #8)** : liste du plus récent au plus ancien, ligne = jaquette + titre + « Type · année » (films, séries) ou « Type · auteur » (livres) + date + pastille de statut si ≠ terminé + demi-étoiles ; état vide avec bouton « Chercher » qui bascule d'onglet ; état d'erreur avec « Réessayer » ; rechargement automatique après un log ; tap → feuille d'édition, appui long → Voir la fiche / Supprimer (PR #9, #10) ; segments Semaine · Mois · Année · Tout avec compteur dans l'actif, chips par type avec compteur, groupé par jour, edge « Pas de livres cette semaine » + Voir tout (#13) ; **ouverture sur Tout, segments Tout · Semaine · Mois · Année, tap → la fiche de l'œuvre, appui long → Modifier / Supprimer (#18)** ; **l'aperçu du commentaire (2 lignes) remplace la date sur la ligne, qui est déjà l'en-tête de sa section (#19)**.
 
 - Groupé par jour (Aujourd'hui, Hier, puis dates). Ligne = jaquette, titre, type · année ou créateur, étoiles si notées.
 - **Vide** : icône livres, « Ton journal est vide », « Cherche un film, une série ou un livre et tape dessus : c'est loggé. », bouton « Chercher ».
@@ -148,14 +160,14 @@ Kulturstack
 └─────────────────────────────────┘
 ```
 
-> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). Réalisateur, durée, genres, saisons complétés chez TMDB à l'ouverture (#12) ; bouton « Envie » ♡ à côté de « Logger » (#14).
+> **Réalisé (PR #10)** : jaquette, « Dune (2021) », « Film · 2h35 · réalisateur » (quand la poche les a), genres / saisons · épisodes / pages · éditeur · sujets selon le type, résumé sur 3 lignes avec « Plus », « Logger à nouveau », TES LOGS (date, statut, étoiles, commentaire ; tap → feuille), « Source : TMDB ». États introuvable et erreur. Ouverte par le titre de la feuille d'édition ou par appui long dans le Journal. Depuis la Recherche : tap sur un résultat, aperçu avec « Logger » s'il n'est pas encore en base (#11). Réalisateur, durée, genres, saisons complétés chez TMDB à l'ouverture (#12) ; bouton « Envie » ♡ à côté de « Logger » (#14). **« Logger » / « Logger à nouveau » ouvre le formulaire (date, demi-étoiles, statut, commentaire) au lieu d'enregistrer sec, et rien n'est écrit tant qu'on n'a pas enregistré — y compris pour une œuvre pas encore en base : annuler ne laisse pas de fiche orpheline (#20)**. Ouverte aussi au **tap sur une ligne du Journal ou de l'Envie** (#18).
 
 - Les détails de la « poche » varient par type : durée / réalisateur pour un film, saisons pour une série, pages / éditeur pour un livre.
 - Tap sur un log → Modifier.
 
 ### 3.4 Modifier un log (feuille)
 
-> **Réalisé (PR #9)** : feuille Annuler / Log / Enregistrer, titre « Dune (2021) », date avec raccourcis Aujourd'hui · Hier · Ce week-end, demi-étoiles cliquables (re-tap = sans note), statut segmenté limité au type, commentaire, « Supprimer ce log » avec confirmation ; états « ce log n'existe plus » et erreur de lecture. Ouverte par « Modifier » sur le bandeau de la Recherche et par appui long dans le Journal (Modifier / Supprimer).
+> **Réalisé (PR #9)** : feuille Annuler / Log / Enregistrer, titre « Dune (2021) », date avec raccourcis Aujourd'hui · Hier · Ce week-end, demi-étoiles cliquables (re-tap = sans note), statut segmenté limité au type, commentaire, « Supprimer ce log » avec confirmation ; états « ce log n'existe plus » et erreur de lecture. Ouverte par « Modifier » sur le bandeau de la Recherche, par appui long dans le Journal ou l'Envie (Modifier / Supprimer), et depuis la fiche en touchant un log. **Le sélecteur de date ne propose plus d'heure — l'heure reste stockée, elle ordonne deux logs du même jour (#20)**. **La même feuille sert à créer un log depuis la fiche** : formulaire vierge, pas de « Supprimer », écriture à l'enregistrement (#20).
 
 ```
 ┌─────────────────────────────────┐
@@ -264,6 +276,8 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 3. ~~**Groupement du Journal par jour ou liste plate ?**~~ **Tranché le 22/09/2026 : par jour** (#13), après la démo de la PR 7 où un log passé à hier avait « disparu » en bas de liste.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.
+7. **Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau** — c'est ce pour quoi on ouvre l'app le soir, et ça ne coûte pas un onglet. À trancher avant la PR 16 (`docs/plans/tranche-2.md`).
+8. ~~**Le Journal s'ouvre-t-il filtré ?**~~ **Tranché le 23/09/2026 : sur Tout** (founder, après qu'un log daté hors de la semaine a eu l'air perdu). Filtrer est un geste, pas un défaut.
 
 ## 7. Ce qu'on ne fait pas en design
 

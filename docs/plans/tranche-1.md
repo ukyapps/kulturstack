@@ -154,13 +154,17 @@ PR 2 et PR 3 peuvent se faire dans n'importe quel ordre après PR 1.
 
 ## Ce qu'on vérifie à la fin de T1 avant de dire « shippé »
 
-- [ ] Premier lancement = base vide, `EmptyState` sur chaque écran.
-- [ ] Seed → wipe → seed : même nombre d'objets.
-- [ ] Coverage ≥ 70 % Domain, ≥ 50 % Features (`make coverage`).
-- [ ] Test T-01 vert.
-- [ ] Panne OpenLibrary simulée : films toujours cherchables.
-- [ ] Aucune string en dur (grep `Text("` sans `String(localized:)` = 0).
-- [ ] `Secrets.xcconfig` absent du repo, hook pre-commit actif.
-- [ ] Chaque PR porte sa fiche de review locale (CLAUDE.md).
-- [ ] `PrivacyInfo.xcprivacy` présent, attribution TMDB visible.
-- [ ] Installé sur l'iPhone de la founder via TestFlight.
+**Vérifié le 2026-09-23 — la Tranche 1 est shippée.**
+
+- [x] Premier lancement = base vide — l'app s'est ouverte sur un **Journal vide** sur l'iPhone, pas sur du seed. `EmptyState` sur chaque écran : Journal, Envie et Recherche vus sur l'appareil, les autres couverts par les tests de rendu.
+- [x] Seed → wipe → seed : même nombre d'objets (**T-14**).
+- [x] Coverage ≥ 70 % Domain, ≥ 50 % Features — 83 % sur l'ensemble de l'app.
+- [x] Test **T-01** vert (et il devra le rester à la migration V2).
+- [x] Panne OpenLibrary simulée : films toujours cherchables (interrupteur de l'écran DEBUG + test).
+- [x] Aucune string en dur — `grep 'Text("' sans String(localized:)` = 0.
+- [x] `Secrets.xcconfig` absent du dépôt, hook pre-commit actif.
+- [x] Chaque PR porte sa fiche de review locale (CLAUDE.md).
+- [x] `PrivacyInfo.xcprivacy` présent, attribution TMDB visible dans À propos.
+- [x] Installé sur l'iPhone de la founder — **par câble** (Personal Team, `make device`), pas par TestFlight : décision du 22/09 de ne pas prendre de compte développeur payant tant qu'il n'y a qu'une testeuse. Signature valable 7 jours, à refaire vers le 30/09.
+
+**Ce que la T1 a appris, une fois vécue** : les sept retours du 23/09 et leurs cinq PRs (#18 → #22) sont dans `docs/product/retours-utilisateurs.md` et résumés dans `docs/etat-du-projet.md` § 2. Le plus instructif : un filtre par défaut qui cache sans le dire coûte plus cher qu'il ne rapporte.
