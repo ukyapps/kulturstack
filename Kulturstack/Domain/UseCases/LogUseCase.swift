@@ -17,9 +17,9 @@ struct LogUseCase {
     // Le formulaire « Logger » de la fiche : date, note et commentaire posés d'un coup.
     @discardableResult
     func log(_ item: MediaItem, status: LogStatus = .done, date: Date = .now,
-             rating: Int? = nil, note: String? = nil) throws -> LogEntry {
+             rating: Int? = nil, note: String? = nil, episode: Episode? = nil) throws -> LogEntry {
         let log = try LogEntry.make(item: item, status: status, date: date, rating: rating,
-                                    note: LogRules.note(note), source: "manual")
+                                    note: LogRules.note(note), source: "manual", episode: episode)
         try repository.add(log)
         return log
     }

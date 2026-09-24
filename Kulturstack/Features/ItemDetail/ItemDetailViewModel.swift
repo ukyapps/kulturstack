@@ -66,6 +66,12 @@ final class ItemDetailViewModel {
         }
     }
 
+    // Une série n'a d'épisodes à cocher qu'une fois en base : un log se raccroche à une œuvre.
+    var storedItemID: UUID? {
+        guard case .stored(let itemID) = subject else { return nil }
+        return itemID
+    }
+
     // « Logger » ouvre le formulaire : c'est lui qui écrit, avec la date, la note et le commentaire.
     var logTarget: LogTarget {
         switch subject {

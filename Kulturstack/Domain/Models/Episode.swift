@@ -27,5 +27,8 @@ extension KulturstackSchemaV2 {
         }
 
         static func key(seasonKey: String, number: Int) -> String { "\(seasonKey):e\(number)" }
+
+        // Coché = il existe un log « vu » qui porte cet épisode.
+        var isWatched: Bool { logs.contains { $0.status == .done } }
     }
 }
