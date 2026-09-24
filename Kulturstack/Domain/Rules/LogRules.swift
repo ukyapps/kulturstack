@@ -7,6 +7,12 @@ enum LogRules {
         }
     }
 
+    // Un log d'épisode porte l'œuvre de cet épisode, jamais une autre.
+    static func validate(episode: Episode?, for item: MediaItem) throws {
+        guard let episode else { return }
+        guard episode.season?.item?.id == item.id else { throw DomainError.episodeNotOfThisItem }
+    }
+
     static func validate(rating: Int?) throws {
         guard let rating else { return }
         guard ratingRange.contains(rating) else { throw DomainError.ratingOutOfRange(rating) }

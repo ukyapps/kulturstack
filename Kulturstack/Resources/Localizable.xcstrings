@@ -401,18 +401,18 @@
         }
       }
     },
-    "debug.storage.badge %lld %lld %lld": {
+    "debug.storage.badge %lld %lld %lld %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Store V%1$lld · %2$lld items · %3$lld logs"
+            "value": "Store V%1$lld · %2$lld items · %3$lld logs · %4$lld episodes"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Base V%1$lld · %2$lld fiches · %3$lld logs"
+            "value": "Base V%1$lld · %2$lld fiches · %3$lld logs · %4$lld épisodes"
           }
         }
       }

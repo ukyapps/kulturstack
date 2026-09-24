@@ -48,6 +48,8 @@ struct SwiftDataMediaRepository: MediaRepository {
     func deleteAll() throws {
         for log in try context.fetch(FetchDescriptor<LogEntry>()) { context.delete(log) }
         for ref in try context.fetch(FetchDescriptor<ExternalRef>()) { context.delete(ref) }
+        for episode in try context.fetch(FetchDescriptor<Episode>()) { context.delete(episode) }
+        for season in try context.fetch(FetchDescriptor<Season>()) { context.delete(season) }
         for item in try context.fetch(FetchDescriptor<MediaItem>()) { context.delete(item) }
         try context.save()
     }

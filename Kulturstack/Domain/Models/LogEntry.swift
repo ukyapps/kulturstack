@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV1 {
+extension KulturstackSchemaV2 {
     @Model
     final class LogEntry {
         @Attribute(.unique) var id: UUID
@@ -12,8 +12,10 @@ extension KulturstackSchemaV1 {
         var source: String
         var createdAt: Date
         var item: MediaItem?
+        var episode: Episode?
 
-        private init(item: MediaItem, status: LogStatus, date: Date, rating: Int?, note: String?, source: String) {
+        private init(item: MediaItem, status: LogStatus, date: Date, rating: Int?, note: String?,
+                     source: String, episode: Episode?) {
             self.id = UUID()
             self.date = date
             self.statusRaw = status.rawValue
@@ -22,13 +24,17 @@ extension KulturstackSchemaV1 {
             self.source = source
             self.createdAt = .now
             self.item = item
+            self.episode = episode
         }
 
         static func make(item: MediaItem, status: LogStatus, date: Date = .now, rating: Int? = nil,
-                         note: String? = nil, source: String = "manual") throws -> LogEntry {
+                         note: String? = nil, source: String = "manual",
+                         episode: Episode? = nil) throws -> LogEntry {
             try LogRules.validate(status: status, for: item.kind)
             try LogRules.validate(rating: rating)
-            return LogEntry(item: item, status: status, date: date, rating: rating, note: note, source: source)
+            try LogRules.validate(episode: episode, for: item)
+            return LogEntry(item: item, status: status, date: date, rating: rating, note: note,
+                            source: source, episode: episode)
         }
 
         var status: LogStatus {

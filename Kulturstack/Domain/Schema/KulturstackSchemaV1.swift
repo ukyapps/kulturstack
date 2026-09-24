@@ -8,7 +8,3 @@ enum KulturstackSchemaV1: VersionedSchema {
         [MediaItem.self, ExternalRef.self, LogEntry.self]
     }
 }
-
-typealias MediaItem = KulturstackSchemaV1.MediaItem
-typealias ExternalRef = KulturstackSchemaV1.ExternalRef
-typealias LogEntry = KulturstackSchemaV1.LogEntry

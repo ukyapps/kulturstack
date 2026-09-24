@@ -5,21 +5,29 @@ import Testing
 
 @MainActor
 struct WipeUseCaseTests {
-    private func counts(_ context: ModelContext) throws -> (Int, Int, Int) {
+    private func counts(_ context: ModelContext) throws -> (Int, Int, Int, Int, Int) {
         (try context.fetchCount(FetchDescriptor<MediaItem>()),
          try context.fetchCount(FetchDescriptor<LogEntry>()),
-         try context.fetchCount(FetchDescriptor<ExternalRef>()))
+         try context.fetchCount(FetchDescriptor<ExternalRef>()),
+         try context.fetchCount(FetchDescriptor<Season>()),
+         try context.fetchCount(FetchDescriptor<Episode>()))
     }
 
     @Test func wipeLeavesNothingBehind() throws {
         let container = try ModelContainerFactory.inMemory()
         let context = container.mainContext
         try DemoSeed(context: context).fill()
-        #expect(try counts(context) != (0, 0, 0))
+        let series = MediaItem(kind: .series, title: "Severance")
+        context.insert(series)
+        let season = try Season.make(number: 2, item: series)
+        context.insert(season)
+        context.insert(Episode(number: 4, season: season))
+        try context.save()
+        #expect(try counts(context) != (0, 0, 0, 0, 0))
 
         try WipeUseCase(repository: SwiftDataMediaRepository(context: context)).wipe()
 
-        #expect(try counts(context) == (0, 0, 0))
+        #expect(try counts(context) == (0, 0, 0, 0, 0))
         #expect(context.hasChanges == false)
     }
 
@@ -29,6 +37,6 @@ struct WipeUseCaseTests {
 
         try WipeUseCase(repository: SwiftDataMediaRepository(context: context)).wipe()
 
-        #expect(try counts(context) == (0, 0, 0))
+        #expect(try counts(context) == (0, 0, 0, 0, 0))
     }
 }

@@ -7,6 +7,7 @@ struct DebugSection: View {
     @Environment(\.modelContext) private var context
     @Query private var items: [MediaItem]
     @Query private var logs: [LogEntry]
+    @Query private var episodes: [Episode]
     @State private var showsSearch = false
 
     var body: some View {
@@ -22,7 +23,7 @@ struct DebugSection: View {
             Text(String(localized: "debug.menu"))
         } footer: {
             let version = Int(KulturstackMigrationPlan.current.versionIdentifier.major)
-            Text(String(localized: "debug.storage.badge \(version) \(items.count) \(logs.count)"))
+            Text(String(localized: "debug.storage.badge \(version) \(items.count) \(logs.count) \(episodes.count)"))
                 .font(.caption.monospaced())
         }
         .sheet(isPresented: $showsSearch) { DebugSearchView() }
