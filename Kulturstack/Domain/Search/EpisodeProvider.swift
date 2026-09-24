@@ -7,6 +7,16 @@ struct SeasonSummary: Sendable, Equatable, Identifiable {
     let title: String?
     let episodeCount: Int
     let airDate: Date?
+    // Le tiroir à making-of et bonus : il se coche, mais il n'est jamais « la suite ».
+    let isSpecials: Bool
+
+    init(number: Int, title: String?, episodeCount: Int, airDate: Date?, isSpecials: Bool = false) {
+        self.number = number
+        self.title = title
+        self.episodeCount = episodeCount
+        self.airDate = airDate
+        self.isSpecials = isSpecials
+    }
 
     var id: Int { number }
 }

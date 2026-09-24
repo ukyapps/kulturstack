@@ -59,6 +59,8 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Livre** : sur la fiche d'une série, la liste des saisons dépliables, une case par épisode, et « tout cocher jusqu'ici ».
 
+> **Les spéciaux vivent en bas, à part** (founder, 24/09). La saison 0 de TMDB — making-of, bonus — arrive en dernier, sous un intitulé « Spéciaux », et se coche comme le reste. Elle ne compte **jamais** comme « prochain épisode » (PR 15 et 16) : `SeasonSummary.isSpecials` est là pour ça. TMDB ne dit pas à quelle saison un spécial se rattache — 37 des 39 de Friends n'ont pas même de date — donc on ne les intercale pas.
+
 - Cocher = un `LogEntry` `done` daté maintenant, portant l'épisode. Décocher = supprimer ce log.
 - « Tout cocher jusqu'ici » : crée les logs manquants de la saison jusqu'à l'épisode touché, **sans doublon** si certains sont déjà cochés.
 - Trois rendus, comme partout : saison vide (« pas encore d'épisodes annoncés »), erreur de chargement (« Réessayer »), et la liste.
@@ -83,6 +85,7 @@ Les mêmes qu'en T1, elles ont tenu :
 **Livre** : **un quatrième onglet « En cours »** — l'écran qui répond à « je reprends quoi ce soir ? ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Les livres en cours y sont aussi, avec « terminé » en un tap.
 
 - Requête : les `LogEntry` `inProgress` sans log `done` ni `dropped` postérieur sur la même œuvre — exactement la mécanique des envies en attente (`StatsUseCase.pendingWishes`), à généraliser.
+- **Le prochain épisode ignore les spéciaux** : une saison marquée `isSpecials` ne fournit jamais « la suite », même cochée en partie.
 - État vide conçu avec l'écran : « Rien en cours » + « Chercher ». C'est l'écran d'accueil d'un onglet permanent : il sera vu vide souvent, il se soigne.
 - Quatrième onglet dans la `TabView`, avec son icône et son libellé FR + EN.
 

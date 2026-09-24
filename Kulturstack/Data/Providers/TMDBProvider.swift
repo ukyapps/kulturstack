@@ -124,13 +124,14 @@ struct TMDBProvider: MetadataProvider, DetailsProvider, EpisodeProvider {
         guard let showID = tvID(fromKey: key) else { return [] }
         let data = try await get(path: "tv/\(showID)")
         let show = try Self.decoder().decode(TMDBTVDetailsResponse.self, from: data)
-        // La saison 0 de TMDB est le bac aux épisodes spéciaux : une série se suit par ses
-        // saisons numérotées, et « le prochain épisode » n'aurait aucun sens sinon.
-        return (show.seasons ?? [])
-            .filter { $0.seasonNumber > 0 }
-            .sorted { $0.seasonNumber < $1.seasonNumber }
+        // La saison 0 de TMDB est le bac aux making-of et bonus. TMDB ne dit jamais à quelle
+        // saison ils se rattachent (37 des 39 de Friends n'ont même pas de date) : on ne peut
+        // pas les intercaler. Ils passent donc en dernier, marqués, jamais « la suite ».
+        let all = (show.seasons ?? []).sorted { $0.seasonNumber < $1.seasonNumber }
+        return (all.filter { $0.seasonNumber > 0 } + all.filter { $0.seasonNumber == 0 })
             .map { SeasonSummary(number: $0.seasonNumber, title: Self.text($0.name),
-                                 episodeCount: $0.episodeCount ?? 0, airDate: Self.day($0.airDate)) }
+                                 episodeCount: $0.episodeCount ?? 0, airDate: Self.day($0.airDate),
+                                 isSpecials: $0.seasonNumber == 0) }
     }
 
     func episodes(forKey key: String, season: Int) async throws -> [EpisodeSummary] {

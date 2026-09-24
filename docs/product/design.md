@@ -212,7 +212,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 | Tranche | Écran | L'idée en une ligne |
 |---|---|---|
 | 2 | **Où j'en suis** | **Un onglet** (tranché le 24/09, § 6 q. 7). Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un bouton ✓ qui coche l'épisode suivant. Livres en cours avec « terminé » en un tap. |
-| 2 | **Saisons / épisodes** | Sur la fiche d'une série : liste des saisons dépliables, cases à cocher par épisode, « tout cocher jusqu'ici ». |
+| 2 | **Saisons / épisodes** | Sur la fiche d'une série : liste des saisons dépliables, cases à cocher par épisode, « tout cocher jusqu'ici ». Les **spéciaux** (saison 0 de TMDB) ferment la liste, à part, cochables mais jamais « la suite » (founder, 24/09). |
 | 3 | **Import** | Choisir un fichier → aperçu « 312 films, 48 séries, 0 doublon » → importer → file « À confirmer » (titre + année, 2-3 candidats, « c'est celui-là » / « ignorer »). |
 | 5 | **Bibliothèque** | Onglet. Grille de jaquettes par format, onglets Vinyles · CD · Livres · DVD. Bouton scan en haut : viseur plein écran, bip, fiche pré-remplie avec « je le possède » coché. |
 | 5 | **Ajouter** (revu) | Sur un résultat : deux cases « ☑ Je l'ai vu » « ☐ Je le possède » — la première cochée par défaut ; format demandé seulement si la seconde est cochée. |

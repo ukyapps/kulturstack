@@ -17,15 +17,34 @@ struct TMDBSeasonsTests {
         return try #require(calendar.date(from: DateComponents(year: year, month: month, day: day)))
     }
 
-    // Les « Épisodes spéciaux » sont la saison 0 chez TMDB. Ils ne comptent pas dans
-    // « où j'en suis » : une série se suit par ses saisons numérotées.
-    @Test func theSeasonsOfASeriesLeaveTheSpecialsOut() async throws {
+    // Les « Épisodes spéciaux » sont la saison 0 chez TMDB. TMDB ne dit jamais à quelle
+    // saison ils se rattachent : ils ne peuvent pas être intercalés, ils passent en dernier.
+    @Test func theSpecialsComeLastAndNeverBetweenTwoSeasons() async throws {
         let client = StubHTTPClient(data: try Fixtures.data("tmdb-tv-friends"))
 
         let seasons = try await makeProvider(client: client).seasons(forKey: "tmdb:tv:1668")
 
-        #expect(seasons.map(\.number) == Array(1...10))
-        #expect(seasons.contains { $0.number == 0 } == false)
+        #expect(seasons.map(\.number) == Array(1...10) + [0])
+        #expect(seasons.last?.isSpecials == true)
+        #expect(seasons.last?.title == "Épisodes spéciaux")
+        #expect(seasons.last?.episodeCount == 39)
+        #expect(seasons.dropLast().allSatisfy { $0.isSpecials == false })
+    }
+
+    // Un spécial se coche comme un épisode : la saison 0 se charge comme les autres.
+    @Test func theSpecialsSeasonLoadsItsEpisodesLikeAnyOther() async throws {
+        let client = json(#"""
+        {"season_number": 0, "episodes": [
+            {"episode_number": 1, "name": "The Stuff You've Never Seen", "air_date": "2001-02-15", "runtime": 42},
+            {"episode_number": 10, "name": "Épisode 10", "air_date": null, "runtime": null}
+        ]}
+        """#)
+
+        let episodes = try await makeProvider(client: client).episodes(forKey: "tmdb:tv:1668", season: 0)
+
+        #expect(episodes.map(\.number) == [1, 10])
+        #expect(episodes.first?.title == "The Stuff You've Never Seen")
+        #expect(episodes.last?.airDate == nil)
     }
 
     @Test func aSeasonCarriesItsTitleItsCountAndItsFirstAirDate() async throws {
@@ -37,7 +56,7 @@ struct TMDBSeasonsTests {
         #expect(first.title == "Saison 1")
         #expect(first.episodeCount == 24)
         #expect(first.airDate == (try day(1994, 9, 22)))
-        #expect(seasons.last?.episodeCount == 17)
+        #expect(seasons.first { $0.number == 10 }?.episodeCount == 17)
     }
 
     // Une série longue, c'est dix appels réseau pour rien : lister les saisons n'en charge aucune.
