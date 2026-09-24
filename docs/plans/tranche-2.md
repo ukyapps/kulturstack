@@ -80,17 +80,17 @@ Les mêmes qu'en T1, elles ont tenu :
 
 ## PR 16 — « Où j'en suis » `feat/in-progress`
 
-**Livre** : l'écran qui répond à « je reprends quoi ce soir ? ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Les livres en cours y sont aussi, avec « terminé » en un tap.
+**Livre** : **un quatrième onglet « En cours »** — l'écran qui répond à « je reprends quoi ce soir ? ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Les livres en cours y sont aussi, avec « terminé » en un tap.
 
 - Requête : les `LogEntry` `inProgress` sans log `done` ni `dropped` postérieur sur la même œuvre — exactement la mécanique des envies en attente (`StatsUseCase.pendingWishes`), à généraliser.
-- État vide conçu avec l'écran : « Rien en cours » + « Chercher ».
+- État vide conçu avec l'écran : « Rien en cours » + « Chercher ». C'est l'écran d'accueil d'un onglet permanent : il sera vu vide souvent, il se soigne.
+- Quatrième onglet dans la `TabView`, avec son icône et son libellé FR + EN.
 
-> **⚠︎ Une question d'ergonomie à trancher avant d'écrire cette PR.** Le design (§ 4) prévoit « où j'en suis » comme un **chip du Journal**. Mais la founder a tranché l'inverse pour « Envie » le 22/09 : elle voulait **un onglet**, pas un chip. Trois options :
-> 1. **Un chip dans le Journal** (ce que dit le design) — cohérent avec les filtres existants, mais le Journal est chronologique et « où j'en suis » ne l'est pas.
-> 2. **Un quatrième onglet** — cohérent avec Envie, mais quatre onglets dans une app qui en veut trois.
-> 3. **Un bandeau en haut du Journal** (cartes défilant à l'horizontale), visible sans rien toucher.
+> **✅ Tranché le 24/09/2026 : un quatrième onglet** (founder), contre la reco du bandeau — comme pour Envie le 22/09. La barre passe à Journal · Envie · En cours · Recherche.
 >
-> **Reco : 3.** C'est ce qu'on ouvre l'app pour faire, et ça ne coûte pas un onglet. À valider avec elle avant de coder.
+> Ce que ça implique pour cette PR : un écran plein, pas un bandeau — liste verticale, une ligne par œuvre en cours avec sa progression (`S2 E4 sur 10`, `p. 212 sur 480`), le bouton qui avance d'un épisode à droite, et l'`EmptyState` « Rien en cours » quand la liste est vide (c'est alors un **onglet vide**, pas un bandeau qui disparaît : l'état vide compte double ici).
+>
+> **Reste à confirmer à l'écran, à la démo** : sa place dans la barre — troisième (l'ordre actuel ne bouge pas) ou deuxième, si « En cours » devient ce qu'on ouvre le soir.
 
 **Démo** : captures vide / rempli, et le ✓ qui fait avancer une série.
 

@@ -97,6 +97,13 @@ Sept retours d'un coup, après avoir vécu avec l'app. Triés en quatre PRs ; l'
 | « Dans journal à la place de mettre la date en petit sur quand j'ai vu je voudrais un aperçu du commentaire. » | Fait (PR 19) : la ligne du Journal montre le début du commentaire (2 lignes) là où était la date. La date ne se perd pas — elle est l'en-tête du jour, juste au-dessus. Sans commentaire, la ligne ne montre rien à cet endroit. |
 | « On peut enregistrer les trucs en double, on devrait pas, c'est une fois un film, même si on peut l'avoir revu, on peut mettre sur la même fiche qu'on l'a revu mais voilà » | Il n'y a **jamais deux fiches** (dédup par clé externe, ADR-004) : ce sont deux **logs** de la même œuvre, ce qui est voulu pour un revisionnage. Ce qui manquait, c'est l'avertissement : la ligne affichait « Vu le 20 sept. » et le `+` ajoutait quand même un log sans rien dire. Fait (PR 22) : le `+` sur une œuvre déjà loggée demande confirmation en rappelant la date, et « Logger à nouveau » reste à un bouton — un film revu, c'est bien deux logs sur la même fiche. |
 
+## Founder — session du 2026-09-24 (où vit « où j'en suis »)
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| Question posée à l'écran, trois maquettes comparées : chip du Journal, quatrième onglet, ou bandeau de cartes en haut du Journal. Choix : **le quatrième onglet**, contre ma reco du bandeau. | Consigné dans le design (§ 2, § 4, § 6 q. 7) et dans le plan de la T2 (PR 16, qui était bloquée là-dessus). L'écran entier appartient à « En cours » : progression, prochain épisode, bouton pour avancer. **Deuxième fois que la founder choisit l'onglet contre une reco de chip ou de bandeau** (déjà pour Envie le 22/09) : dans cette app, une chose qui compte mérite sa place dans la barre, pas un filtre. J'en tiens compte pour les prochaines recos. |
+| Conséquence non demandée, mais créée par ce choix : la barre comptera quatre onglets, et la Bibliothèque (T5) en ferait cinq. | Ouvert comme question 9 du design, **à trancher en T5, pas maintenant**. Pas de décision prise dans le dos. |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*
