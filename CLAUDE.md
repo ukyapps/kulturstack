@@ -109,6 +109,8 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 > **La migration V2 a été vérifiée sur l'appareil le 24/09** : base sauvegardée, comparée ligne à ligne, rien de perdu. Toute migration suivante se vérifie de la même façon — mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
 
+> **Lire `gh pr list --state open` en début de session.** Une PR ouverte est du travail en cours que `docs/etat-du-projet.md` ne montre pas. Le 24/09, deux sessions ont posé la même question à la founder et ouvert trois PRs pour la même décision.
+
 > **Vérifier l'état d'une PR avant de pousser sur sa branche** (`gh pr view <n> --json state`). La founder fusionne vite, dans le navigateur, sans le dire : un commit poussé sur une branche déjà fusionnée reste orphelin et recrée la branche côté GitHub. C'est arrivé le 24/09 (#30 → #31).
 
 **Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. En T2 même « vite fait » : les podcasts (ils arrivent en T4, le modèle est écrit pour eux mais seules les séries sont câblées) et les notes par épisode. Si une PR déborde d'une journée, la couper.

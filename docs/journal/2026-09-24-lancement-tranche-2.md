@@ -53,7 +53,9 @@ La signature personnelle est repartie pour 7 jours à cette occasion : prochaine
 
 5. **Interroger la vraie API avant de répondre à une question produit.** « Pourquoi pas répartis dans les saisons ? » appelait une réponse technique plausible ; la réponse honnête (37 spéciaux sans date sur 39, aucun titre français) ne s'obtenait qu'en regardant les données. Même leçon que pour `combined_credits` le 23/09.
 
-6. **Une liste markdown numérotée dans le désordre ment à l'écran.** GitHub renumérote séquentiellement : un item écrit « 7. » affiché en septième position seulement si les six précédents sont dans l'ordre. Quatre documents renvoyaient à « § 6, question 7 ».
+6. **Deux sessions ont posé la même question à la founder le même jour.** Une session de 17h a obtenu « pour où j'en suis fais un nouvel onglet » et ouvert la **PR #26** ; une session de 20h a reposé la question avec trois maquettes et ouvert les **#27** et **#28**. Même réponse, travail fait deux fois, et une PR périmée qui annulerait du travail si on la fusionnait. **Lire `gh pr list --state open` en début de session**, pas seulement l'état du projet : une PR ouverte est du travail en cours que la photo ne montre pas.
+
+7. **Une liste markdown numérotée dans le désordre ment à l'écran.** GitHub renumérote séquentiellement : un item écrit « 7. » affiché en septième position seulement si les six précédents sont dans l'ordre. Quatre documents renvoyaient à « § 6, question 7 ».
 
 ## Pièges
 
