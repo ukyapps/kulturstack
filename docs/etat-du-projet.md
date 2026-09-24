@@ -285,7 +285,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **trancher où vit « où j'en suis »** (design § 6, question 7 — reco : un bandeau en haut du Journal) · **dire si la Tranche 2 démarre** · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **dire si la Tranche 2 démarre** · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
@@ -301,4 +301,6 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 **Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
 
-**Question d'ergonomie ouverte** : où vit « où j'en suis » (T2) — design § 6, question 7.
+**Tranché le 24/09** : « où j'en suis » (T2) vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau. Sa place exacte dans la barre se confirme à l'écran, à la démo de la PR 16.
+
+**Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en comptera déjà quatre — design § 6, question 9. À trancher en T5, pas avant.
