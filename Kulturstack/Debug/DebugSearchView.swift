@@ -8,10 +8,16 @@ struct DebugSearchView: View {
     @State private var sections: [SearchSection] = []
     @State private var searchTask: Task<Void, Never>?
 
-    private var useCase: SearchUseCase {
+    private var registry: ProviderRegistry {
         let client = URLSessionHTTPClient()
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-        var providers = ProviderRegistry.live(secrets: BundleSecrets(), client: client, appVersion: version).providers
+        return ProviderRegistry.live(secrets: BundleSecrets(), client: client, appVersion: version)
+    }
+
+    private var episodeProvider: (any EpisodeProvider)? { registry.episodeProviders.first }
+
+    private var useCase: SearchUseCase {
+        var providers = registry.providers
         if simulateOutage {
             providers = providers.map { $0.id == "openlibrary" ? FailingProvider(id: $0.id, supportedKinds: $0.supportedKinds) : $0 }
         }
@@ -81,15 +87,28 @@ struct DebugSearchView: View {
             }
         case .loaded(let candidates):
             ForEach(candidates.prefix(5)) { candidate in
-                HStack(spacing: Spacing.m) {
-                    CoverThumbnail(url: candidate.coverURL, placeholderSymbol: candidate.kind.symbol, width: 32)
-                    VStack(alignment: .leading, spacing: Spacing.xs) {
-                        Text(candidate.title).font(.body)
-                        Text(String(localized: "journal.row.subtitle \(candidate.kind.label) \(candidate.year.map(String.init) ?? candidate.creators.first ?? "—")"))
-                            .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
+                // Une série mène à ses saisons : c'est la démo de la PR 13.
+                if candidate.kind.hasEpisodes, let episodeProvider {
+                    NavigationLink {
+                        DebugSeasonsView(title: candidate.title, key: candidate.id, provider: episodeProvider)
+                    } label: {
+                        row(candidate)
                     }
+                } else {
+                    row(candidate)
                 }
+            }
+        }
+    }
+
+    private func row(_ candidate: MediaCandidate) -> some View {
+        HStack(spacing: Spacing.m) {
+            CoverThumbnail(url: candidate.coverURL, placeholderSymbol: candidate.kind.symbol, width: 32)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text(candidate.title).font(.body)
+                Text(String(localized: "journal.row.subtitle \(candidate.kind.label) \(candidate.year.map(String.init) ?? candidate.creators.first ?? "—")"))
+                    .font(.caption)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
     }

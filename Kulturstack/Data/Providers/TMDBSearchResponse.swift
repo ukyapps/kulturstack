@@ -43,9 +43,27 @@ struct TMDBMovieDetailsResponse: Decodable {
 struct TMDBTVDetailsResponse: Decodable {
     struct Genre: Decodable { let name: String }
     struct Creator: Decodable { let name: String }
+    struct Season: Decodable {
+        let seasonNumber: Int
+        let name: String?
+        let episodeCount: Int?
+        let airDate: String?
+    }
     let numberOfSeasons: Int?
     let numberOfEpisodes: Int?
     let status: String?
     let genres: [Genre]?
     let createdBy: [Creator]?
+    let seasons: [Season]?
+}
+
+// GET /tv/{id}/season/{n} — le détail d'une saison, chargé seulement au dépliement.
+struct TMDBSeasonResponse: Decodable {
+    struct Episode: Decodable {
+        let episodeNumber: Int
+        let name: String?
+        let airDate: String?
+        let runtime: Int?
+    }
+    let episodes: [Episode]?
 }
