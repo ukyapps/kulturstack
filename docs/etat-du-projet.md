@@ -12,7 +12,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
-**Prochaine étape : la Tranche 2 (épisodes), planifiée mais pas commencée** — `docs/plans/tranche-2.md`, cinq PRs, en attente du feu vert de la founder et d'une question d'ergonomie (§ 8). Rien ne se publie sans son action.
+**La Tranche 2 (épisodes) est lancée le 24/09** — `docs/plans/tranche-2.md`, cinq PRs : schéma V2, épisodes TMDB, cocher un épisode, statuts *en cours* / *abandonné*, puis un **quatrième onglet « En cours »** (décision founder du 24/09). Rien ne se publie sans son action.
 
 ## 2. Features — planifié vs livré
 
@@ -56,7 +56,7 @@ Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utili
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis », statuts en cours / abandonné — **plan écrit : `docs/plans/tranche-2.md`** | non |
+| 2 | Épisodes | **en cours depuis le 24/09** — saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), onglet « En cours », statuts en cours / abandonné — `docs/plans/tranche-2.md` | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -285,14 +285,14 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **trancher où vit « où j'en suis »** (design § 6, question 7 — reco : un bandeau en haut du Journal) · **dire si la Tranche 2 démarre** · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
 1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
 2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. Si la founder lance la T2 : `docs/plans/tranche-2.md`, PR 12 (schéma V2). **Sa base contient maintenant ses vrais logs** — la migration se vérifie sur son iPhone avant fusion, pas seulement en mémoire. Basculer aussi le § « Périmètre courant » de `CLAUDE.md`.
-4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
+3. Tranche 2 : `docs/plans/tranche-2.md`, dans l'ordre. **La base de la founder contient ses vrais logs** — la migration V2 se vérifie sur son iPhone avant fusion, pas seulement en mémoire.
+4. Un retour d'usage passe toujours avant la suite du plan : petites PRs, comme le 23/09.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
@@ -301,4 +301,4 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 **Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
 
-**Question d'ergonomie ouverte** : où vit « où j'en suis » (T2) — design § 6, question 7.
+**Tranché le 24/09** : « où j'en suis » sera un **quatrième onglet** (« En cours »), pas un chip ni un bandeau — founder, contre la reco. Position dans la barre à confirmer en construisant l'écran.

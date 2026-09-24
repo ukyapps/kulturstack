@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: 2 — Épisodes
-statut: proposé — une question d'ergonomie à trancher avant la PR 16
+statut: lancée le 2026-09-24 — feu vert de la founder ; « où j'en suis » sera un onglet (§ PR 16)
 créé: 2026-09-23
 ---
 
@@ -85,12 +85,8 @@ Les mêmes qu'en T1, elles ont tenu :
 - Requête : les `LogEntry` `inProgress` sans log `done` ni `dropped` postérieur sur la même œuvre — exactement la mécanique des envies en attente (`StatsUseCase.pendingWishes`), à généraliser.
 - État vide conçu avec l'écran : « Rien en cours » + « Chercher ».
 
-> **⚠︎ Une question d'ergonomie à trancher avant d'écrire cette PR.** Le design (§ 4) prévoit « où j'en suis » comme un **chip du Journal**. Mais la founder a tranché l'inverse pour « Envie » le 22/09 : elle voulait **un onglet**, pas un chip. Trois options :
-> 1. **Un chip dans le Journal** (ce que dit le design) — cohérent avec les filtres existants, mais le Journal est chronologique et « où j'en suis » ne l'est pas.
-> 2. **Un quatrième onglet** — cohérent avec Envie, mais quatre onglets dans une app qui en veut trois.
-> 3. **Un bandeau en haut du Journal** (cartes défilant à l'horizontale), visible sans rien toucher.
->
-> **Reco : 3.** C'est ce qu'on ouvre l'app pour faire, et ça ne coûte pas un onglet. À valider avec elle avant de coder.
+> **Tranché le 24/09 : un onglet** (founder), contre ma reco du bandeau. Libellé **« En cours »**, titre de l'écran **« Où j'en suis »**. Quatre onglets : Journal · Envie · En cours · Recherche.
+> Position dans la barre à confirmer en construisant l'écran — reco : **en dernier**, pour ne déplacer aucun onglet existant.
 
 **Démo** : captures vide / rempli, et le ✓ qui fait avancer une série.
 

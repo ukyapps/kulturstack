@@ -53,10 +53,10 @@ Kulturstack
 ├── Journal            ← onglet 1, écran d'accueil
 │   ├── filtre période : Tout · Semaine · Mois · Année
 │   ├── filtre type    : chips (Films · Séries · Livres · …)
-│   ├── Envie          (T1)  — finalement un onglet, pas un chip (founder, 22/09)
-│   ├── Où j'en suis   (T2)  — emplacement à trancher (§ 6, question 7)
 │   └── → Fiche d'une œuvre → Modifier un log
-├── Recherche          ← onglet 2 (tranché le 21/09 : onglet, pas de « + » flottant)
+├── Envie              ← onglet 2 (T1) — un onglet, pas un chip (founder, 22/09)
+├── En cours           ← onglet (T2) — « Où j'en suis » : un onglet aussi (founder, 24/09)
+├── Recherche          ← onglet (tranché le 21/09 : onglet, pas de « + » flottant)
 │   ├── sections par famille : Films & séries · Livres · Disques · Podcasts · Jeux · Live
 │   ├── chips de filtre après la saisie
 │   └── « Aucun résultat ? Ajouter à la main » (T7)
@@ -211,7 +211,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 
 | Tranche | Écran | L'idée en une ligne |
 |---|---|---|
-| 2 | **Où j'en suis** | Chip du Journal. Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un bouton ✓ qui coche l'épisode suivant. Livres en cours avec « terminé » en un tap. |
+| 2 | **Où j'en suis** | **Un onglet** (founder, 24/09), titre « Où j'en suis », libellé d'onglet « En cours ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un bouton ✓ qui coche l'épisode suivant. Livres en cours avec « terminé » en un tap. Vide : « Rien en cours » + Chercher. |
 | 2 | **Saisons / épisodes** | Sur la fiche d'une série : liste des saisons dépliables, cases à cocher par épisode, « tout cocher jusqu'ici ». |
 | 3 | **Import** | Choisir un fichier → aperçu « 312 films, 48 séries, 0 doublon » → importer → file « À confirmer » (titre + année, 2-3 candidats, « c'est celui-là » / « ignorer »). |
 | 5 | **Bibliothèque** | Onglet. Grille de jaquettes par format, onglets Vinyles · CD · Livres · DVD. Bouton scan en haut : viseur plein écran, bip, fiche pré-remplie avec « je le possède » coché. |
@@ -276,7 +276,9 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 3. ~~**Groupement du Journal par jour ou liste plate ?**~~ **Tranché le 22/09/2026 : par jour** (#13), après la démo de la PR 7 où un log passé à hier avait « disparu » en bas de liste.
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.
-7. **Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau** — c'est ce pour quoi on ouvre l'app le soir, et ça ne coûte pas un onglet. À trancher avant la PR 16 (`docs/plans/tranche-2.md`).
+7. ~~**Où vit « où j'en suis » (T2) ?**~~ **Tranché le 24/09/2026 : un onglet** (founder), contre ma reco du bandeau — comme pour Envie le 22/09, et pour la même raison : ce qu'on consulte souvent mérite sa place, pas un coin d'écran. Quatre onglets : Journal · Envie · En cours · Recherche.
+   **Reste à décider en construisant la PR 16** : la position dans la barre. Reco — **ajouter « En cours » en dernier** (Journal · Envie · Recherche · En cours) pour ne déplacer aucun onglet existant, plutôt que de l'insérer en troisième et de pousser Recherche, qui est le plus utilisé au pouce.
+   **Conséquence à assumer** : la Bibliothèque (T5) ferait un cinquième onglet. On regardera à ce moment-là — probablement en la fusionnant avec le Journal.
 8. ~~**Le Journal s'ouvre-t-il filtré ?**~~ **Tranché le 23/09/2026 : sur Tout** (founder, après qu'un log daté hors de la semaine a eu l'air perdu). Filtrer est un geste, pas un défaut.
 
 ## 7. Ce qu'on ne fait pas en design

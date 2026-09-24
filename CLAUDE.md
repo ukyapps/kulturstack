@@ -103,11 +103,11 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 ## Périmètre courant
 
-**Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **Rien n'est en cours.**
+**Tranche 2 — Épisodes**, lancée le 24/09 (`docs/plans/tranche-2.md`) : cinq PRs, de `feat/schema-v2` à l'onglet « En cours ». La Tranche 1 est livrée et corrigée après usage réel (#18 → #22).
 
-La Tranche 2 — épisodes — est planifiée (`docs/plans/tranche-2.md`) mais **pas lancée** : ne rien coder dessus avant le feu vert de la founder, et avant qu'elle ait tranché où vit « où j'en suis » (design § 6, question 7). Le jour où elle lance la T2, mettre ce paragraphe à jour.
+**Deux règles propres à cette tranche** : la base de la founder contient ses vrais logs, donc **la migration V2 se vérifie sur son iPhone avant fusion**, pas seulement en mémoire ; et **une saison ne se charge qu'au dépliement**, jamais les dix d'un coup.
 
-**Hors périmètre** : épisodes et « en cours » (T2, pas lancée), import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Si une PR déborde d'une journée, la couper.
+**Hors périmètre** : les podcasts (le PRD les annonce en T2, ils n'existent qu'en T4), import (T3), disques (T4), possessions (T5), iPad, widgets, sync. Si une PR déborde d'une journée, la couper.
 
 ## Contexte founder — à garder en tête
 
