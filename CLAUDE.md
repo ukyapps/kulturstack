@@ -105,9 +105,11 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 **Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22).
 
-**Tranche 2 — épisodes — lancée le 24/09/2026** (feu vert de la founder). Le plan fait foi : `docs/plans/tranche-2.md`, cinq PRs dans l'ordre, PR 12 → PR 16. « Où j'en suis » est **un quatrième onglet « En cours »** (design § 6, q. 7, tranché le 24/09).
+**Tranche 2 — épisodes — en cours depuis le 24/09/2026.** Le plan fait foi : `docs/plans/tranche-2.md`. **PR 12 ✅ (#29) et PR 13 ✅ (#30) fusionnées** ; la suite est la **PR 14** (cocher un épisode), première PR visible à l'écran. « Où j'en suis » sera **un quatrième onglet « En cours »** (design § 6, q. 7) ; les **épisodes spéciaux** vivent à part, cochables, jamais « le prochain épisode ».
 
-> **La PR 12 ne se fusionne pas sans l'iPhone de la founder.** C'est la première vraie migration : sa base contient ses vrais logs depuis le 23/09. Installer la branche **par-dessus** l'app existante, vérifier que son journal est intact, et seulement ensuite fusionner. Une migration ne se teste pas qu'en mémoire.
+> **La migration V2 a été vérifiée sur l'appareil le 24/09** : base sauvegardée, comparée ligne à ligne, rien de perdu. Toute migration suivante se vérifie de la même façon — mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
+
+> **Vérifier l'état d'une PR avant de pousser sur sa branche** (`gh pr view <n> --json state`). La founder fusionne vite, dans le navigateur, sans le dire : un commit poussé sur une branche déjà fusionnée reste orphelin et recrée la branche côté GitHub. C'est arrivé le 24/09 (#30 → #31).
 
 **Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. En T2 même « vite fait » : les podcasts (ils arrivent en T4, le modèle est écrit pour eux mais seules les séries sont câblées) et les notes par épisode. Si une PR déborde d'une journée, la couper.
 

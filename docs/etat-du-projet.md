@@ -8,11 +8,13 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**La Tranche 1 est livrée, l'app tourne sur l'iPhone de la founder, et elle a servi.** Installée par câble le 23/09 (signature personnelle valable 7 jours — `make device` pour réinstaller). Deux jours d'usage réel ont produit **sept retours**, tous traités le même jour en cinq PRs (#18 → #22). 215 tests verts, 23 PRs fusionnées.
+**La Tranche 1 est livrée, l'app tourne sur l'iPhone de la founder, et la Tranche 2 est commencée.** Installée par câble, réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel ont produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **242 tests verts**, couverture 82,9 %.
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
-**Prochaine étape : la Tranche 2 (épisodes), planifiée mais pas commencée** — `docs/plans/tranche-2.md`, cinq PRs, en attente du feu vert de la founder et d'une question d'ergonomie (§ 8). Rien ne se publie sans son action.
+**Tranche 2 en cours depuis le 24/09.** Les PR 12 (schéma V2, #29) et 13 (saisons et épisodes chez TMDB, #30) sont fusionnées ; la #31 (épisodes spéciaux) attend. **Rien ne se voit encore à l'écran** : les deux PRs sont de la fondation. La prochaine, la PR 14, est la première visible — cocher un épisode sur la fiche d'une série.
+
+**La migration V2 a été vérifiée sur l'iPhone de la founder avant fusion**, base sauvegardée et comparée ligne à ligne : rien de perdu. Procédure dans `docs/journal/2026-09-24-lancement-tranche-2.md`. Rien ne se publie sans son action.
 
 ## 2. Features — planifié vs livré
 
@@ -58,7 +60,7 @@ Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utili
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **lancée le 24/09, plan : `docs/plans/tranche-2.md`** | non |
+| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **en cours : PR 12 ✅ #29, PR 13 ✅ #30, PR 14 → 16 à faire** | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -287,13 +289,13 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **brancher son iPhone pour la PR 12** — la migration se vérifie sur ses vraies données avant fusion, et cette installation remplace la réinstallation due **avant le 30/09** (la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **fusionner #31** (les épisodes spéciaux) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
 1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
 2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. **La T2 est lancée (24/09)** : `docs/plans/tranche-2.md`, PR 12 (schéma V2) d'abord. **Sa base contient maintenant ses vrais logs** — la migration se vérifie sur son iPhone avant fusion, pas seulement en mémoire. Cette installation sert aussi de réinstallation avant le 30/09 : la signature repart pour 7 jours.
+3. **T2 en cours** : PR 12 et 13 fusionnées, migration vérifiée sur l'appareil le 24/09. La suite est la **PR 14** (cocher un épisode) — `docs/plans/tranche-2.md`. Vérifier d'abord que **#31** (les spéciaux) est fusionnée, sinon la saison 0 est encore jetée.
 4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
@@ -303,6 +305,6 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 **Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
 
-**Tranché le 24/09** : « où j'en suis » (T2) vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau. Sa place exacte dans la barre se confirme à l'écran, à la démo de la PR 16.
+**Tranché le 24/09** : « où j'en suis » (T2) vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau — sa place exacte dans la barre se confirme à l'écran, à la démo de la PR 16 · les **épisodes spéciaux** (saison 0 de TMDB) vivent dans une section à part en bas de la fiche, cochables, **jamais** « le prochain épisode » : TMDB ne dit pas à quelle saison ils se rattachent, et 37 des 39 de Friends n'ont pas de date de diffusion.
 
 **Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en comptera déjà quatre — design § 6, question 9. À trancher en T5, pas avant.

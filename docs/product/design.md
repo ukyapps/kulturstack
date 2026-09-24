@@ -8,7 +8,9 @@ propriétaire: founder
 
 Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est dans le PRD, le *comment technique* dans `docs/tdd/`. L'ergonomie fine se valide à l'écran, maquette par maquette, en Tranche 1 — chaque écran ci-dessous porte un encadré **Réalisé** qui dit ce qui est dans l'app et ce qui manque encore.
 
-## 0. Où en est l'interface (23/09/2026)
+## 0. Où en est l'interface (24/09/2026)
+
+> **Tranche 2 commencée, rien de visible encore.** Les PR 12 et 13 (schéma V2, saisons et épisodes chez TMDB) sont fusionnées : elles n'ajoutent aucun écran. La première PR visible de la T2 est la 14 — saisons dépliables sur la fiche d'une série. Ce qui suit décrit donc toujours l'app livrée en Tranche 1.
 
 | Écran | État | PR |
 |---|---|---|
