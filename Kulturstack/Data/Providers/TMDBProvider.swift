@@ -1,6 +1,6 @@
 import Foundation
 
-struct TMDBProvider: MetadataProvider, DetailsProvider {
+struct TMDBProvider: MetadataProvider, DetailsProvider, EpisodeProvider {
     static let baseURL = URL(string: "https://api.themoviedb.org/3")!
     static let imageBaseURL = URL(string: "https://image.tmdb.org/t/p/w342")!
 
@@ -83,6 +83,16 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
         }
     }
 
+    private func get(path: String, extraQuery: [URLQueryItem] = []) async throws -> Data {
+        let token = try secrets.value(for: .tmdbReadToken)
+        var components = URLComponents(url: Self.baseURL.appending(path: path), resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "language", value: language)] + extraQuery
+        return try await client.get(components.url!, headers: [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json",
+        ])
+    }
+
     private static func decoder() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -93,16 +103,8 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
     func details(forKey key: String) async throws -> MediaEnrichment? {
         let parts = key.split(separator: ":", omittingEmptySubsequences: false).map(String.init)
         guard parts.count == 3, parts[0] == id, ["movie", "tv"].contains(parts[1]), Int(parts[2]) != nil else { return nil }
-        let token = try secrets.value(for: .tmdbReadToken)
-        var components = URLComponents(url: Self.baseURL.appending(path: "\(parts[1])/\(parts[2])"), resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "language", value: language)]
-        if parts[1] == "movie" {
-            components.queryItems?.append(URLQueryItem(name: "append_to_response", value: "credits"))
-        }
-        let data = try await client.get(components.url!, headers: [
-            "Authorization": "Bearer \(token)",
-            "Accept": "application/json",
-        ])
+        let credits = parts[1] == "movie" ? [URLQueryItem(name: "append_to_response", value: "credits")] : []
+        let data = try await get(path: "\(parts[1])/\(parts[2])", extraQuery: credits)
         let decoder = Self.decoder()
         if parts[1] == "movie" {
             let movie = try decoder.decode(TMDBMovieDetailsResponse.self, from: data)
@@ -116,6 +118,51 @@ struct TMDBProvider: MetadataProvider, DetailsProvider {
             creators: (show.createdBy ?? []).map(\.name),
             details: SeriesDetails(seasonCount: show.numberOfSeasons, episodeCount: show.numberOfEpisodes,
                                    status: show.status, genres: (show.genres ?? []).map(\.name)))
+    }
+
+    func seasons(forKey key: String) async throws -> [SeasonSummary] {
+        guard let showID = tvID(fromKey: key) else { return [] }
+        let data = try await get(path: "tv/\(showID)")
+        let show = try Self.decoder().decode(TMDBTVDetailsResponse.self, from: data)
+        // La saison 0 de TMDB est le bac aux épisodes spéciaux : une série se suit par ses
+        // saisons numérotées, et « le prochain épisode » n'aurait aucun sens sinon.
+        return (show.seasons ?? [])
+            .filter { $0.seasonNumber > 0 }
+            .sorted { $0.seasonNumber < $1.seasonNumber }
+            .map { SeasonSummary(number: $0.seasonNumber, title: Self.text($0.name),
+                                 episodeCount: $0.episodeCount ?? 0, airDate: Self.day($0.airDate)) }
+    }
+
+    func episodes(forKey key: String, season: Int) async throws -> [EpisodeSummary] {
+        guard let showID = tvID(fromKey: key) else { return [] }
+        let data = try await get(path: "tv/\(showID)/season/\(season)")
+        let response = try Self.decoder().decode(TMDBSeasonResponse.self, from: data)
+        return (response.episodes ?? [])
+            .sorted { $0.episodeNumber < $1.episodeNumber }
+            .map { EpisodeSummary(number: $0.episodeNumber, title: Self.text($0.name),
+                                  airDate: Self.day($0.airDate), runtimeMinutes: Self.minutes($0.runtime)) }
+    }
+
+    private func tvID(fromKey key: String) -> Int? {
+        let parts = key.split(separator: ":", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count == 3, parts[0] == id, parts[1] == "tv" else { return nil }
+        return Int(parts[2])
+    }
+
+    // Une date de diffusion TMDB est un jour (« 2024-11-17 »), pas un instant.
+    private static func day(_ raw: String?) -> Date? {
+        guard let raw, !raw.isEmpty else { return nil }
+        return try? Date(raw, strategy: .iso8601.year().month().day())
+    }
+
+    private static func text(_ raw: String?) -> String? {
+        guard let raw, !raw.trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+        return raw
+    }
+
+    private static func minutes(_ raw: Int?) -> Int? {
+        guard let raw, raw > 0 else { return nil }
+        return raw
     }
 
     private static func candidate(from result: TMDBSearchResult) -> MediaCandidate? {
