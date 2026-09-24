@@ -59,6 +59,64 @@ struct SearchViewModelTests {
         #expect(viewModel.toast == nil)
     }
 
+    // Retour du 23/09 : « on peut enregistrer les trucs en double, on devrait pas ».
+    @Test func thePlusOnAnAlreadyLoggedWorkAsksBeforeAddingASecondLog() async throws {
+        let logged = Logged()
+        let yesterday = Date.now.addingTimeInterval(-86_400)
+        let dates = Dates(byID: ["tmdb:movie:1": yesterday])
+        let tmdb = MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film]))
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: [tmdb]),
+                                        logNow: { logged.ids.append($0.id); return UUID() },
+                                        lastLogDate: { dates.byID[$0.id] }, debounce: .zero)
+        viewModel.query = "dune"
+        try await settle(viewModel)
+
+        viewModel.log(film)
+
+        #expect(logged.ids.isEmpty)
+        #expect(viewModel.toast == nil)
+        let warning = try #require(viewModel.duplicate)
+        #expect(warning.title == film.title)
+        #expect(warning.loggedLabel == film.kind.loggedLabel(on: yesterday))
+
+        viewModel.confirmDuplicate()
+
+        #expect(logged.ids == ["tmdb:movie:1"])
+        #expect(viewModel.duplicate == nil)
+        #expect(viewModel.toast?.isError == false)
+    }
+
+    @Test func refusingTheSecondLogWritesNothing() async throws {
+        let logged = Logged()
+        let dates = Dates(byID: ["tmdb:movie:1": .now])
+        let tmdb = MockProvider(id: "tmdb", kinds: [.film, .series], result: .success([film]))
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: [tmdb]),
+                                        logNow: { logged.ids.append($0.id); return UUID() },
+                                        lastLogDate: { dates.byID[$0.id] }, debounce: .zero)
+        viewModel.query = "dune"
+        try await settle(viewModel)
+        viewModel.log(film)
+
+        viewModel.cancelDuplicate()
+
+        #expect(logged.ids.isEmpty)
+        #expect(viewModel.duplicate == nil)
+        #expect(viewModel.toast == nil)
+    }
+
+    // Deux fois de suite sur le +, sans quitter l'écran : la deuxième fois demande aussi.
+    @Test func aSecondTapInTheSameSessionAlsoAsks() {
+        let logged = Logged()
+        let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
+                                        logNow: { logged.ids.append($0.id); return UUID() }, debounce: .zero)
+
+        viewModel.log(film)
+        viewModel.log(film)
+
+        #expect(logged.ids == ["tmdb:movie:1"])
+        #expect(viewModel.duplicate != nil)
+    }
+
     @Test func aFailedQuickLogShowsAnErrorToastAndLeavesTheRowUntouched() {
         let viewModel = SearchViewModel(useCase: SearchUseCase(providers: []),
                                         logNow: { _ in throw HTTPError.status(500) }, debounce: .zero)

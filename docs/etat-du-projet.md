@@ -86,8 +86,8 @@ Kulturstack/
 │   │   ├── JournalRowTap.swift       ce qu'un tap ouvre : showItem(fiche), ou edit(log) si la fiche a disparu
 │   │   └── JournalRow.swift          jaquette + titre + « Type · année ou auteur » + pastille statut + aperçu du commentaire (2 lignes) + étoiles ; pas de date, elle est dans l'en-tête du jour
 │   ├── Search/
-│   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; bandeau hors-ligne (safeAreaInset) ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; ♡ → envie, + → log ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
-│   │   ├── SearchViewModel.swift     query (didSet → debounce 300 ms), sections, selectedKind, presentation ; log(candidate) → logNow injecté + pastille + toast 4 s ; wish(candidate) → toast ; lastLogDate injecté → row(for:) ; refreshLogDates()
+│   │   ├── SearchView.swift          .searchable + focus à l'ouverture ; bandeau hors-ligne (safeAreaInset) ; 4 rendus ; ligne = NavigationLink → fiche (mode candidat) ; ♡ → envie, + → log (**confirmation si l'œuvre est déjà loggée**) ; Toast « Modifier » → feuille ; pastilles rafraîchies sur didSave
+│   │   ├── SearchViewModel.swift     query (didSet → debounce 300 ms), sections, selectedKind, presentation ; log(candidate) → confirmation si déjà loggé (Duplicate + confirmDuplicate() / cancelDuplicate()), sinon logNow injecté + pastille + toast 4 s ; wish(candidate) → toast ; lastLogDate injecté → row(for:) ; refreshLogDates()
 │   │   ├── SearchResultRowModel.swift  instantané valeur d'un candidat (titre, « Type · année · créateur », jaquette, lastLoggedAt, loggedLabel)
 │   │   ├── SearchResultRow.swift     MediaRow avec pastille « Vu le … » + boutons ♡ et + (borderless) en accessoire
 │   │   └── KindChips.swift           « Tous » + un chip par type des familles enregistrées
@@ -180,7 +180,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 212, tous verts
+## 4. Tests — 215, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -224,7 +224,7 @@ Kulturstack/
 | `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary], familles [écran, livres], detailsProviders = [TMDB] ; User-Agent nomme l'app et un contact |
 | `TMDBDetailsTests` | 5 (paramétrés : 8 cas) | fixture film → 2h35, genres, réalisateur ; fixture série → 2 saisons, 14 épisodes, statut, genres, créateurs ; URL movie/{id} + credits + langue + Bearer ; clés d'une autre forme → nil sans requête ; secret manquant → erreur sans requête |
 | `EnrichUseCaseTests` | 5 (paramétrés : 10 cas) | remplit créateurs + poche et enregistre ; créateurs existants gardés ; panne → rien ne change ; clé inconnue → sauté ; needsEnrichment par type |
-| `SearchViewModelTests` | 15 | ♡ → wish + toast portant l'id, pas de pastille ; ligne déjà loggée → « Vu le … », refreshLogDates la met à jour ; + → logNow + pastille + toast (portant l'id du log) qui s'efface, échec → toast d'erreur sans id ; idle sous 2 caractères ; une section par famille ; **debounce → un seul appel avec la dernière saisie** ; effacer → idle ; filtre par type (candidats filtrés, familles étrangères masquées) ; filtre sans résultat = edge ; rien nulle part = aucun résultat ; section en erreur visible à côté des résultats ; retry ciblé ; chips = types des familles ; sous-titre |
+| `SearchViewModelTests` | 18 | ♡ → wish + toast portant l'id, pas de pastille ; ligne déjà loggée → « Vu le … », refreshLogDates la met à jour ; + → logNow + pastille + toast (portant l'id du log) qui s'efface, échec → toast d'erreur sans id ; idle sous 2 caractères ; une section par famille ; **debounce → un seul appel avec la dernière saisie** ; effacer → idle ; filtre par type (candidats filtrés, familles étrangères masquées) ; filtre sans résultat = edge ; rien nulle part = aucun résultat ; section en erreur visible à côté des résultats ; retry ciblé ; chips = types des familles ; sous-titre ; **+ sur une œuvre déjà loggée : demande d'abord, confirmer logge, refuser n'écrit rien, et un deuxième tap dans la même session demande aussi** |
 | `SearchViewRenderingTests` | 2 | l'écran traverse ses 4 rendus dans une UIWindow ; chips, en-tête et ligne se rendent |
 | `LogUseCaseTests` | 12 | **un log porte la date, la note et le commentaire qu'on lui donne (blanc → nil)** ; **un candidat loggé porte les mêmes champs** ; envie puis vu = 2 logs sur 1 fiche ; envie sur une fiche existante ; logAgain = log done maintenant sur la même fiche ; find(itemID:) ; premier log = fiche + refs + poche + log done/manual/maintenant ; **T-04** deux fois le même candidat → 1 fiche, 2 logs ; **T-05** clé partagée → même fiche, clés nouvelles ajoutées ; œuvres différentes → fiches différentes ; Envie accepté, statut interdit refusé ; `findItem(withAnyKey:)` |
 | `SearchUseCaseTests` | 8 | loading pour chaque famille puis settle ; **T-07** panne isolée ; **T-09** le rapide n'attend pas le lent ; **T-08** annulation → providers annulés, rien de périmé ; timeout → failed ; vide → empty ; retry n'appelle que la famille ; ordre canonique des familles |
