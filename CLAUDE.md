@@ -103,7 +103,11 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 ## Périmètre courant
 
-Tranche 1 (`docs/plans/tranche-1.md`). **Hors périmètre** : épisodes, import, disques, podcasts, possessions, « en cours », iPad, widgets, sync. Si une PR déborde d'une journée, la couper.
+**Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **Rien n'est en cours.**
+
+La Tranche 2 — épisodes — est planifiée (`docs/plans/tranche-2.md`) mais **pas lancée** : ne rien coder dessus avant le feu vert de la founder, et avant qu'elle ait tranché où vit « où j'en suis » (design § 6, question 7). Le jour où elle lance la T2, mettre ce paragraphe à jour.
+
+**Hors périmètre** : épisodes et « en cours » (T2, pas lancée), import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Si une PR déborde d'une journée, la couper.
 
 ## Contexte founder — à garder en tête
 
