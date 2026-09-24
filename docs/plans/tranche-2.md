@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: 2 — Épisodes
-statut: en cours — lancée le 2026-09-24 ; « où j'en suis » = un onglet (§ 6 q. 7)
+statut: en cours — lancée le 2026-09-24 ; PR 12 et 13 fusionnées ; « où j'en suis » = un onglet (§ 6 q. 7)
 créé: 2026-09-23
 ---
 
@@ -32,7 +32,7 @@ Les mêmes qu'en T1, elles ont tenu :
 
 ---
 
-## PR 12 — Schéma V2 : saisons et épisodes `feat/schema-v2`
+## PR 12 — Schéma V2 : saisons et épisodes `feat/schema-v2` — ✅ #29
 
 **Livre** : `Season`, `Episode`, `LogEntry.episode`, `KulturstackSchemaV2` et son **étage de migration**. Aucune interface.
 
@@ -43,8 +43,10 @@ Les mêmes qu'en T1, elles ont tenu :
 **Démo** : le badge DEBUG affiche « Base V2 · n fiches · n logs · n épisodes ». Peu spectaculaire, assumé — comme la PR 1.
 
 > **C'est la PR la plus risquée de la tranche, et la première vraie migration.** Jusqu'ici la base de la founder était jetable ; depuis le 23/09 elle contient ses vrais logs. Avant de fusionner : installer la branche sur son iPhone **par-dessus** l'app existante et vérifier que son journal est intact. Une migration ne se teste pas qu'en mémoire.
+>
+> **Fait le 24/09, et ça a tenu.** Sauvegarde du store depuis l'appareil (`~/Documents/kulturstack-sauvegarde-base-2026-09-24/`), référence prise en SQLite, installation, puis comparaison **ligne à ligne** : 7 œuvres, 11 logs, 10 références, identiques avant et après ; notes et commentaires conservés ; `ZSEASON` et `ZEPISODE` créées et vides. Mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
 
-## PR 13 — Les épisodes chez TMDB `feat/tmdb-seasons`
+## PR 13 — Les épisodes chez TMDB `feat/tmdb-seasons` — ✅ #30, spéciaux en #31
 
 **Livre** : de quoi remplir une saison depuis TMDB, derrière un protocole du `Domain`.
 

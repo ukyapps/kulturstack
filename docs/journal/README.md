@@ -19,3 +19,4 @@ Un fichier par session de travail : ce qui a été décidé, fait, cassé, appri
 | 2026-09-22 | [Réglages, Confidentialité, À propos (PR 11)](2026-09-22-reglages.md) |
 | 2026-09-22 | [Fin de la Tranche 1, jalon iPhone](2026-09-22-jalon-iphone.md) |
 | 2026-09-23 | [Les premiers retours d'usage (PR #18 → #22)](2026-09-23-retours-usage.md) |
+| 2026-09-24 | [Docs remises d'aplomb, puis lancement de la Tranche 2 (#25 → #31)](2026-09-24-lancement-tranche-2.md) |

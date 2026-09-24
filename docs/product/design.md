@@ -8,7 +8,9 @@ propriétaire: founder
 
 Ce document décrit **comment l'app se présente et se manipule**. Le *quoi* est dans le PRD, le *comment technique* dans `docs/tdd/`. L'ergonomie fine se valide à l'écran, maquette par maquette, en Tranche 1 — chaque écran ci-dessous porte un encadré **Réalisé** qui dit ce qui est dans l'app et ce qui manque encore.
 
-## 0. Où en est l'interface (23/09/2026)
+## 0. Où en est l'interface (24/09/2026)
+
+> **Tranche 2 commencée, rien de visible encore.** Les PR 12 et 13 (schéma V2, saisons et épisodes chez TMDB) sont fusionnées : elles n'ajoutent aucun écran. La première PR visible de la T2 est la 14 — saisons dépliables sur la fiche d'une série. Ce qui suit décrit donc toujours l'app livrée en Tranche 1.
 
 | Écran | État | PR |
 |---|---|---|
@@ -276,7 +278,7 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.
 6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ ~~**Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.~~ **Retranché le 23/09/2026 après quelques jours d'usage : la fiche** (founder : « quand je fais un tap sur un film que j'ai vu, je voudrais que ça ouvre la fiche du film, et que j'aie une option pour modifier depuis la fiche »). Modifier reste à l'appui long, et depuis la fiche. Même geste dans l'onglet Envie (#18).
-7. ~~**Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau**.~~ **Tranché le 24/09/2026 : un quatrième onglet « En cours »** (founder), contre la reco du bandeau — comme pour Envie le 22/09. L'écran entier lui appartient : progression, prochain épisode, bouton pour avancer. **Reste à confirmer à l'écran, à la démo de la PR 16** : sa place dans la barre. Le § 2 le met en troisième (Journal · Envie · En cours · Recherche) pour ne pas bouger l'ordre existant ; Journal · En cours · Envie · Recherche se défend aussi, si « En cours » devient ce qu'on ouvre le soir.
+7. ~~**Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau**.~~ **Tranché le 24/09/2026 : un quatrième onglet « En cours »** (founder), contre la reco du bandeau — comme pour Envie le 22/09. L'écran entier lui appartient : progression, prochain épisode, bouton pour avancer. **Reste à confirmer à l'écran, à la démo de la PR 16** : sa place dans la barre. Trois positions se défendent : **troisième** (Journal · Envie · En cours · Recherche), ce que retient le § 2, pour garder Journal et Envie où ils sont ; **dernière** (Journal · Envie · Recherche · En cours), qui ne déplace *aucun* onglet existant — Recherche est celui que le pouce connaît le mieux ; **deuxième**, si « En cours » devient ce qu'on ouvre le soir. À regarder à l'écran, pas sur le papier.
 8. ~~**Le Journal s'ouvre-t-il filtré ?**~~ **Tranché le 23/09/2026 : sur Tout** (founder, après qu'un log daté hors de la semaine a eu l'air perdu). Filtrer est un geste, pas un défaut.
 9. **Où va la Bibliothèque (T5) ?** Conséquence directe de la question 7 : la barre en compte quatre, la Bibliothèque en ferait cinq — un de trop sur un iPhone. Options à ouvrir le moment venu : fusionner Journal et En cours, passer Envie dans le Journal, ou un « Plus ». **Pas maintenant** — à trancher en T5, pas avant.
 
