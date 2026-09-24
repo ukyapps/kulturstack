@@ -103,11 +103,13 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 ## Périmètre courant
 
-**Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **Rien n'est en cours.**
+**Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22).
 
-La Tranche 2 — épisodes — est planifiée (`docs/plans/tranche-2.md`) mais **pas lancée** : ne rien coder dessus avant le feu vert de la founder. La question d'emplacement qui bloquait la PR 16 est tranchée depuis le 24/09 — « où j'en suis » est **un quatrième onglet « En cours »** (design § 6, q. 7). Le jour où elle lance la T2, mettre ce paragraphe à jour.
+**Tranche 2 — épisodes — lancée le 24/09/2026** (feu vert de la founder). Le plan fait foi : `docs/plans/tranche-2.md`, cinq PRs dans l'ordre, PR 12 → PR 16. « Où j'en suis » est **un quatrième onglet « En cours »** (design § 6, q. 7, tranché le 24/09).
 
-**Hors périmètre** : épisodes et « en cours » (T2, pas lancée), import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Si une PR déborde d'une journée, la couper.
+> **La PR 12 ne se fusionne pas sans l'iPhone de la founder.** C'est la première vraie migration : sa base contient ses vrais logs depuis le 23/09. Installer la branche **par-dessus** l'app existante, vérifier que son journal est intact, et seulement ensuite fusionner. Une migration ne se teste pas qu'en mémoire.
+
+**Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. En T2 même « vite fait » : les podcasts (ils arrivent en T4, le modèle est écrit pour eux mais seules les séries sont câblées) et les notes par épisode. Si une PR déborde d'une journée, la couper.
 
 ## Contexte founder — à garder en tête
 

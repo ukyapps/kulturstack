@@ -52,11 +52,13 @@ Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utili
 | « On peut enregistrer les trucs en double » | Le `+` sur une œuvre déjà loggée demande confirmation | ✅ #22 |
 | « La recherche par auteur marche pour les livres » | Rien à faire : OpenLibrary cherche nativement dans les auteurs | — |
 
-### Tranches suivantes (planifiées, rien de codé)
+### Tranches suivantes
+
+**La Tranche 2 est lancée depuis le 24/09/2026** (feu vert de la founder). Rien n'est encore codé : la PR 12 est la prochaine.
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis », statuts en cours / abandonné — **plan écrit : `docs/plans/tranche-2.md`** | non |
+| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **lancée le 24/09, plan : `docs/plans/tranche-2.md`** | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -285,13 +287,13 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **dire si la Tranche 2 démarre** · **réinstaller l'app avant le 30/09** (`make device` — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **brancher son iPhone pour la PR 12** — la migration se vérifie sur ses vraies données avant fusion, et cette installation remplace la réinstallation due **avant le 30/09** (la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
 1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
 2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. Si la founder lance la T2 : `docs/plans/tranche-2.md`, PR 12 (schéma V2). **Sa base contient maintenant ses vrais logs** — la migration se vérifie sur son iPhone avant fusion, pas seulement en mémoire. Basculer aussi le § « Périmètre courant » de `CLAUDE.md`.
+3. **La T2 est lancée (24/09)** : `docs/plans/tranche-2.md`, PR 12 (schéma V2) d'abord. **Sa base contient maintenant ses vrais logs** — la migration se vérifie sur son iPhone avant fusion, pas seulement en mémoire. Cette installation sert aussi de réinstallation avant le 30/09 : la signature repart pour 7 jours.
 4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 

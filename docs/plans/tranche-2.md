@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: 2 — Épisodes
-statut: proposé — une question d'ergonomie à trancher avant la PR 16
+statut: en cours — lancée le 2026-09-24 ; « où j'en suis » = un onglet (§ 6 q. 7)
 créé: 2026-09-23
 ---
 
