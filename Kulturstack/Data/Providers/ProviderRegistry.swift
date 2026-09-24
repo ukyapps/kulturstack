@@ -8,6 +8,9 @@ struct ProviderRegistry: Sendable {
     // Les sources qui savent compléter une fiche après coup (TMDB aujourd'hui).
     var detailsProviders: [any DetailsProvider] { providers.compactMap { $0 as? any DetailsProvider } }
 
+    // Celles qui savent découper une série en saisons et en épisodes.
+    var episodeProviders: [any EpisodeProvider] { providers.compactMap { $0 as? any EpisodeProvider } }
+
     static func live(secrets: any SecretsProviding, client: any HTTPClient, appVersion: String) -> ProviderRegistry {
         ProviderRegistry(providers: [
             TMDBProvider(secrets: secrets, client: client),
