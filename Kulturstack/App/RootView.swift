@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
-    enum Tab: Hashable { case journal, wishlist, search }
+    enum Tab: Hashable { case journal, wishlist, inProgress, search }
 
     @Environment(\.modelContext) private var context
     @State private var selectedTab = Tab.journal
@@ -23,6 +23,12 @@ struct RootView: View {
             }
             .tabItem { Label(String(localized: "tab.wishlist"), systemImage: "heart") }
             .tag(Tab.wishlist)
+
+            NavigationStack {
+                InProgressView(services: services) { selectedTab = .search }
+            }
+            .tabItem { Label(String(localized: "tab.inProgress"), systemImage: "play.circle") }
+            .tag(Tab.inProgress)
 
             NavigationStack {
                 SearchView(useCase: SearchUseCase(providers: registry.providers), services: services)
