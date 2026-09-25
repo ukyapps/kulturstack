@@ -20,7 +20,10 @@ struct SeriesEpisodesViewModelTests {
             log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
             edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context))
         )
-        return (item, SeriesEpisodesViewModel(itemID: item.id, repository: media, useCase: useCase))
+        let status = WatchStatusUseCase(
+            log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+            edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        return (item, SeriesEpisodesViewModel(itemID: item.id, repository: media, useCase: useCase, status: status))
     }
 
     private func rows(_ state: SeriesEpisodesViewModel.SeasonsState) throws -> [SeasonRowModel] {
@@ -179,6 +182,118 @@ struct SeriesEpisodesViewModelTests {
         #expect(provider.episodeCalls.count == 1)
     }
 
+    // MARK: - En cours, terminé, abandonné
+
+    @Test func checkingAnEpisodeShowsTheSeriesAsInProgress() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+        #expect(viewModel.watchStatus == nil)
+
+        viewModel.toggle(episode: 1, in: 1)
+
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    @Test func uncheckingEverythingClearsTheStatus() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+
+        viewModel.toggle(episode: 1, in: 1)
+        viewModel.toggle(episode: 1, in: 1)
+
+        #expect(viewModel.watchStatus == nil)
+    }
+
+    @Test func checkingTheLastEpisodeOfTheLastSeasonProposesToFinish() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+
+        viewModel.checkUpTo(episode: 3, in: 1)
+
+        #expect(viewModel.proposesFinish)
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    @Test func acceptingTheProposalMarksTheSeriesDone() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+        viewModel.checkUpTo(episode: 3, in: 1)
+
+        viewModel.finish()
+
+        #expect(viewModel.watchStatus == .done)
+        #expect(viewModel.proposesFinish == false)
+    }
+
+    // Une série qui continue n'est pas finie : rien n'est imposé, la proposition se refuse.
+    @Test func decliningTheProposalLeavesTheSeriesInProgress() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),
+                                           episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+        viewModel.checkUpTo(episode: 2, in: 1)
+
+        viewModel.proposesFinish = false
+
+        #expect(viewModel.watchStatus == .inProgress)
+        let statusLogs = try container.mainContext.fetch(FetchDescriptor<LogEntry>()).filter { $0.episode == nil }
+        #expect(statusLogs.count == 1)
+    }
+
+    @Test func aMiddleEpisodeProposesNothing() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3),
+                                                              StubEpisodeProvider.season(2, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+
+        viewModel.checkUpTo(episode: 3, in: 1)
+
+        #expect(viewModel.proposesFinish == false)
+    }
+
+    @Test func droppingThenResumingIsShown() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+        viewModel.toggle(episode: 1, in: 1)
+
+        viewModel.drop()
+        #expect(viewModel.watchStatus == .dropped)
+
+        viewModel.resume()
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    // Une série déjà en cours se rouvre en cours : le statut se lit, il ne se redevine pas.
+    @Test func theStatusIsReadWhenTheSectionLoads() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (item, viewModel) = try make(provider)
+        container.mainContext.insert(try LogEntry.make(item: item, status: .dropped))
+        try container.mainContext.save()
+
+        await viewModel.load()
+
+        #expect(viewModel.watchStatus == .dropped)
+    }
+
     @Test func aWorkThatDisappearedShowsTheErrorState() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1)]))
         let context = container.mainContext
@@ -187,7 +302,10 @@ struct SeriesEpisodesViewModelTests {
             repository: SwiftDataEpisodeRepository(context: context), providers: [provider],
             log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
             edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
-        let viewModel = SeriesEpisodesViewModel(itemID: UUID(), repository: media, useCase: useCase)
+        let viewModel = SeriesEpisodesViewModel(
+            itemID: UUID(), repository: media, useCase: useCase,
+            status: WatchStatusUseCase(log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+                                       edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context))))
 
         await viewModel.load()
 

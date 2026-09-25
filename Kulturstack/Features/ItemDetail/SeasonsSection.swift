@@ -6,19 +6,17 @@ struct SeasonsSection: View {
 
     private let opened: Set<Int>
 
-    init(itemID: UUID, services: AppServices, opened: Set<Int> = []) {
+    init(itemID: UUID, services: AppServices, opened: Set<Int> = [], onChange: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: SeriesEpisodesViewModel(
-            itemID: itemID, repository: services.mediaRepository, useCase: services.episodeUseCase))
+            itemID: itemID, repository: services.mediaRepository, useCase: services.episodeUseCase,
+            status: services.watchStatusUseCase, onChange: onChange))
         _expanded = State(initialValue: opened)
         self.opened = opened
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
-            Text(String(localized: "series.seasons.title"))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Color.textSecondary)
-                .textCase(.uppercase)
+            header
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -27,6 +25,44 @@ struct SeasonsSection: View {
             for number in opened.sorted() { await viewModel.open(number) }
         }
         .alert(String(localized: "series.check.failed"), isPresented: $viewModel.didFailToCheck) {}
+        .alert(String(localized: "series.finish.title"), isPresented: $viewModel.proposesFinish) {
+            Button(String(localized: "series.finish.confirm")) { viewModel.finish() }
+            Button(String(localized: "series.finish.later"), role: .cancel) {}
+        } message: {
+            Text(String(localized: "series.finish.message"))
+        }
+    }
+
+    // Le statut se montre et se change au même endroit : abandonner est une action, jamais une devinette.
+    private var header: some View {
+        HStack(spacing: Spacing.s) {
+            Text(String(localized: "series.seasons.title"))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color.textSecondary)
+                .textCase(.uppercase)
+            if let status = viewModel.watchStatus {
+                Text(status.label)
+                    .font(.caption)
+                    .padding(.horizontal, Spacing.s)
+                    .padding(.vertical, 2)
+                    .background(Color.surfaceSecondary, in: Capsule())
+                    .foregroundStyle(Color.textPrimary)
+            }
+            Spacer(minLength: 0)
+            Menu {
+                if viewModel.watchStatus == .dropped {
+                    Button(String(localized: "series.resume"), systemImage: "play.circle") { viewModel.resume() }
+                } else {
+                    Button(String(localized: "series.drop"), systemImage: "xmark.circle", role: .destructive) {
+                        viewModel.drop()
+                    }
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .foregroundStyle(Color.textSecondary)
+                    .accessibilityLabel(String(localized: "series.status.menu"))
+            }
+        }
     }
 
     @ViewBuilder private var content: some View {

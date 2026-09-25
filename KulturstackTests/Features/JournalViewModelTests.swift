@@ -268,3 +268,67 @@ private final class StubLogRepository: LogRepository {
     func save() throws {}
     func delete(_ log: LogEntry) throws { throw StubError() }
 }
+
+// Cocher des épisodes ne doit pas noyer le journal : une saison cochée, c'est une ligne
+// « en cours » sur l'œuvre, pas dix lignes identiques.
+@MainActor
+struct JournalEpisodeLogsTests {
+    private let container: ModelContainer
+
+    init() throws { container = try ModelContainerFactory.inMemory() }
+
+    private func severance() throws -> (MediaItem, [LogEntry]) {
+        let context = container.mainContext
+        let item = MediaItem(kind: .series, title: "Severance")
+        context.insert(item)
+        let season = try Season.make(number: 1, item: item)
+        context.insert(season)
+        var logs: [LogEntry] = []
+        for number in 1...3 {
+            let episode = Episode(number: number, season: season)
+            context.insert(episode)
+            let log = try LogEntry.make(item: item, status: .done, episode: episode)
+            context.insert(log)
+            logs.append(log)
+        }
+        let status = try LogEntry.make(item: item, status: .inProgress,
+                                       source: WatchStatusUseCase.automaticSource)
+        context.insert(status)
+        try context.save()
+        return (item, logs + [status])
+    }
+
+    @Test func theJournalShowsTheStatusNotEachCheckedEpisode() async throws {
+        let (_, logs) = try severance()
+        let viewModel = JournalViewModel(repository: StubLogRepository(result: .success(logs)))
+
+        await viewModel.load()
+
+        guard case .loaded(let rows) = viewModel.state else {
+            Issue.record("état attendu : loaded")
+            return
+        }
+        #expect(rows.count == 1)
+        #expect(rows.first?.status == .inProgress)
+    }
+
+    @Test func aSeriesOnlyTickedEpisodeByEpisodeIsNotAnEmptyJournal() async throws {
+        let (_, logs) = try severance()
+        let episodesOnly = logs.filter { $0.episode != nil }
+        let viewModel = JournalViewModel(repository: StubLogRepository(result: .success(episodesOnly)))
+
+        await viewModel.load()
+
+        #expect(viewModel.state == .empty)
+    }
+
+    // La fiche montre les épisodes juste au-dessus, cochés : les relister en bas est du bruit.
+    @Test func theItemDetailDoesNotListEachCheckedEpisode() throws {
+        let (item, _) = try severance()
+
+        let model = ItemDetailModel(item: item)
+
+        #expect(model.logs.count == 1)
+        #expect(model.logs.first?.status == .inProgress)
+    }
+}
