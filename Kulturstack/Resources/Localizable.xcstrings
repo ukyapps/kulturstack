@@ -2489,6 +2489,22 @@
         }
       }
     },
+    "series.drop": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop this series"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abandonner cette série"
+          }
+        }
+      }
+    },
     "series.episode %lld": {
       "localizations": {
         "en": {
@@ -2581,6 +2597,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Impossible de charger cette saison."
+          }
+        }
+      }
+    },
+    "series.finish.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark finished"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marquer terminée"
+          }
+        }
+      }
+    },
+    "series.finish.later": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas encore"
+          }
+        }
+      }
+    },
+    "series.finish.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can mark it finished. A series that’s still running isn’t over: you can also leave it as is."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu peux la marquer comme terminée. Une série qui continue n’est pas finie : tu peux aussi laisser comme ça."
+          }
+        }
+      }
+    },
+    "series.finish.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last season finished"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dernière saison terminée"
+          }
+        }
+      }
+    },
+    "series.resume": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick this series back up"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre cette série"
           }
         }
       }
@@ -2725,6 +2821,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Spéciaux"
+          }
+        }
+      }
+    },
+    "series.status.menu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Series status"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statut de la série"
           }
         }
       }

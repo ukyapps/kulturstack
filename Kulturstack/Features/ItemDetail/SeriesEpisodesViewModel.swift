@@ -19,18 +19,25 @@ final class SeriesEpisodesViewModel {
 
     private(set) var seasons: SeasonsState = .loading
     private(set) var episodes: [Int: EpisodesState] = [:]
+    private(set) var watchStatus: LogStatus?
     var didFailToCheck = false
+    var proposesFinish = false
 
     private let itemID: UUID
     private let repository: any MediaRepository
     private let useCase: EpisodeUseCase
+    private let status: WatchStatusUseCase
+    private let onChange: () -> Void
     private var summaries: [SeasonSummary] = []
     private var stored: [Int: Season] = [:]
 
-    init(itemID: UUID, repository: any MediaRepository, useCase: EpisodeUseCase) {
+    init(itemID: UUID, repository: any MediaRepository, useCase: EpisodeUseCase,
+         status: WatchStatusUseCase, onChange: @escaping () -> Void = {}) {
         self.itemID = itemID
         self.repository = repository
         self.useCase = useCase
+        self.status = status
+        self.onChange = onChange
     }
 
     func load() async {
@@ -39,6 +46,7 @@ final class SeriesEpisodesViewModel {
             seasons = .failed
             return
         }
+        watchStatus = WatchStatusUseCase.status(of: item)
         do {
             summaries = try await useCase.seasons(of: item)
             seasons = summaries.isEmpty ? .empty : .loaded(seasonRows())
@@ -69,13 +77,39 @@ final class SeriesEpisodesViewModel {
         perform(episode: number, in: season) { try useCase.checkUpTo($1, of: $0) }
     }
 
+    func finish() { record { try status.finish($0) } }
+
+    func drop() { record { try status.drop($0) } }
+
+    func resume() { record { try status.resume($0) } }
+
     private func perform(episode number: Int, in season: Int, _ action: (MediaItem, Episode) throws -> Void) {
         guard let item = item(),
               let episode = stored[season]?.episodes.first(where: { $0.number == number }) else { return }
         do {
             try action(item, episode)
+            try status.refreshAfterChecking(item)
             didFailToCheck = false
             refresh(season)
+            watchStatus = WatchStatusUseCase.status(of: item)
+            // Finir la dernière saison propose « terminé » ; une série qui continue n'est pas finie.
+            if watchStatus != .done, WatchStatusUseCase.finishes(episode, seasons: summaries) {
+                proposesFinish = true
+            }
+            onChange()
+        } catch {
+            didFailToCheck = true
+        }
+    }
+
+    private func record(_ action: (MediaItem) throws -> Void) {
+        guard let item = item() else { return }
+        do {
+            try action(item)
+            didFailToCheck = false
+            proposesFinish = false
+            watchStatus = WatchStatusUseCase.status(of: item)
+            onChange()
         } catch {
             didFailToCheck = true
         }

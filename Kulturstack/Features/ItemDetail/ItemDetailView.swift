@@ -66,7 +66,7 @@ struct ItemDetailView: View {
                 }
                 .sensoryFeedback(.success, trigger: model.logs.count)
                 if model.kind.hasEpisodes, let itemID = viewModel.storedItemID {
-                    SeasonsSection(itemID: itemID, services: services)
+                    SeasonsSection(itemID: itemID, services: services) { viewModel.load() }
                 }
                 logs(model.logs)
                 if let source = model.source {

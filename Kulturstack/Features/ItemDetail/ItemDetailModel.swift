@@ -27,7 +27,9 @@ struct ItemDetailModel: Equatable {
         coverURL = item.coverURL
         headline = Self.headline(kind: item.kind, runtime: (details as? FilmDetails)?.runtimeMinutes, creator: item.creators.first)
         facts = Self.facts(for: details)
+        // Les épisodes cochés se voient juste au-dessus, dans leur saison : les relister est du bruit.
         logs = item.logs
+            .filter { $0.episode == nil }
             .sorted { ($0.date, $0.createdAt) > ($1.date, $1.createdAt) }
             .map(ItemLogRowModel.init)
         source = Self.source(of: item.externalRefs)

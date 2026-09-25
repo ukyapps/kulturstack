@@ -82,6 +82,24 @@ struct SeasonsSectionRenderingTests {
         #expect(Set(shots).count == 3)
     }
 
+    // Le bandeau de statut : rien, en cours, abandonnée — trois lignes différentes.
+    @Test func rendersTheStatusBadge() async throws {
+        var shots: [Data] = []
+        for (index, status) in [nil, LogStatus.inProgress, .dropped].enumerated() {
+            let provider = StubEpisodeProvider(key: Self.key(index + 31),
+                                               seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]))
+            let (itemID, services) = try series(provider, id: index + 31)
+            if let status {
+                let item = try #require(try services.mediaRepository.find(itemID: itemID))
+                container.mainContext.insert(try LogEntry.make(item: item, status: status))
+                try container.mainContext.save()
+            }
+            shots.append(await render(SeasonsSection(itemID: itemID, services: services), settles: true))
+        }
+
+        #expect(Set(shots).count == 3)
+    }
+
     @Test func rendersAnEpisodeCheckedAndUnchecked() async throws {
         let context = container.mainContext
         let item = MediaItem(kind: .series, title: "Severance")

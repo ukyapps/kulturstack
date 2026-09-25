@@ -66,7 +66,9 @@ final class JournalViewModel {
 
     func load() async {
         do {
-            let logs = try await repository.fetchAll()
+            // Un épisode coché n'est pas une ligne de journal : une saison suivie en ferait dix
+            // identiques. C'est le statut de l'œuvre qui s'y montre, une seule fois.
+            let logs = try await repository.fetchAll().filter { $0.episode == nil }
             state = logs.isEmpty ? .empty : .loaded(logs.map(JournalRowModel.init))
         } catch {
             state = .failed
