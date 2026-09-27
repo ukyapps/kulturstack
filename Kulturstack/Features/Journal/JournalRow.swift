@@ -36,5 +36,6 @@ struct JournalRow: View {
             }
         }
         .padding(.vertical, Spacing.xs)
+        .contentShape(Rectangle())
     }
 }
