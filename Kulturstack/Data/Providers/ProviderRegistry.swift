@@ -15,6 +15,7 @@ struct ProviderRegistry: Sendable {
         ProviderRegistry(providers: [
             TMDBProvider(secrets: secrets, client: client),
             OpenLibraryProvider(client: client, userAgent: userAgent(appVersion: appVersion)),
+            ApplePodcastProvider(client: client),
         ])
     }
 
