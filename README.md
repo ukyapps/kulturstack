@@ -20,7 +20,8 @@ Journal de consommation culturelle multi-média, sans friction, local-first, iOS
 | `docs/tdd/` | Cadrage technique : architecture, modèle, protocoles, sources, tests, secrets, RGPD |
 | `docs/decisions/` | Une décision = un ADR (format MADR) |
 | `docs/plans/tranche-1.md` | Le plan de la Tranche 1 (livrée), en PRs d'une journée |
-| `docs/plans/tranche-2.md` | Le plan de la Tranche 2 — Épisodes (proposé, pas commencé) |
+| `docs/plans/tranche-2.md` | Le plan de la Tranche 2 — Épisodes (livrée le 27/09) |
+| `docs/plans/podcasts.md` | Le plan de la tranche **Podcasts** — la prochaine |
 | `docs/journal/` | Journal de bord : une page par session, à lire pour reprendre |
 
 ## Identité
