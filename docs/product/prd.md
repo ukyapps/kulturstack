@@ -72,10 +72,10 @@ Le besoin n'est pas un tracker de plus. C'est **un seul geste, pour tout, au mom
 - Envie : marquer une œuvre à voir / lire, la retrouver, la passer en « vu ».
 - Réglages : tout effacer, à propos, confidentialité. FR + EN.
 
-**Tranche 2 — Épisodes**
-- Saisons et épisodes pour séries et podcasts ; cocher un épisode ; « prochain épisode ».
-- « Où j'en suis » : tout ce qui est en cours (séries, livres, podcasts, jeux).
-- Statuts *en cours* et *abandonné*.
+**Tranche 2 — Épisodes** — ✅ livrée le 27/09/2026
+- Saisons et épisodes **pour les séries** ; cocher un épisode ; « tout cocher jusqu'ici » ; « prochain épisode ». *(Les podcasts arrivent en T4 : le modèle est écrit pour eux, seules les séries sont câblées.)*
+- « Où j'en suis » : un **quatrième onglet « En cours »** — séries et livres, avec le ✓ qui avance d'un épisode. *(Les jeux arrivent en T6.)*
+- Statuts *en cours* et *abandonné*, automatiques pour le premier, explicites pour le second.
 
 **Tranche 3 — Le passé**
 - Importer : Trakt (export JSON), Goodreads / IMDb / Letterboxd (CSV), CSV générique.

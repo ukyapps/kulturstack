@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-23
+maj: 2026-09-27
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,11 +8,13 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**La Tranche 1 est livrée, l'app tourne sur l'iPhone de la founder, et la Tranche 2 est commencée.** Installée par câble, réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel ont produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **242 tests verts**, couverture 82,9 %.
+**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **338 tests verts** (415 exécutions), couverture Domain 97 % · Data 95 % · Features 88 %.
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
-**Tranche 2 en cours depuis le 24/09.** Les PR 12 (schéma V2, #29) et 13 (saisons et épisodes chez TMDB, #30) sont fusionnées ; la #31 (épisodes spéciaux) attend. **Rien ne se voit encore à l'écran** : les deux PRs sont de la fondation. La prochaine, la PR 14, est la première visible — cocher un épisode sur la fiche d'une série.
+**Ce que la Tranche 2 a ajouté (24 → 27/09, cinq PRs)** : sur la fiche d'une série, ses **saisons dépliables** — une saison n'est chargée qu'au dépliement — avec une **case par épisode**, « tout cocher jusqu'ici » en appui long, et les **spéciaux** à part en bas, cochables mais jamais « la suite ». Cocher un premier épisode met la série **en cours** toute seule ; finir la dernière saison **propose** « terminé » sans l'imposer ; **abandonner / reprendre** sont explicites, dans le menu ••• de la rubrique Saisons. Et un **quatrième onglet « En cours »**, en troisième position, répond à « je reprends quoi ce soir » : une ligne par œuvre avec sa progression (« Severance · S2 · E4 sur 10 · *Prochain : E5* ») et un **✓ qui coche l'épisode suivant sans ouvrir la fiche**. Les livres en cours y sont aussi, avec « Terminé » en un tap. La barre est désormais **Journal · Envie · En cours · Recherche**.
+
+**Toute la tranche s'est faite sans changement de schéma après la V2** : les statuts automatiques se distinguent des statuts manuels par le champ `source`, qui existait depuis la V1.
 
 **La migration V2 a été vérifiée sur l'iPhone de la founder avant fusion**, base sauvegardée et comparée ligne à ligne : rien de perdu. Procédure dans `docs/journal/2026-09-24-lancement-tranche-2.md`. Rien ne se publie sans son action.
 
@@ -54,13 +56,27 @@ Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utili
 | « On peut enregistrer les trucs en double » | Le `+` sur une œuvre déjà loggée demande confirmation | ✅ #22 |
 | « La recherche par auteur marche pour les livres » | Rien à faire : OpenLibrary cherche nativement dans les auteurs | — |
 
+### Tranche 2 — Épisodes (**complète**, 5 PRs sur 5, 24 → 27/09)
+
+| PR | Feature | État |
+|---|---|---|
+| 12 | Schéma V2 : `Season`, `Episode`, `LogEntry.episode` + étage de migration | ✅ #29 (2026-09-24) — **migration vérifiée sur l'iPhone avant fusion** |
+| 13 | Saisons et épisodes chez TMDB, chargés au dépliement | ✅ #30 (2026-09-24) ; spéciaux en #31 |
+| 14 | Cocher un épisode : saisons dépliables, une case par épisode, « tout cocher jusqu'ici » | ✅ #33 (2026-09-24) |
+| 15 | Statuts : en cours automatique, proposition de « terminé », abandonner / reprendre | ✅ #34 (2026-09-25) |
+| 16 | Onglet « En cours » : progression, prochain épisode, ✓ qui avance | ✅ #35 (2026-09-27) |
+
+Deux corrections trouvées en relisant le travail, pas à l'usage : une `SeasonsSection` qui rendait « aucune saison » au lieu de la liste (test de rendu qui ne pouvait pas échouer — voir §4), et **chaque épisode coché qui créait une ligne de Journal** (dix lignes identiques pour une saison suivie), corrigé en #34.
+
+**Hors périmètre, assumé** : la progression d'un livre (« p. 212 sur 480 » — pas de page courante dans le modèle, il faudrait un `SchemaV3`) et les podcasts (T4 : le modèle est écrit pour eux, seules les séries sont câblées).
+
 ### Tranches suivantes
 
-**La Tranche 2 est lancée depuis le 24/09/2026** (feu vert de la founder). Rien n'est encore codé : la PR 12 est la prochaine.
+**La Tranche 3 n'est pas lancée.** Avant de l'ouvrir : quelques jours d'usage réel et les retours qui vont avec, comme le 23/09.
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **en cours : PR 12 ✅ #29, PR 13 ✅ #30, PR 14 → 16 à faire** | non |
+| 2 | Épisodes | **✅ livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -76,8 +92,8 @@ Le détail de chaque feature : `docs/product/prd.md` §6. Les écrans : `docs/pr
 Kulturstack/
 ├── App/
 │   ├── KulturstackApp.swift          ouvre le ModelContainer de prod ; EmptyState d'erreur si échec
-│   ├── RootView.swift                TabView Journal / Envie / Recherche ; AppServices + providers ; badge DEBUG
-│   ├── AppServices.swift             repositories + use cases composés une fois sur le contexte (+ detailsProviders, connectivity), injectés par initializer
+│   ├── RootView.swift                TabView Journal / Envie / **En cours** / Recherche ; AppServices + providers ; badge DEBUG
+│   ├── AppServices.swift             repositories + use cases composés une fois sur le contexte (+ detailsProviders, **episodeProviders**, connectivity), injectés par initializer
 │   └── ModelContainerFactory.swift   production() / onDisk(url:) / inMemory() — toujours avec le plan de migration
 ├── Data/
 │   ├── Network/
@@ -94,7 +110,8 @@ Kulturstack/
 │   │   └── OpenLibrarySearchResponse.swift  DTO
 │   └── Repositories/
 │       ├── SwiftDataLogRepository.swift  fetchAll (date desc, createdAt desc) · find(id:) · save() · delete(_:)
-│       └── SwiftDataMediaRepository.swift  findItem(withAnyKey:) via #Predicate sur ExternalRef.key ; find(itemID:) ; add item + refs ; add refs ; add log ; save ; deleteAll (objet par objet)
+│       ├── SwiftDataMediaRepository.swift  findItem(withAnyKey:) via #Predicate sur ExternalRef.key ; find(itemID:) ; add item + refs ; add refs ; add log ; save ; deleteAll (objet par objet, épisodes et saisons compris)
+│       └── SwiftDataEpisodeRepository.swift  season(ofItem:number:) par clé unique ; add(season) ; add([episodes]) ; save
 ├── Features/
 │   ├── Journal/
 │   │   ├── JournalView.swift         ⚙︎ → Réglages ; 5 rendus : chargement · vide (EmptyState) · erreur (EmptyState + Réessayer) · edge (chips conservés + « Voir tout ») · liste groupée par jour ; segments « Tout · n » + chips « Films · n » ; tap → la fiche de l'œuvre ; appui long → Modifier / Supprimer (confirmation)
@@ -131,7 +148,17 @@ Kulturstack/
 │   │   ├── ItemDetailModel.swift     instantané valeur, init(item:) ou init(candidate:) : headline « Type · 2h35 · créateur », facts par type (genres / saisons · épisodes / pages · éditeur · sujets), logs triés, source (TMDB, OpenLibrary, IMDb, Trakt)
 │   │   ├── ItemLogRowModel.swift     instantané valeur d'un log de la fiche
 │   │   ├── ItemLogRow.swift          date + pastille statut + étoiles + chevron + commentaire (2 lignes)
+│   │   ├── SeasonsSection.swift      rubrique SAISONS de la fiche d'une série : bandeau de statut + menu ••• (Abandonner / Reprendre), saisons dépliables, 3 rendus pour la liste **et** pour chaque saison ; alerte « dernière saison terminée » ; `opened:` ouvre une saison d'emblée (tests, captures, T5)
+│   │   ├── SeriesEpisodesViewModel.swift  seasons = loading | loaded | empty | failed ; episodes[n] idem ; watchStatus ; proposesFinish ; open(n) (une saison chargée une fois) ; toggle / checkUpTo ; finish / drop / resume ; onChange prévient la fiche
+│   │   ├── SeasonRowModel.swift      instantané valeur d'une saison : titre (« Spéciaux » pour la 0), progression « Vus : 3 / 10 », isComplete
+│   │   ├── EpisodeRowModel.swift     instantané valeur d'un épisode : « 4 · Woe's Hollow », date · durée, isWatched
+│   │   ├── EpisodeRow.swift          case + titre + détail ; appui long → « Tout cocher jusqu'ici »
 │   │   └── ItemReference.swift       l'id qu'une vue garde pour ouvrir la fiche
+│   ├── InProgress/
+│   │   ├── InProgressView.swift      onglet 3 : liste, vide (EmptyState « Rien en cours » + Chercher), erreur ; tap → la fiche ; recharge sur didSave
+│   │   ├── InProgressViewModel.swift state = loading | empty | loaded | failed ; advance(row) coche la suite (une seule) ; finish(row) ; les deux sont async et rechargent
+│   │   ├── InProgressRowModel.swift  instantané valeur : « S2 · E4 sur 10 » (ou le type si rien n'est vu), Next(season, number, « Prochain : E5 »)
+│   │   └── InProgressRow.swift       jaquette + titre + progression + prochain ; ✓ s'il y a une suite, « Terminé » sinon
 │   └── Shared/
 │       ├── MediaKind+Presentation.swift   label, pluralLabel, symbole SF, loggedLabel(on:) « Vu le / Lu le / … », seenActionLabel « Je l'ai vu / lu / … »
 │       ├── Period+Presentation.swift      label (Semaine…) + phrase (« cette semaine », « ce mois-ci »…)
@@ -139,21 +166,25 @@ Kulturstack/
 │       └── SearchFamily+Presentation.swift  label localisé par famille
 ├── Debug/                            compilé hors Release
 │   ├── DemoSeed.swift                fill() = wipe() puis 23 fiches / 25 logs sur 12 mois ; wipe() = WipeUseCase
-│   ├── DebugSection.swift            section de Réglages : « Remplir données démo » / « Tout effacer (démo) » / « Test recherche TMDB » + badge « Base V1 · n fiches · n logs »
-│   └── DebugSearchView.swift         champ + sections par famille (5 lignes max) + interrupteur « Simuler une panne OpenLibrary » + Réessayer ; sans test (outil jetable)
+│   ├── DebugSection.swift            section de Réglages : « Remplir données démo » / « Tout effacer (démo) » / « Test recherche TMDB » + badge « Base V2 · n fiches · n logs · n épisodes »
+│   ├── DebugSearchView.swift         champ + sections par famille (5 lignes max) + interrupteur « Simuler une panne OpenLibrary » + Réessayer
+│   └── DebugSeasonsView.swift        saisons et épisodes d'une série, chargées au dépliement (démo de la PR 13)
 ├── Domain/
 │   ├── Models/
 │   │   ├── MediaKind.swift           9 types ; hasEpisodes, hasDuration, allowedStatuses, searchFamily
 │   │   ├── Period.swift              all · week · month · year (« Tout » en premier) ; range(containing:calendar:) semaine du lundi, [début, fin)
 │   │   ├── LogStatus.swift           wishlist · inProgress · done · dropped
-│   │   ├── MediaItem.swift           la fiche : champs communs + detailsData (poche) ; relations externalRefs / logs
+│   │   ├── MediaItem.swift           la fiche : champs communs + detailsData (poche) ; relations externalRefs / logs / seasons ; orderedSeasons
 │   │   ├── ExternalRef.swift         clé unique "provider:value"
-│   │   └── LogEntry.swift            fabrique make() qui valide statut et note ; date = .now par défaut
+│   │   ├── Season.swift              make(number:title:item:) refuse un type sans épisodes ; clé unique "<itemID>:s<n>" ; orderedEpisodes ; cascade sur ses épisodes
+│   │   ├── Episode.swift             clé unique "<seasonKey>:e<n>" ; isWatched = il existe un log « vu » qui le porte ; **nullify** sur ses logs (le cache s'efface, pas la donnée)
+│   │   └── LogEntry.swift            fabrique make() qui valide statut, note et **l'appartenance de l'épisode à l'œuvre** ; date = .now ; `source` = "manual" ou "episodes" (posé par l'app)
 │   ├── Details/
 │   │   ├── DetailsPayload.swift      FilmDetails · SeriesDetails · BookDetails · GenericDetails (tolérants)
 │   │   └── DetailsCodec.swift        encode / decode(kind:) ; currentVersion = 1
 │   ├── Repositories/                 PROTOCOLES (les impls SwiftData sont dans Data/)
 │   │   ├── LogRepository.swift       fetchAll() · find(id:) · save() · delete(_:)
+│   │   ├── EpisodeRepository.swift   season(ofItem:number:) · add(season) · add([episodes]) · save()
 │   │   └── MediaRepository.swift     findItem(withAnyKey:) · find(itemID:) · add(item, refs:) · add(refs, to:) · add(log) · save()
 │   ├── Rules/
 │   │   ├── LogRules.swift            validate(status:for:) · validate(rating:) · note(_:) commentaire blanc → nil
@@ -163,6 +194,7 @@ Kulturstack/
 │   ├── Search/
 │   │   ├── MetadataProvider.swift    protocole : id, supportedKinds, search(_:)
 │   │   ├── DetailsProvider.swift     protocole : details(forKey:) → MediaEnrichment? (créateurs + poche) ; nil = pas ma clé
+│   │   ├── EpisodeProvider.swift     protocole : seasons(forKey:) · episodes(forKey:season:) ; SeasonSummary (isSpecials) et EpisodeSummary — des valeurs, pas des @Model
 │   │   ├── MediaCandidate.swift      résultat de recherche ; identité = clé externe principale
 │   │   └── SearchSection.swift       famille + SectionState (loading · loaded · empty · failed(reason)) ; SearchError.timeout
 │   ├── UseCases/
@@ -172,11 +204,16 @@ Kulturstack/
 │   │   ├── EditLogUseCase.swift      log(id:) · update(date, status, rating, note) validé par LogRules · delete
 │   │   ├── LogHistoryUseCase.swift   lastLogDate(for: candidate) = date du dernier log non-envie de la fiche partageant une clé
 │   │   ├── SearchUseCase.swift       search(_:) → AsyncStream<SearchSection> : loading pour chaque famille, puis TaskGroup, timeout 8 s par provider, annulation propagée ; retry(_:family:)
+│   │   ├── EpisodeUseCase.swift      seasons(of:) sans rien persister ; open(summary, of:) charge **puis** écrit (une panne ne laisse pas de saison à moitié créée), upsert sans doublon ; toggle (cocher = un log « vu » portant l'épisode, décocher = le supprimer) ; checkUpTo comble les trous sans redoubler
+│   │   ├── WatchStatusUseCase.swift  status(of:) = le dernier log qui parle de l'œuvre (envies et épisodes exclus) ; refreshAfterChecking (en cours automatique, retiré si on décoche tout, jamais ce qui est manuel ; une série finie qui repart revient en cours) ; finishes(episode, seasons:) spéciaux exclus ; finish / drop / resume
+│   │   ├── InProgressUseCase.swift   items() = les œuvres dont le dernier statut dit « en cours », la plus récente d'abord ; next(for:) = premier épisode non coché, trous compris, saison 0 exclue ; lastWatched(of:)
 │   │   ├── DedupUseCase.swift        existingItem(for: candidate) = fiche partageant AU MOINS une clé externe (ADR-004)
 │   │   └── LogUseCase.swift          logNow(candidate, status:now:rating:note:) : valide le statut, retrouve ou crée la fiche (+ poche encodée + refs), ajoute les clés manquantes, puis log(item, …) qui crée le log source « manual » ; logAgain(item) ; wish(candidate) / wish(item)
 │   └── Schema/
-│       ├── KulturstackSchemaV1.swift 3 modèles ; typealias MediaItem / ExternalRef / LogEntry
-│       └── KulturstackMigrationPlan.swift  schemas [V1], stages [], current
+│       ├── V1/                       MediaItemV1 · ExternalRefV1 · LogEntryV1 (figés, pour le test T-01)
+│       ├── KulturstackSchemaV1.swift 3 modèles
+│       ├── KulturstackSchemaV2.swift 5 modèles ; typealias MediaItem / ExternalRef / LogEntry / Season / Episode
+│       └── KulturstackMigrationPlan.swift  schemas [V1, V2], stage **lightweight** V1 → V2, current = V2
 ├── DesignSystem/
 │   ├── Tokens.swift                  Spacing, Radius, Color.*
 │   ├── EmptyState.swift              icône + titre + message + action optionnelle
@@ -188,18 +225,20 @@ Kulturstack/
 │   ├── SectionHeader.swift           titre de section + spinner optionnel
 │   └── Toast.swift                   bandeau accent (ou rouge si erreur) avec icône et action optionnelle
 └── Resources/
-    ├── Localizable.xcstrings         ~170 clés FR + EN (3 pluriels)
+    ├── Localizable.xcstrings         217 clés FR + EN (3 pluriels)
     ├── PrivacyInfo.xcprivacy         aucune donnée collectée
     └── Assets.xcassets               AccentColor, AppIcon (« K » provisoire), TMDBLogo (SVG)
 ```
 
-**Pas encore là** : Import / Export (T3). Filtrage du Journal en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs.
+**Pas encore là** : Import / Export (T3). Filtrage du Journal en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs ; `InProgressUseCase.items()` lit aussi tous les logs, même remarque.
+
+**Règle apprise en T2** : une œuvre a **un** statut, et il se lit à **un** endroit (`WatchStatusUseCase.status(of:)` = son dernier log qui parle d'elle). L'onglet « En cours », la pastille de la fiche et la proposition de « terminé » lisent tous la même fonction — aucune n'a sa propre définition de « en cours ».
 
 **Écart au TDD 01** : les *protocoles* de repositories sont dans `Domain/Repositories/` (pas `Data/`) pour que `Domain/UseCases/` n'importe rien de `Data/`. Les implémentations SwiftData restent dans `Data/`.
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 215, tous verts
+## 4. Tests — 338, tous verts (415 exécutions)
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -247,8 +286,23 @@ Kulturstack/
 | `SearchViewRenderingTests` | 2 | l'écran traverse ses 4 rendus dans une UIWindow ; chips, en-tête et ligne se rendent |
 | `LogUseCaseTests` | 12 | **un log porte la date, la note et le commentaire qu'on lui donne (blanc → nil)** ; **un candidat loggé porte les mêmes champs** ; envie puis vu = 2 logs sur 1 fiche ; envie sur une fiche existante ; logAgain = log done maintenant sur la même fiche ; find(itemID:) ; premier log = fiche + refs + poche + log done/manual/maintenant ; **T-04** deux fois le même candidat → 1 fiche, 2 logs ; **T-05** clé partagée → même fiche, clés nouvelles ajoutées ; œuvres différentes → fiches différentes ; Envie accepté, statut interdit refusé ; `findItem(withAnyKey:)` |
 | `SearchUseCaseTests` | 8 | loading pour chaque famille puis settle ; **T-07** panne isolée ; **T-09** le rapide n'attend pas le lent ; **T-08** annulation → providers annulés, rien de périmé ; timeout → failed ; vide → empty ; retry n'appelle que la famille ; ordre canonique des familles |
+| `EpisodeModelTests` | 10 | unicité d'un épisode dans sa saison et d'une saison dans son œuvre ; un log d'épisode porte son œuvre, et refuse l'épisode d'une autre ; **supprimer un épisode garde le log** (cache ≠ donnée) ; supprimer l'œuvre emporte saisons et épisodes ; ordre ; seul un type à épisodes a des saisons |
+| `TMDBSeasonsTests` | 11 | fixtures réelles (série courte, série à dix saisons) ; saison vide ; épisodes sans date ; **la saison 0 passe en dernier, marquée `isSpecials`** ; clé d'une autre forme → aucun appel ; panne → la fiche reste lisible |
+| `EpisodeUseCaseTests` | 14 | les saisons viennent de la source, un type sans épisodes n'appelle rien ; **une saison n'est chargée qu'au dépliement** (appels comptés) ; rouvrir ne duplique pas et rafraîchit ; **recharger garde ce qui était coché** ; cocher / décocher / recocher = un seul log ; « tout cocher jusqu'ici » avec trous, deux fois de suite sans effet |
+| `WatchStatusUseCaseTests` | 17 | aucun statut sans épisode coché ; le premier met en cours, les suivants n'ajoutent rien ; tout décocher reprend l'automatique et **garde le manuel** ; abandonner / reprendre ; **une série finie qui repart revient en cours**, sans nouvel épisode elle reste finie ; une envie n'est pas un statut ; « terminé » proposé au dernier épisode de la dernière saison — pas sur un trou, pas au milieu, **jamais sur les spéciaux** |
+| `SeriesEpisodesViewModelTests` | 20 | spéciaux en dernier ; série sans saison → vide ; source en panne → erreur ; une seule saison chargée ; saison annoncée mais vide ≠ saison en erreur ; cocher marque la ligne **et** la progression ; décocher ; « jusqu'ici » ; saison complète ; redéplier ne rappelle pas la source ; œuvre disparue → erreur ; en cours / terminé / abandonné vus depuis l'écran |
+| `SeasonRowModelTests` | 7 | compte annoncé tant que la saison n'est pas ouverte, réel ensuite ; « Vus : 2 / 3 » ; saison sans épisode ≠ terminée ; **les spéciaux portent leur propre nom**, pas celui de la source |
+| `EpisodeRowModelTests` | 5 | « 4 · titre » ou « Épisode 4 » ; date et durée sur la même ligne ; **seul un log « vu » coche** (une envie ne coche pas) |
+| `SeasonsSectionRenderingTests` | 5 | les trois rendus de la liste, les trois d'une saison ouverte, le bandeau de statut (rien / en cours / abandonnée), la ligne cochée vs non — **comparés image contre image** ; une série en base montre ses saisons, un candidat non |
+| `JournalEpisodeLogsTests` | 3 | le Journal montre le statut, **pas les dix épisodes cochés** ; une série suivie seulement épisode par épisode n'est pas un journal vide ; la fiche ne reliste pas les épisodes |
+| `InProgressUseCaseTests` | 14 | en cours listé, terminé et abandonné non, repris de nouveau ; une envie n'est pas un « en cours » ; commencé deux fois = une ligne ; le plus récent d'abord ; un livre y a sa place ; **le prochain épisode comble le trou du milieu**, traverse vers la saison suivante, ignore les spéciaux, n'existe plus si tout est vu |
+| `InProgressViewModelTests` | 9 | vide ; progression et prochain épisode ; avancer coche **une seule** chose et fait bouger la ligne ; plus de suite au dernier ; terminer sort de la liste ; un livre se termine ; erreur de lecture ≠ vide ; œuvre supprimée entre-temps |
+| `InProgressViewRenderingTests` | 2 | l'onglet vide et l'onglet rempli ne donnent pas le même pixel ; la ligne avec ✓ et la ligne avec « Terminé » non plus |
+| `DebugSeasonsViewTests` | 4 | l'écran DEBUG des saisons se rend dans ses quatre états |
 
-Couverture : `Domain/` 96 %, `Data/` 97 %, `Features/` 87 %, `DesignSystem/` 86 %. Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
+Couverture : `Domain/` 97 %, `Data/` 95 %, `Features/` 88 %, `DesignSystem/` 86 %.
+
+**Ce que la T2 a changé dans la façon de tester** : un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer. Le 24/09 il a laissé passer une section qui rendait « aucune saison » au lieu de la liste (la clé de l'œuvre de test ne correspondait pas à celle du stub). Les tests de rendu **comparent maintenant les PNG des états entre eux** — `#expect(Set(shots).count == 3)` tient directement la règle « vide ≠ erreur ≠ edge » du CLAUDE.md. Même mécanique pour les captures des PRs : un `CaptureHarness.swift` temporaire, supprimé avant le commit (mode d'emploi et pièges dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`). Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
 Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
@@ -285,26 +339,35 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/tdd/01…07` | architecture, modèle, protocoles, sources, tests, secrets, RGPD | avant de coder une couche |
 | `docs/decisions/001…012` | les ADRs | quand on se demande « pourquoi » |
 | `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
-| `docs/plans/tranche-2.md` | les 5 PRs de T2 (proposée, pas commencée) | avant chaque PR de T2 |
+| `docs/plans/tranche-2.md` | les 5 PRs de T2 (**livrée**), et ce qui reste à regarder à l'usage | pour l'historique |
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **fusionner #31** (les épisodes spéciaux) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+
+**Deux choses à juger à l'écran, pas sur le papier** — elles ne bloquent rien, elles attendent l'usage :
+
+1. **La place de l'onglet « En cours »** dans la barre : troisième aujourd'hui (Journal · Envie · En cours · Recherche), pour ne déplacer ni Journal ni Envie. Deuxième si c'est ce qu'on ouvre le soir. Une ligne de `RootView` (design § 6, q. 7).
+2. **« Tout cocher jusqu'ici » est derrière un appui long** sur un épisode. C'est l'idiome iOS et ça n'encombre pas la ligne, mais ça ne se devine pas. À rendre visible si la founder ne le trouve pas seule.
 
 **Prochaine session — par où commencer**
 
-1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
+1. Demander ce que les jours d'usage ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
 2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. **T2 en cours** : PR 12 et 13 fusionnées, migration vérifiée sur l'appareil le 24/09. La suite est la **PR 14** (cocher un épisode) — `docs/plans/tranche-2.md`. Vérifier d'abord que **#31** (les spéciaux) est fusionnée, sinon la saison 0 est encore jetée.
-4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
+3. **La Tranche 2 est close** — les cinq PRs sont fusionnées. Rien n'est en cours, aucune PR n'est ouverte.
+4. Ensuite, au choix de la founder : les corrections d'usage de la T2 (petites PRs, comme le 23/09), ou **ouvrir la Tranche 3** (import du passé — Trakt, CSV). Le plan T3 n'est pas écrit : il se rédige avant de coder, comme celui de la T2.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
+
+**Dettes techniques connues, aucune urgente** : le Journal et l'onglet « En cours » filtrent en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs. Le prochain épisode ne vient que des saisons déjà ouvertes (pas d'appel réseau depuis l'onglet). Pas de progression de lecture pour les livres (« p. 212 sur 480 » demanderait un `SchemaV3`). Test du plan pas encore écrit : T-17 (conversion des notes, T3).
 
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
 
+**Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en compte déjà quatre — design § 6, question 9. À trancher en T5, pas avant.
+
 **Tranché le 22/09 à l'écran** : tap sur un résultat = fiche, `+` = loggé, ♡ = envie · Journal groupé par jour · Envie en onglet (pas en chip), hors des compteurs.
 
-**Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
+**Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier.
 
-**Tranché le 24/09** : « où j'en suis » (T2) vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau — sa place exacte dans la barre se confirme à l'écran, à la démo de la PR 16 · les **épisodes spéciaux** (saison 0 de TMDB) vivent dans une section à part en bas de la fiche, cochables, **jamais** « le prochain épisode » : TMDB ne dit pas à quelle saison ils se rattachent, et 37 des 39 de Friends n'ont pas de date de diffusion.
+**Tranché le 24/09** : « où j'en suis » vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau · les **épisodes spéciaux** (saison 0 de TMDB) vivent à part en bas de la fiche, cochables, **jamais** « le prochain épisode » : TMDB ne dit pas à quelle saison ils se rattachent, et 37 des 39 de Friends n'ont pas de date de diffusion.
 
-**Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en comptera déjà quatre — design § 6, question 9. À trancher en T5, pas avant.
+**Tranché en écrivant la T2 (24 → 27/09)**, et à renverser si l'usage contredit : cocher un premier épisode met la série en cours **toute seule**, mais « terminé » se **propose** et ne s'impose pas (une série qui continue n'est pas finie) · abandonner est une **action explicite**, jamais une devinette · tout décocher reprend le statut que l'app avait posé, **jamais** ce qui a été dit à la main (le champ `source` porte la différence) · une série marquée terminée **repasse en cours** si un épisode est coché après coup (le cas Severance : saison 1 finie, saison 2 qui sort) · le ✓ de l'onglet « En cours » coche **une seule** chose, la suite, et ne comble pas les trous derrière · un **épisode coché n'est pas une ligne de Journal** — c'est le statut de l'œuvre qui s'y voit, une fois.

@@ -1,11 +1,13 @@
 ---
 type: plan
 tranche: 2 — Épisodes
-statut: en cours — lancée le 2026-09-24 ; PR 12 et 13 fusionnées ; « où j'en suis » = un onglet (§ 6 q. 7)
+statut: livrée — lancée le 2026-09-24, close le 2026-09-27 ; les 5 PRs sont fusionnées (#29, #30, #31, #33, #34, #35)
 créé: 2026-09-23
 ---
 
 # Plan Tranche 2 — Épisodes
+
+> **Livrée le 27/09/2026.** Les cinq PRs sont fusionnées, **338 tests verts**, couverture Domain 97 % · Data 95 % · Features 88 %. Estimé « 2 à 3 semaines part-time », fait en **quatre jours calendaires** — la fondation (PR 12 et 13) avait été posée le 24/09 et les trois dernières se sont enchaînées sans surprise de modèle. Ce qui reste à regarder à l'usage est en bas de page, et l'histoire est dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`.
 
 **Objectif** : à la fin, une série se suit épisode par épisode. On ouvre sa fiche, on déplie une saison, on coche ce qu'on a vu (ou « tout cocher jusqu'ici »), et l'app sait dire **où on en est** et **quel est le prochain épisode**. Une série commencée passe en *en cours* toute seule ; une série qu'on laisse tomber se marque *abandonnée*.
 
@@ -57,7 +59,7 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : l'écran DEBUG « Test recherche » sait afficher les saisons et les épisodes d'une série.
 
-## PR 14 — Cocher un épisode `feat/series-episodes`
+## PR 14 — Cocher un épisode `feat/series-episodes` — ✅ #33
 
 **Livre** : sur la fiche d'une série, la liste des saisons dépliables, une case par épisode, et « tout cocher jusqu'ici ».
 
@@ -70,7 +72,9 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : captures fiche série repliée / dépliée / après avoir coché.
 
-## PR 15 — « En cours » et « abandonné » `feat/status-in-progress`
+> **Livré tel quel.** « Tout cocher jusqu'ici » a atterri sur un **appui long** (menu contextuel) : l'idiome iOS, qui n'encombre pas la ligne mais ne se devine pas. À confirmer à l'usage.
+
+## PR 15 — « En cours » et « abandonné » `feat/status-in-progress` — ✅ #34
 
 **Livre** : les statuts existent déjà dans le modèle depuis la T1 (`allowedStatuses`) ; ici ils deviennent **automatiques et visibles**.
 
@@ -82,7 +86,11 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : captures avant / pendant / après une saison.
 
-## PR 16 — « Où j'en suis » `feat/in-progress`
+> **Livré, plus une règle non prévue** : une série finie qui repart — saison 1 terminée, saison 2 qui sort — revient en cours dès qu'un épisode est coché après coup. Sans elle, la PR 16 ne l'aurait jamais revue. L'automatique se distingue du manuel par `source` (`"episodes"` vs `"manual"`), un champ qui existe depuis la V1 : **aucun changement de schéma sur toute la tranche**.
+>
+> **Corrigé au passage** : la PR 14 faisait apparaître chaque épisode coché comme une ligne du Journal (dix lignes identiques pour une saison suivie). Le Journal et la fiche filtrent maintenant les logs qui portent un épisode ; ce qui s'y voit, c'est le statut de l'œuvre, une fois.
+
+## PR 16 — « Où j'en suis » `feat/in-progress` — ✅ #35
 
 **Livre** : **un quatrième onglet « En cours »** — l'écran qui répond à « je reprends quoi ce soir ? ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Les livres en cours y sont aussi, avec « terminé » en un tap.
 
@@ -99,6 +107,13 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : captures vide / rempli, et le ✓ qui fait avancer une série.
 
+> **Livré en troisième position** : Journal · Envie · En cours · Recherche. Deux écarts au plan, assumés :
+>
+> - **Pas de « p. 212 sur 480 »** pour les livres — le modèle ne sait pas où on en est dans un livre, il faudrait un champ de page courante, donc un `SchemaV3` et une migration. Un livre en cours montre son type et se termine d'un tap, ce que le plan demandait aussi.
+> - **Le prochain épisode ne vient que des saisons déjà ouvertes** : l'onglet ne va pas sur le réseau, il ferait sinon dix appels à son ouverture. En pratique on coche depuis la fiche, donc la saison courante est en cache. Finir une saison sans avoir jamais déplié la suivante affiche « Terminé » au lieu de la suite ; un passage par la fiche règle ça.
+>
+> Le ✓ coche **une seule** chose, la suite : il ne comble pas les trous derrière. Si E1 et E3 sont vus, la suite est **E2**.
+
 ---
 
 ## Ordre de dépendance
@@ -111,15 +126,21 @@ Tout est en file : le schéma d'abord, les données ensuite, l'interface après,
 
 ## Ce qu'on vérifie avant de dire « shippé »
 
-- [ ] **La base de la founder survit à la migration** — testé sur son iPhone, avec ses vrais logs, pas seulement en mémoire.
-- [ ] Test T-01 vert, dans sa version V1 → V2 **avec des données**.
-- [ ] Une série de dix saisons ne déclenche pas dix appels réseau à l'ouverture.
-- [ ] Cocher puis décocher puis recocher : un seul log, pas trois.
-- [ ] Trois rendus distincts sur chaque nouvel écran (vide ≠ erreur ≠ edge).
-- [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
-- [ ] Aucune string en dur, FR + EN dans la même PR.
-- [ ] Captures vide **et** rempli dans chaque PR.
-- [ ] Les podcasts n'ont pas été câblés « en passant ».
+- [x] **La base de la founder survit à la migration** — vérifiée sur son iPhone le 24/09, sauvegarde comparée ligne à ligne.
+- [x] Test T-01 vert, dans sa version V1 → V2 **avec des données**.
+- [x] Une série de dix saisons ne déclenche pas dix appels réseau à l'ouverture — tenu par un test qui compte les appels au provider.
+- [x] Cocher puis décocher puis recocher : un seul log, pas trois.
+- [x] Trois rendus distincts sur chaque nouvel écran — tenus par comparaison **image contre image**, pas par `height > 0`.
+- [x] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features — Domain 97 %, Data 95 %, Features 88 %.
+- [x] Aucune string en dur, FR + EN dans la même PR.
+- [x] Captures vide **et** rempli dans chaque PR — `docs/captures/t2-pr-14/`, `t2-pr-15/`, `t2-pr-16/`.
+- [x] Les podcasts n'ont pas été câblés « en passant ».
+
+## Ce qui reste à regarder sur l'iPhone
+
+1. **La place de l'onglet** dans la barre — troisième aujourd'hui ; deuxième si « En cours » devient ce qu'on ouvre le soir (design § 6, q. 7).
+2. **« Tout cocher jusqu'ici » derrière un appui long** — à rendre visible si la founder ne le trouve pas seule.
+3. **La progression d'un livre** — à rouvrir si le manque se fait sentir (schéma V3).
 
 ## Ce que cette tranche ne résout pas
 
