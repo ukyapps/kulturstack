@@ -76,19 +76,22 @@ struct SeriesEpisodesViewModelTests {
 
     // MARK: - Déplier une saison
 
+    // Dix saisons annoncées, deux appels : celui de la saison où elle en est à l'ouverture
+    // de la fiche, celui de la saison qu'elle déplie. Jamais les dix.
     @Test func openingASeasonLoadsOnlyItsEpisodes() async throws {
         let provider = StubEpisodeProvider(
-            seasons: .success([StubEpisodeProvider.season(1), StubEpisodeProvider.season(2)]),
-            episodes: [2: .success([StubEpisodeProvider.episode(1, title: "Hello, Ms. Cobel"),
+            seasons: .success((1...10).map { StubEpisodeProvider.season($0) }),
+            episodes: [1: .success([StubEpisodeProvider.episode(1)]),
+                       7: .success([StubEpisodeProvider.episode(1, title: "Hello, Ms. Cobel"),
                                     StubEpisodeProvider.episode(2)])])
         let (_, viewModel) = try make(provider)
         await viewModel.load()
 
-        await viewModel.open(2)
+        await viewModel.open(7)
 
-        #expect(try rows(viewModel.episodes[2]).map(\.number) == [1, 2])
-        #expect(viewModel.episodes[1] == nil)
-        #expect(provider.episodeCalls.map(\.season) == [2])
+        #expect(try rows(viewModel.episodes[7]).map(\.number) == [1, 2])
+        #expect(viewModel.episodes[4] == nil)
+        #expect(provider.episodeCalls.map(\.season) == [1, 7])
     }
 
     @Test func anAnnouncedButEmptySeasonShowsItsOwnEmptyState() async throws {
@@ -214,14 +217,17 @@ struct SeriesEpisodesViewModelTests {
         #expect(viewModel.watchStatus == nil)
     }
 
-    // Une saison qu'on n'a pas dépliée n'a pas d'épisode en mémoire : rien à cocher, rien qui plante.
+    // Une saison qu'on n'a pas dépliée n'a pas d'épisode en mémoire : rien à cocher, rien qui
+    // plante. La saison 1 s'ouvre toute seule à l'arrivée sur la fiche, la 2 non.
     @Test func checkingASeasonThatIsNotOpenChangesNothing() async throws {
-        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
-                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3),
+                                                              StubEpisodeProvider.season(2, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) }),
+                                                      2: .success((1...3).map { StubEpisodeProvider.episode($0) })])
         let (_, viewModel) = try make(provider)
         await viewModel.load()
 
-        viewModel.checkSeason(1)
+        viewModel.checkSeason(2)
 
         #expect(viewModel.watchStatus == nil)
         #expect(viewModel.didFailToCheck == false)
@@ -350,6 +356,117 @@ struct SeriesEpisodesViewModelTests {
         await viewModel.load()
 
         #expect(viewModel.watchStatus == .dropped)
+    }
+
+    // MARK: - « À quel épisode j'en suis » (retour du 27/09)
+
+    private func provider(seasons: [SeasonSummary], episodes: [Int: [Int]]) -> StubEpisodeProvider {
+        StubEpisodeProvider(
+            seasons: .success(seasons),
+            episodes: episodes.mapValues { .success($0.map { StubEpisodeProvider.episode($0) }) })
+    }
+
+    @Test func aSeriesNeverStartedProposesItsFirstEpisode() async throws {
+        let (_, viewModel) = try make(provider(seasons: [StubEpisodeProvider.season(1, episodes: 3)],
+                                               episodes: [1: [1, 2, 3]]))
+
+        await viewModel.load()
+
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (1, 1))
+    }
+
+    // La fiche s'ouvre sur la saison où elle en est — la dernière entamée —, pas sur la première.
+    @Test func theFicheOpensOnTheSeasonWhereSheIsAt() async throws {
+        let stub = provider(seasons: [StubEpisodeProvider.season(1, episodes: 2),
+                                      StubEpisodeProvider.season(2, episodes: 4)],
+                            episodes: [1: [1, 2], 2: [1, 2, 3, 4]])
+        let (_, viewModel) = try make(stub)
+        await viewModel.load()
+        viewModel.checkSeason(1)
+        await viewModel.open(2)
+        viewModel.checkUpTo(episode: 2, in: 2)
+
+        await viewModel.load()
+
+        #expect(viewModel.currentSeason == 2)
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (2, 3))
+    }
+
+    @Test func theNextEpisodeIsTheFirstUncheckedOne() async throws {
+        let (_, viewModel) = try make(provider(seasons: [StubEpisodeProvider.season(1, episodes: 5)],
+                                               episodes: [1: [1, 2, 3, 4, 5]]))
+        await viewModel.load()
+        viewModel.toggle(episode: 1, in: 1)
+        viewModel.toggle(episode: 3, in: 1)
+
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (1, 2))
+    }
+
+    // La saison suivante se devine sans être chargée : on connaît son numéro par la liste des saisons.
+    @Test func aFinishedSeasonPointsToTheNextOneWithoutLoadingIt() async throws {
+        let stub = provider(seasons: [StubEpisodeProvider.season(1, episodes: 2),
+                                      StubEpisodeProvider.season(2, episodes: 6)],
+                            episodes: [1: [1, 2], 2: [1, 2, 3, 4, 5, 6]])
+        let (_, viewModel) = try make(stub)
+        await viewModel.load()
+        viewModel.checkSeason(1)
+
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (2, 1))
+        #expect(stub.episodeCalls.map(\.season) == [1])
+    }
+
+    @Test func aSeriesSeenToTheEndHasNoNextEpisode() async throws {
+        let (_, viewModel) = try make(provider(seasons: [StubEpisodeProvider.season(1, episodes: 2)],
+                                               episodes: [1: [1, 2]]))
+        await viewModel.load()
+        viewModel.checkSeason(1)
+
+        #expect(viewModel.next == nil)
+    }
+
+    // Un bonus n'est jamais « la suite » : la règle des spéciaux vaut aussi pour la fiche.
+    @Test func theSpecialsAreNeverTheNextEpisode() async throws {
+        let stub = provider(seasons: [StubEpisodeProvider.season(1, episodes: 2),
+                                      StubEpisodeProvider.season(0, episodes: 3, isSpecials: true)],
+                            episodes: [1: [1, 2], 0: [1, 2, 3]])
+        let (_, viewModel) = try make(stub)
+        await viewModel.load()
+        viewModel.checkSeason(1)
+
+        #expect(viewModel.next == nil)
+    }
+
+    @Test func checkingTheNextEpisodeMarksItAndMovesOn() async throws {
+        let (_, viewModel) = try make(provider(seasons: [StubEpisodeProvider.season(1, episodes: 3)],
+                                               episodes: [1: [1, 2, 3]]))
+        await viewModel.load()
+
+        await viewModel.checkNext()
+
+        #expect(try rows(viewModel.episodes[1]).map(\.isWatched) == [true, false, false])
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (1, 2))
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    // Cocher la suite quand elle est dans une saison pas encore chargée : on la charge d'abord.
+    @Test func checkingANextEpisodeFromAnUnloadedSeasonLoadsItFirst() async throws {
+        let stub = provider(seasons: [StubEpisodeProvider.season(1, episodes: 1),
+                                      StubEpisodeProvider.season(2, episodes: 3)],
+                            episodes: [1: [1], 2: [1, 2, 3]])
+        let (_, viewModel) = try make(stub)
+        await viewModel.load()
+        viewModel.checkSeason(1)
+
+        await viewModel.checkNext()
+
+        #expect(stub.episodeCalls.map(\.season) == [1, 2])
+        let next = try #require(viewModel.next)
+        #expect((next.season, next.number) == (2, 2))
     }
 
     @Test func aWorkThatDisappearedShowsTheErrorState() async throws {

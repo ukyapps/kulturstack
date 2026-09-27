@@ -17,12 +17,18 @@ struct SeasonsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
+            // Où elle en est vient avant la liste : c'est ce qu'on ouvre la fiche pour savoir.
+            if let next = viewModel.next {
+                NextEpisodeCard(next: next) { Task { await viewModel.checkNext() } }
+            }
             header
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .task {
             await viewModel.load()
+            // La saison où elle en est s'ouvre d'elle-même : la fiche arrive dépliée au bon endroit.
+            if let current = viewModel.currentSeason { expanded.insert(current) }
             for number in opened.sorted() { await viewModel.open(number) }
         }
         .alert(String(localized: "series.check.failed"), isPresented: $viewModel.didFailToCheck) {}

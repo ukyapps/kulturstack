@@ -42,6 +42,25 @@ struct SearchViewRenderingTests {
         #expect(viewModel.presentation == .idle)
     }
 
+    // Le bouton d'une série mène à ses épisodes, celui d'un film logge : deux lignes différentes.
+    @Test func aSeriesRowAndAFilmRowDoNotOfferTheSameButton() throws {
+        var shots: [Data] = []
+        for kind in [MediaKind.series, .film] {
+            let row = SearchResultRow(model: SearchResultRowModel(
+                candidate: MockProvider.candidate("x:1", kind: kind, title: "Severance")), onLog: {}, onWish: {})
+            let host = UIHostingController(rootView: row.frame(width: 390))
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 120))
+            window.rootViewController = host
+            window.makeKeyAndVisible()
+            host.view.frame = window.bounds
+            host.view.layoutIfNeeded()
+            let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
+            shots.append(renderer.image { context in window.layer.render(in: context.cgContext) }.pngData() ?? Data())
+        }
+
+        #expect(Set(shots).count == 2)
+    }
+
     @Test func chipsAndRowsRender() throws {
         let row = SearchResultRowModel(candidate: MockProvider.candidate("ol:work:1", kind: .book, title: "Dune"))
         let view = VStack {

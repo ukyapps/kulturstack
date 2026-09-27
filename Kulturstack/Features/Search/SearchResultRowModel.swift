@@ -9,6 +9,11 @@ struct SearchResultRowModel: Identifiable, Equatable {
     let lastLoggedAt: Date?
     let loggedLabel: String?
 
+    // Une série ne se logge pas d'un bloc comme un film : le « + » mène à ses épisodes,
+    // où elle dit ce qu'elle a vu (retour du 27/09). Logger la série entière reste possible
+    // depuis sa fiche, pour une série qu'on ne suit pas épisode par épisode.
+    var leadsToEpisodes: Bool { kind.hasEpisodes }
+
     init(candidate: MediaCandidate, lastLoggedAt: Date? = nil) {
         id = candidate.id
         kind = candidate.kind
