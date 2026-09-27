@@ -275,6 +275,59 @@ struct EpisodeUseCaseTests {
         #expect(try logs().count == 3)
     }
 
+    // MARK: - Les podcasts, reconnus à leur identité (tranche Podcasts, PR 32)
+
+    private func podcast(_ provider: StubEpisodeProvider) throws -> (MediaItem, EpisodeUseCase) {
+        let media = SwiftDataMediaRepository(context: container.mainContext)
+        let item = MediaItem(kind: .podcast, title: "Le code a changé")
+        try media.add(item, refs: [ExternalRef(provider: "tmdb", value: "tv:95396")])
+        return (item, makeUseCase(provider))
+    }
+
+    // Le scénario qui justifie le schéma V3 : on coche l'épisode du jour, le podcast en publie
+    // trois autres, tout descend d'un rang — et la coche reste sur le bon épisode.
+    @Test func aCheckedPodcastEpisodeStaysCheckedWhenTheFeedPublishes() async throws {
+        let before = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),
+            episodes: [1: .success([StubEpisodeProvider.episode(1, title: "Le plus récent", externalID: "guid-a"),
+                                    StubEpisodeProvider.episode(2, title: "L'autre", externalID: "guid-b")])])
+        let (item, useCase) = try podcast(before)
+        let season = try await useCase.open(StubEpisodeProvider.season(1, episodes: 2), of: item)
+        let listened = try #require(season.orderedEpisodes.first { $0.externalID == "guid-a" })
+        try useCase.toggle(listened, of: item)
+
+        // Le même flux, trois épisodes plus tard.
+        let after = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 5)]),
+            episodes: [1: .success([StubEpisodeProvider.episode(1, title: "Tout neuf", externalID: "guid-d"),
+                                    StubEpisodeProvider.episode(2, title: "Récent", externalID: "guid-c"),
+                                    StubEpisodeProvider.episode(3, title: "Le plus récent", externalID: "guid-a"),
+                                    StubEpisodeProvider.episode(4, title: "L'autre", externalID: "guid-b")])])
+        let refreshed = try await makeUseCase(after).open(StubEpisodeProvider.season(1, episodes: 5), of: item)
+
+        let coche = try #require(refreshed.orderedEpisodes.first { $0.externalID == "guid-a" })
+        #expect(coche.isWatched)
+        #expect(coche.number == 3)
+        #expect(refreshed.orderedEpisodes.count == 4)
+        #expect(refreshed.orderedEpisodes.filter { $0.isWatched }.map(\.externalID) == ["guid-a"])
+        #expect(try logs().filter { $0.episode != nil }.count == 1)
+    }
+
+    // Un épisode de série n'a pas d'identité de flux : il reste reconnu à son numéro.
+    @Test func aSeriesEpisodeIsStillMatchedByItsNumber() async throws {
+        let provider = StubEpisodeProvider(episodes: [1: .success([StubEpisodeProvider.episode(1, title: "Avant")])])
+        let (item, useCase) = try make(provider: provider)
+        let season = try await useCase.open(StubEpisodeProvider.season(1), of: item)
+        try useCase.toggle(try #require(season.orderedEpisodes.first), of: item)
+
+        let renamed = StubEpisodeProvider(episodes: [1: .success([StubEpisodeProvider.episode(1, title: "Après")])])
+        let refreshed = try await makeUseCase(renamed).open(StubEpisodeProvider.season(1), of: item)
+
+        #expect(refreshed.orderedEpisodes.count == 1)
+        #expect(refreshed.orderedEpisodes.first?.title == "Après")
+        #expect(refreshed.orderedEpisodes.first?.isWatched == true)
+    }
+
     private func stored(season number: Int, of item: MediaItem) throws -> Season {
         let repository = SwiftDataEpisodeRepository(context: container.mainContext)
         let season = try Season.make(number: number, item: item)

@@ -11,8 +11,9 @@ struct ProviderRegistryTests {
         // Apple cherche, il ne complète pas une fiche après coup : TMDB reste seul à le faire.
         #expect(registry.detailsProviders.count == 1)
         #expect(registry.detailsProviders.first is TMDBProvider)
-        // Et il ne sait pas encore découper un podcast en épisodes : c'est la PR suivante.
-        #expect(registry.episodeProviders.count == 1)
+        // Deux sources d'épisodes : TMDB pour les séries, le flux RSS pour les podcasts.
+        #expect(registry.episodeProviders.count == 2)
+        #expect(registry.episodeSources.first is RSSEpisodeProvider)
     }
 
     @Test func userAgentNamesTheAppAndAContact() {

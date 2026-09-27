@@ -27,13 +27,16 @@ struct EpisodeUseCase {
         let fetched = try await episodes(season: summary.number, of: item)
         let season = try stored(summary, of: item)
         var missing: [Episode] = []
-        let known = Dictionary(season.episodes.map { ($0.number, $0) }, uniquingKeysWith: { first, _ in first })
         for episode in fetched {
-            guard let cached = known[episode.number] else {
+            guard let cached = match(episode, in: season) else {
                 missing.append(Episode(number: episode.number, title: episode.title, airDate: episode.airDate,
-                                       runtimeMinutes: episode.runtimeMinutes, season: season))
+                                       runtimeMinutes: episode.runtimeMinutes,
+                                       externalID: episode.externalID, season: season))
                 continue
             }
+            // Un flux qui publie fait descendre ses épisodes d'un rang : la position change,
+            // l'identité non — et c'est l'identité qui tient la coche.
+            cached.number = episode.number
             cached.title = episode.title
             cached.airDate = episode.airDate
             cached.runtimeMinutes = episode.runtimeMinutes
@@ -72,6 +75,15 @@ struct EpisodeUseCase {
         for episode in season.orderedEpisodes {
             for entry in episode.logs.filter({ $0.item?.id == item.id }) { try edit.delete(entry) }
         }
+    }
+
+    // Un épisode de podcast se reconnaît à son identité de flux ; un épisode de série, qui
+    // n'en a pas, à son numéro — celui que la source lui donne et ne change jamais.
+    private func match(_ episode: EpisodeSummary, in season: Season) -> Episode? {
+        guard let identity = episode.externalID else {
+            return season.episodes.first { $0.externalID == nil && $0.number == episode.number }
+        }
+        return season.episodes.first { $0.externalID == identity }
     }
 
     private func episodes(season number: Int, of item: MediaItem) async throws -> [EpisodeSummary] {
