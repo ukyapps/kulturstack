@@ -143,6 +143,56 @@ struct ItemDetailViewModelTests {
         #expect(provider.keys == ["tmdb:movie:438631"])
     }
 
+    // MARK: - « Je le commence » (retour du 27/09)
+
+    @Test func startingAStoredWorkWritesAnInProgressLog() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let book = MediaItem(kind: .book, title: "Piranesi")
+        try repository.add(book, refs: [ExternalRef(provider: "ol", value: "work:OL1W")])
+        let viewModel = ItemDetailViewModel(subject: .stored(book.id), repository: repository, logUseCase: logUseCase)
+        viewModel.load()
+
+        viewModel.start()
+
+        #expect(book.logs.map(\.status) == [.inProgress])
+        #expect(viewModel.didFailToLog == false)
+        guard case .loaded(let model) = viewModel.state else {
+            Issue.record("état attendu : loaded")
+            return
+        }
+        #expect(model.watchStatus == .inProgress)
+        #expect(model.canStart == false)
+        withExtendedLifetime(container) {}
+    }
+
+    // Commencer un livre trouvé dans la recherche l'enregistre d'abord : un log tient à une œuvre.
+    @Test func startingACandidateStoresItFirst() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let piranesi = MediaCandidate(id: "ol:work:OL1W", kind: .book, title: "Piranesi", originalTitle: nil,
+                                      year: 2020, creators: ["Susanna Clarke"], coverURL: nil, summary: nil,
+                                      externalKeys: ["ol:work:OL1W"], details: BookDetails(), providerID: "openlibrary")
+        let viewModel = ItemDetailViewModel(subject: .candidate(piranesi), repository: repository, logUseCase: logUseCase)
+        viewModel.load()
+
+        viewModel.start()
+
+        let stored = try #require(try repository.findItem(withAnyKey: ["ol:work:OL1W"]))
+        #expect(stored.logs.map(\.status) == [.inProgress])
+        #expect(viewModel.storedItemID == stored.id)
+        withExtendedLifetime(container) {}
+    }
+
+    // Le modèle refuse « en cours » sur un film : rien n'est écrit, et l'échec se dit.
+    @Test func startingAFilmIsRefusedWithoutWritingAnything() throws {
+        let (container, item, viewModel) = try make()
+        viewModel.load()
+
+        viewModel.start()
+
+        #expect(viewModel.didFailToLog)
+        #expect(item.logs.contains { $0.status == .inProgress } == false)
+        withExtendedLifetime(container) {}
+    }
 }
 
 private struct FailingError: Error {}
