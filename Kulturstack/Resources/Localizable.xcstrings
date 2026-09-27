@@ -2334,13 +2334,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A film, a series or a book. Tap a result to see its page, + to log it right away, ♡ to keep it for later."
+            "value": "A film, a series, a book or a podcast. Tap a result to see its page, + to log it right away, ♡ to keep it for later."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un film, une série ou un livre. Tape sur un résultat pour voir sa fiche, sur + pour le logger tout de suite, sur ♡ pour le garder pour plus tard."
+            "value": "Un film, une série, un livre ou un podcast. Tape sur un résultat pour voir sa fiche, sur + pour le logger tout de suite, sur ♡ pour le garder pour plus tard."
           }
         }
       }
@@ -2414,13 +2414,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A film, a series, a book…"
+            "value": "A film, a series, a book, a podcast…"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un film, une série, un livre…"
+            "value": "Un film, une série, un livre, un podcast…"
           }
         }
       }

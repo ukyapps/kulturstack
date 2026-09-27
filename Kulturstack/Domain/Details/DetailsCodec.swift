@@ -13,7 +13,8 @@ enum DetailsCodec {
         case .film: return try decoder.decode(FilmDetails.self, from: data)
         case .series: return try decoder.decode(SeriesDetails.self, from: data)
         case .book: return try decoder.decode(BookDetails.self, from: data)
-        case .album, .podcast, .game, .concert, .theatre, .exhibition:
+        case .podcast: return try decoder.decode(PodcastDetails.self, from: data)
+        case .album, .game, .concert, .theatre, .exhibition:
             return try decoder.decode(GenericDetails.self, from: data)
         }
     }

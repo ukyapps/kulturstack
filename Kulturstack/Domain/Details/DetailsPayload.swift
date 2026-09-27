@@ -70,6 +70,29 @@ struct BookDetails: DetailsPayload, Equatable {
     }
 }
 
+struct PodcastDetails: DetailsPayload, Equatable {
+    static let kind = MediaKind.podcast
+    var feedURL: URL?
+    var episodeCount: Int?
+    var publisher: String?
+    var genre: String?
+
+    init(feedURL: URL? = nil, episodeCount: Int? = nil, publisher: String? = nil, genre: String? = nil) {
+        self.feedURL = feedURL
+        self.episodeCount = episodeCount
+        self.publisher = publisher
+        self.genre = genre
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        feedURL = try c.decodeIfPresent(URL.self, forKey: .feedURL)
+        episodeCount = try c.decodeIfPresent(Int.self, forKey: .episodeCount)
+        publisher = try c.decodeIfPresent(String.self, forKey: .publisher)
+        genre = try c.decodeIfPresent(String.self, forKey: .genre)
+    }
+}
+
 struct GenericDetails: DetailsPayload, Equatable {
     static let kind = MediaKind.exhibition
     var venue: String?
