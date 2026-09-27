@@ -12,6 +12,7 @@ struct AppServices {
     let episodeUseCase: EpisodeUseCase
     let watchStatusUseCase: WatchStatusUseCase
     let inProgressUseCase: InProgressUseCase
+    let advanceUseCase: AdvanceUseCase
     let wipeUseCase: WipeUseCase
     let connectivity: any ConnectivityMonitoring
 
@@ -32,6 +33,8 @@ struct AppServices {
                                         providers: episodeProviders, log: logUseCase, edit: editUseCase)
         watchStatusUseCase = WatchStatusUseCase(log: logUseCase, edit: editUseCase)
         inProgressUseCase = InProgressUseCase(repository: logRepository)
+        advanceUseCase = AdvanceUseCase(media: mediaRepository, episodes: episodeUseCase,
+                                        status: watchStatusUseCase)
         self.connectivity = connectivity
     }
 }

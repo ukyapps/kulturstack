@@ -10,7 +10,7 @@ struct InProgressView: View {
     init(services: AppServices, onSearch: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: InProgressViewModel(
             useCase: services.inProgressUseCase, repository: services.mediaRepository,
-            episodes: services.episodeUseCase, status: services.watchStatusUseCase))
+            advance: services.advanceUseCase, status: services.watchStatusUseCase))
         self.services = services
         self.onSearch = onSearch
     }
