@@ -11,6 +11,7 @@ struct AppServices {
     let enrichUseCase: EnrichUseCase
     let episodeUseCase: EpisodeUseCase
     let watchStatusUseCase: WatchStatusUseCase
+    let inProgressUseCase: InProgressUseCase
     let wipeUseCase: WipeUseCase
     let connectivity: any ConnectivityMonitoring
 
@@ -30,6 +31,7 @@ struct AppServices {
         episodeUseCase = EpisodeUseCase(repository: SwiftDataEpisodeRepository(context: context),
                                         providers: episodeProviders, log: logUseCase, edit: editUseCase)
         watchStatusUseCase = WatchStatusUseCase(log: logUseCase, edit: editUseCase)
+        inProgressUseCase = InProgressUseCase(repository: logRepository)
         self.connectivity = connectivity
     }
 }
