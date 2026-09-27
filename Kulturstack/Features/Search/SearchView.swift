@@ -4,6 +4,7 @@ import SwiftUI
 struct SearchView: View {
     @State private var viewModel: SearchViewModel
     @State private var editing: LogReference?
+    @State private var openingEpisodes: MediaCandidate?
     @FocusState private var isSearchFocused: Bool
     private let services: AppServices
 
@@ -38,6 +39,7 @@ struct SearchView: View {
                 viewModel.refreshLogDates()
             }
             .navigationDestination(for: MediaCandidate.self) { ItemDetailView(subject: .candidate($0), services: services) }
+            .navigationDestination(item: $openingEpisodes) { ItemDetailView(subject: .candidate($0), services: services) }
             .safeAreaInset(edge: .top, spacing: 0) {
                 if viewModel.isOffline {
                     OfflineBanner()
@@ -63,6 +65,16 @@ struct SearchView: View {
 
     private var isWarningOfDuplicate: Binding<Bool> {
         Binding(get: { viewModel.duplicate != nil }, set: { if !$0 { viewModel.cancelDuplicate() } })
+    }
+
+    // Une série ne se logge pas d'un bloc : son bouton mène à sa fiche, qui s'ouvre sur
+    // « où j'en suis » et sur ses saisons. Le reste se logge toujours en un geste.
+    private func log(_ candidate: MediaCandidate) {
+        if candidate.kind.hasEpisodes {
+            openingEpisodes = candidate
+        } else {
+            viewModel.log(candidate)
+        }
     }
 
     private func editAction(for toast: SearchViewModel.Toast) -> Toast.Action? {
@@ -134,7 +146,7 @@ struct SearchView: View {
             ForEach(candidates) { candidate in
                 NavigationLink(value: candidate) {
                     SearchResultRow(model: viewModel.row(for: candidate),
-                                    onLog: { viewModel.log(candidate) },
+                                    onLog: { log(candidate) },
                                     onWish: { viewModel.wish(candidate) })
                 }
                 .accessibilityHint(String(localized: "search.row.hint"))

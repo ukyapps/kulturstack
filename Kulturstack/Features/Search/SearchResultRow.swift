@@ -27,12 +27,12 @@ struct SearchResultRow: View {
             }
             if let onLog {
                 Button(action: onLog) {
-                    Image(systemName: "plus.circle.fill")
+                    Image(systemName: model.leadsToEpisodes ? "checklist" : "plus.circle.fill")
                         .font(.title2)
                         .foregroundStyle(Color.accent)
                 }
                 .buttonStyle(.borderless)
-                .accessibilityLabel(String(localized: "search.row.log"))
+                .accessibilityLabel(String(localized: model.leadsToEpisodes ? "search.row.episodes" : "search.row.log"))
                 .sensoryFeedback(.success, trigger: model.lastLoggedAt)
             }
         }

@@ -17,6 +17,15 @@ final class SeriesEpisodesViewModel {
         case failed
     }
 
+    // Où elle en est, en haut de la fiche : « à quel épisode j'en suis » (retour du 27/09).
+    struct Next: Equatable {
+        let season: Int
+        let number: Int
+        let title: String?
+    }
+
+    private(set) var next: Next?
+    private(set) var currentSeason: Int?
     private(set) var seasons: SeasonsState = .loading
     private(set) var episodes: [Int: EpisodesState] = [:]
     private(set) var watchStatus: LogStatus?
@@ -52,7 +61,13 @@ final class SeriesEpisodesViewModel {
             seasons = summaries.isEmpty ? .empty : .loaded(seasonRows())
         } catch {
             seasons = .failed
+            return
         }
+        // Une seule saison se charge à l'ouverture — celle où elle en est. Sans ça, « où j'en
+        // suis » ne saurait rien dire tant qu'elle n'a pas déplié quelque chose à la main.
+        currentSeason = seasonInProgress(of: item)
+        if let currentSeason { await open(currentSeason) }
+        next = nextEpisode(of: item)
     }
 
     // Déplier. Une saison déjà chargée ne redemande rien à la source ; une saison en échec, si.
@@ -64,9 +79,18 @@ final class SeriesEpisodesViewModel {
         do {
             stored[number] = try await useCase.open(summary, of: item)
             refresh(number)
+            next = nextEpisode(of: item)
         } catch {
             episodes[number] = .failed
         }
+    }
+
+    // Le ✓ de « prochain épisode ». Si la suite est dans une saison encore inconnue, on la
+    // charge d'abord : c'est le seul moment où cocher déclenche un appel réseau.
+    func checkNext() async {
+        guard let next else { return }
+        if stored[next.season] == nil { await open(next.season) }
+        toggle(episode: next.number, in: next.season)
     }
 
     func toggle(episode number: Int, in season: Int) {
@@ -112,6 +136,7 @@ final class SeriesEpisodesViewModel {
             try status.refreshAfterChecking(item)
             didFailToCheck = false
             refresh(season)
+            next = nextEpisode(of: item)
             watchStatus = WatchStatusUseCase.status(of: item)
             // Finir la dernière saison propose « terminé » ; une série qui continue n'est pas finie.
             if watchStatus != .done, let trigger, WatchStatusUseCase.finishes(trigger, seasons: summaries) {
@@ -142,6 +167,26 @@ final class SeriesEpisodesViewModel {
         let rows = season.orderedEpisodes.map(EpisodeRowModel.init)
         episodes[number] = rows.isEmpty ? .empty : .loaded(rows)
         if case .loaded = seasons { seasons = .loaded(seasonRows()) }
+    }
+
+    // La saison où elle en est : la dernière qu'elle a entamée, sinon la première à suivre.
+    private func seasonInProgress(of item: MediaItem) -> Int? {
+        let started = item.orderedSeasons
+            .filter { $0.number > 0 && $0.episodes.contains { $0.isWatched } }
+            .map(\.number)
+        return started.max() ?? summaries.first { !$0.isSpecials }?.number
+    }
+
+    // La suite, c'est le premier épisode non coché de ce qu'on connaît. Quand une saison est
+    // finie, la suivante se devine par la liste des saisons, sans avoir à la charger.
+    private func nextEpisode(of item: MediaItem) -> Next? {
+        if let episode = InProgressUseCase.next(for: item), let season = episode.season {
+            return Next(season: season.number, number: episode.number, title: episode.title)
+        }
+        let known = Set(item.orderedSeasons.filter { !$0.episodes.isEmpty }.map(\.number))
+        guard let upcoming = summaries.filter({ !$0.isSpecials }).map(\.number).sorted()
+            .first(where: { !known.contains($0) }) else { return nil }
+        return Next(season: upcoming, number: 1, title: nil)
     }
 
     private func seasonRows() -> [SeasonRowModel] {

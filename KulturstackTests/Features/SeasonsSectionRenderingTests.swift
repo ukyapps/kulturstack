@@ -162,6 +162,33 @@ struct SeasonsSectionRenderingTests {
         #expect(withoutButton != withButton)
     }
 
+    // « Prochain épisode » en haut de la section, et plus rien quand tout est vu.
+    @Test func theSectionSaysWhereSheIsAtUntilEverythingIsSeen() async throws {
+        let provider = StubEpisodeProvider(key: Self.key(51),
+                                           seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),
+                                           episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (itemID, services) = try series(provider, id: 51)
+        let starting = await render(SeasonsSection(itemID: itemID, services: services), settles: true)
+
+        let item = try #require(try services.mediaRepository.find(itemID: itemID))
+        let repository = SwiftDataEpisodeRepository(context: container.mainContext)
+        let season = try #require(try repository.season(ofItem: itemID, number: 1))
+        try services.episodeUseCase.checkAll(season, of: item)
+        let finished = await render(SeasonsSection(itemID: itemID, services: services), settles: true)
+
+        #expect(!starting.isEmpty)
+        #expect(starting != finished)
+    }
+
+    @Test func theCardRendersWithAndWithoutAnEpisodeTitle() async throws {
+        let titled = await render(NextEpisodeCard(next: .init(season: 2, number: 5, title: "Woe’s Hollow"), check: {}),
+                                  scrolls: false)
+        let bare = await render(NextEpisodeCard(next: .init(season: 2, number: 5, title: nil), check: {}),
+                                scrolls: false)
+
+        #expect(titled != bare)
+    }
+
     // Une série ouverte depuis la recherche, pas encore en base, n'a pas d'épisodes à cocher.
     @Test func theDetailOfASeriesShowsItsSeasonsAndACandidateDoesNot() async throws {
         let (itemID, services) = try series(

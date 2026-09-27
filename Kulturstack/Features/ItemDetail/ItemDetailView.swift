@@ -68,6 +68,9 @@ struct ItemDetailView: View {
                 if model.kind.hasEpisodes, let itemID = viewModel.storedItemID {
                     SeasonsSection(itemID: itemID, services: services) { viewModel.load() }
                 }
+                if let summary = model.summary {
+                    summaryBlock(summary)
+                }
                 logs(model.logs)
                 if let source = model.source {
                     Text(String(localized: "detail.source \(source)"))
@@ -94,9 +97,6 @@ struct ItemDetailView: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
-            }
-            if let summary = model.summary {
-                summaryBlock(summary)
             }
         }
         .frame(maxWidth: .infinity)

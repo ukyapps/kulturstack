@@ -19,4 +19,16 @@ struct SearchResultRowModelTests {
         let row = SearchResultRowModel(candidate: MockProvider.candidate("x:1"), lastLoggedAt: nil)
         #expect(row.loggedLabel == nil)
     }
+
+    // « Quand je veux log une série, ça me met la série comme un film au lieu de direct
+    // m'afficher les épisodes » (27/09) : ce qui a des épisodes mène à ses épisodes.
+    @Test(arguments: [MediaKind.series, .podcast])
+    func aWorkWithEpisodesLeadsToThem(kind: MediaKind) {
+        #expect(SearchResultRowModel(candidate: MockProvider.candidate("x:1", kind: kind)).leadsToEpisodes)
+    }
+
+    @Test(arguments: [MediaKind.film, .book, .album, .game, .concert, .theatre, .exhibition])
+    func aWorkWatchedInOneGoIsLoggedInOneTap(kind: MediaKind) {
+        #expect(SearchResultRowModel(candidate: MockProvider.candidate("x:1", kind: kind)).leadsToEpisodes == false)
+    }
 }

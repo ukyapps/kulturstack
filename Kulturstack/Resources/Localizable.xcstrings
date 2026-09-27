@@ -2409,6 +2409,22 @@
         }
       }
     },
+    "search.row.episodes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See the episodes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voir les épisodes"
+          }
+        }
+      }
+    },
     "search.row.hint": {
       "localizations": {
         "en": {
@@ -2821,6 +2837,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dernière saison terminée"
+          }
+        }
+      }
+    },
+    "series.next %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S%1$lld · E%2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S%1$lld · E%2$lld"
+          }
+        }
+      }
+    },
+    "series.next.hint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to check this episode"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche pour cocher cet épisode"
+          }
+        }
+      }
+    },
+    "series.next.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next episode"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prochain épisode"
           }
         }
       }
