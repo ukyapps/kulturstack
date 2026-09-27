@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: Podcasts (T4a du PRD, avancée avant l'import — décision founder du 27/09)
-statut: proposé — une question ouverte avant la PR 32
+statut: proposé — question Radio France tranchée le 27/09 : la tranche se fait sans, puis Radio France en PR 35
 créé: 2026-09-27
 ---
 
@@ -84,7 +84,7 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 - **Plafond de 300 épisodes** gardés, les plus récents. Un flux tronqué par son éditeur ne doit pas décaler ce qui est déjà coché : c'est le `guid` qui fait foi.
 - Tests : fixture réelle (un flux Radio France de 96 épisodes, un flux court), durée mal formée, date absente, `guid` manquant (repli sur le lien), XML invalide → la fiche reste lisible.
 
-> ⚠️ **Cette PR dépend de la question ouverte ci-dessous.** Sans réponse, elle livre les podcasts dont Apple donne le flux — c'est-à-dire tout sauf Radio France.
+> **Cette PR livre les podcasts dont Apple donne le flux** — c'est-à-dire tout sauf Radio France, qui arrive en PR 35 (décision founder du 27/09 : « les deux à parts égales », donc le reste d'abord).
 
 ## PR 33 — Cocher un épisode de podcast `feat/podcast-episodes`
 
@@ -98,7 +98,19 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 
 **Démo** : captures fiche podcast repliée / dépliée / après avoir coché.
 
-## PR 34 — Le seed DEBUG et les finitions `chore/podcasts-seed`
+## PR 34 — Radio France `feat/radio-france-feeds`
+
+**Livre** : les épisodes des podcasts que Apple laisse sans flux — France Inter, France Culture, France Info.
+
+- Un **résolveur de flux** appelé **uniquement** quand Apple ne donne rien : il rend l'URL du flux à partir de l'identifiant Apple du podcast. Le `RSSEpisodeProvider` de la PR 32 fait le reste, sans rien savoir de tout ça.
+- Source retenue : **Podcast Index**, index ouvert des flux. Inscription **gratuite**, clé rangée dans le Trousseau puis injectée par `make secrets`, comme TMDB — **jamais** dans le dépôt, jamais dans le chat.
+- **À vérifier avec la clé en main, avant d'écrire la PR** : que Radio France y est bien indexé, et que l'endpoint « par identifiant Apple » rend le bon flux. Si ce n'est pas le cas, la PR s'arrête là et on en reparle — le reste de la tranche ne dépend pas d'elle.
+- Un **ADR** accompagne la PR : deuxième source pour une seule famille de podcasts, et pourquoi.
+- Tests : fixture réelle, podcast sans flux chez Apple → le résolveur est appelé ; podcast avec flux → il ne l'est **pas** ; résolveur en panne → la fiche montre son erreur, la recherche continue de marcher.
+
+**Démo** : « Le code a changé » et ses 96 épisodes, cochables.
+
+## PR 35 — Le seed DEBUG et les finitions `chore/podcasts-seed`
 
 **Livre** : le seed DEBUG crée un podcast avec ses épisodes, les compteurs du Journal montrent « Podcasts · n », et les libellés FR / EN sont relus (« écouté » et non « vu » — `MediaKind.seenActionLabel` existe déjà).
 
@@ -107,12 +119,13 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 ## Ordre de dépendance
 
 ```
-PR30 → PR31 → PR32 → PR33 → PR34
+PR30 → PR31 → PR32 → PR33 → PR35
+                        ↘ PR34 (Radio France, dès que la clé est là)
 ```
 
 Le schéma d'abord, la recherche ensuite, les épisodes après, l'écran en dernier. La PR 31 peut se faire en parallèle de la PR 30 : elle ne touche pas au modèle.
 
-## La question ouverte — Radio France
+## Radio France — tranché le 27/09
 
 **Apple ne publie pas le flux RSS des podcasts de Radio France.** Mesuré le 27/09 : « Le code a changé », « Affaires sensibles », et les dix premiers résultats de « france inter » et « france culture » — **aucun** n'a de `feedUrl`, ni par la recherche, ni par `lookup`. Les autres producteurs testés (Arte Radio, Binge, Louie Media, The Daily, Transfert) en ont tous un.
 
@@ -123,7 +136,7 @@ Les flux **existent** pourtant : `radiofrance-podcast.net/podcast09/podcast_<uui
 | **A. Podcast Index** (reco) | Un index ouvert des flux, avec un endpoint « donne-moi le flux de ce podcast Apple ». Un appel de plus, **uniquement** quand Apple n'a rien. Radio France couvert comme le reste. | Une **inscription gratuite** (5 minutes) et une clé à ranger dans le Trousseau, comme TMDB. Un ADR. À vérifier une fois la clé en main : que Radio France y est bien indexé. |
 | **B. Sans Radio France** | Rien à faire, rien à inscrire. Les podcasts Radio France restent **cherchables et loggables en une ligne**, comme une série qu'on ne suit pas épisode par épisode — mais **sans liste d'épisodes**. | Si la founder écoute surtout France Inter et France Culture, la tranche rate sa cible. |
 
-**Ce qu'il faut savoir avant de choisir : ce qu'elle écoute.** La question lui est posée. Tant qu'elle n'a pas répondu, les PRs 30 et 31 se font — elles ne dépendent pas de la réponse.
+**Réponse de la founder : « les deux à parts égales ».** Donc **l'option B d'abord, l'option A ensuite** : la tranche se fait sans Radio France (PRs 30 → 33), et Radio France arrive en **PR 34**, quand elle aura cinq minutes pour l'inscription gratuite. Elle aura entre-temps les épisodes de tout le reste.
 
 ## Ce qu'on vérifie avant de dire « shippé »
 
@@ -136,7 +149,8 @@ Les flux **existent** pourtant : `radiofrance-podcast.net/podcast09/podcast_<uui
 - [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
 - [ ] Aucune string en dur, FR + EN dans la même PR.
 - [ ] Captures vide **et** rempli dans chaque PR.
-- [ ] Aucun secret dans le dépôt — si l'option A est retenue, la clé passe par le Trousseau et `make secrets`.
+- [ ] Aucun secret dans le dépôt — la clé de la PR 34 passe par le Trousseau et `make secrets`.
+- [ ] Un podcast dont Apple donne le flux **n'appelle pas** le résolveur de la PR 34.
 
 ## Ce que cette tranche ne résout pas
 
