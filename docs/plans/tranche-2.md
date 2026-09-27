@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: 2 — Épisodes
-statut: en cours — lancée le 2026-09-24 ; PR 12 et 13 fusionnées ; « où j'en suis » = un onglet (§ 6 q. 7)
+statut: livrée le 2026-09-27 — 5 PRs, #29 → #35 ; les huit retours d'usage qui ont suivi sont dans docs/product/retours-utilisateurs.md
 créé: 2026-09-23
 ---
 
@@ -57,7 +57,7 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : l'écran DEBUG « Test recherche » sait afficher les saisons et les épisodes d'une série.
 
-## PR 14 — Cocher un épisode `feat/series-episodes`
+## PR 14 — Cocher un épisode `feat/series-episodes` — ✅ #33
 
 **Livre** : sur la fiche d'une série, la liste des saisons dépliables, une case par épisode, et « tout cocher jusqu'ici ».
 
@@ -70,7 +70,7 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : captures fiche série repliée / dépliée / après avoir coché.
 
-## PR 15 — « En cours » et « abandonné » `feat/status-in-progress`
+## PR 15 — « En cours » et « abandonné » `feat/status-in-progress` — ✅ #34
 
 **Livre** : les statuts existent déjà dans le modèle depuis la T1 (`allowedStatuses`) ; ici ils deviennent **automatiques et visibles**.
 
@@ -82,7 +82,7 @@ Les mêmes qu'en T1, elles ont tenu :
 
 **Démo** : captures avant / pendant / après une saison.
 
-## PR 16 — « Où j'en suis » `feat/in-progress`
+## PR 16 — « Où j'en suis » `feat/in-progress` — ✅ #35
 
 **Livre** : **un quatrième onglet « En cours »** — l'écran qui répond à « je reprends quoi ce soir ? ». Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Les livres en cours y sont aussi, avec « terminé » en un tap.
 
@@ -95,7 +95,7 @@ Les mêmes qu'en T1, elles ont tenu :
 >
 > Ce que ça implique pour cette PR : un écran plein, pas un bandeau — liste verticale, une ligne par œuvre en cours avec sa progression (`S2 E4 sur 10`, `p. 212 sur 480`), le bouton qui avance d'un épisode à droite, et l'`EmptyState` « Rien en cours » quand la liste est vide (c'est alors un **onglet vide**, pas un bandeau qui disparaît : l'état vide compte double ici).
 >
-> **Reste à confirmer à l'écran, à la démo** : sa place dans la barre — troisième (l'ordre actuel ne bouge pas) ou deuxième, si « En cours » devient ce qu'on ouvre le soir.
+> **Confirmé à l'usage le 27/09** : « oui c'est bien » — l'onglet **reste en troisième position**, la barre ne bouge plus.
 
 **Démo** : captures vide / rempli, et le ✓ qui fait avancer une série.
 
@@ -109,17 +109,23 @@ PR12 → PR13 → PR14 → PR15 → PR16
 
 Tout est en file : le schéma d'abord, les données ensuite, l'interface après, l'écran de synthèse en dernier. Seule la PR 13 peut se faire en parallèle de la PR 12 si on stub le provider.
 
-## Ce qu'on vérifie avant de dire « shippé »
+## Ce qu'on vérifie avant de dire « shippé » — fait le 27/09
 
-- [ ] **La base de la founder survit à la migration** — testé sur son iPhone, avec ses vrais logs, pas seulement en mémoire.
-- [ ] Test T-01 vert, dans sa version V1 → V2 **avec des données**.
-- [ ] Une série de dix saisons ne déclenche pas dix appels réseau à l'ouverture.
-- [ ] Cocher puis décocher puis recocher : un seul log, pas trois.
-- [ ] Trois rendus distincts sur chaque nouvel écran (vide ≠ erreur ≠ edge).
-- [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
-- [ ] Aucune string en dur, FR + EN dans la même PR.
-- [ ] Captures vide **et** rempli dans chaque PR.
-- [ ] Les podcasts n'ont pas été câblés « en passant ».
+- [x] **La base de la founder survit à la migration** — vérifiée sur son iPhone le 24/09, base sauvegardée et comparée ligne à ligne (7 œuvres, 11 logs, 10 références, identiques).
+- [x] Test T-01 vert, dans sa version V1 → V2 **avec des données**.
+- [x] Une série de dix saisons ne déclenche pas dix appels réseau à l'ouverture — vérifié en comptant les requêtes.
+- [x] Cocher puis décocher puis recocher : un seul log, pas trois.
+- [x] Trois rendus distincts sur chaque nouvel écran (vide ≠ erreur ≠ edge).
+- [x] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features — 84,8 % au global, 338 tests.
+- [x] Aucune string en dur, FR + EN dans la même PR.
+- [x] Captures vide **et** rempli dans chaque PR.
+- [x] Les podcasts n'ont pas été câblés « en passant » — ils restent en T4.
+
+## Ce que l'usage a dit, trois jours après
+
+Huit retours le 27/09 (`docs/product/retours-utilisateurs.md`), dont **aucun ne remet en cause le modèle** : ce sont des questions de chemin le plus court. La leçon principale : **la tranche a livré la donnée mais pas assez le geste**. Cocher un épisode demandait d'ouvrir la fiche, de déplier une saison et de trouver un appui long ; la founder voulait dire « j'ai vu toute la saison 2 » en un geste, et savoir « où j'en suis » dès le haut de la fiche. Corrigé par les sept PRs 23 → 29.
+
+Une phrase du plan s'est retournée contre lui : *« les épisodes sont une option, pas un passage obligé »*. C'est vrai pour le **modèle**, mais le `+` de la Recherche, lui, loggeait une série d'un bloc comme un film — et c'est le premier geste qu'elle a essayé. Pour une série, le chemin par défaut devient les épisodes ; logger la série en une ligne reste possible depuis sa fiche.
 
 ## Ce que cette tranche ne résout pas
 

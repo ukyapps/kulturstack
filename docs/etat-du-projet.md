@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-23
+maj: 2026-09-27
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,11 +8,11 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**La Tranche 1 est livrée, l'app tourne sur l'iPhone de la founder, et la Tranche 2 est commencée.** Installée par câble, réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel ont produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **242 tests verts**, couverture 82,9 %.
+**Les Tranches 1 et 2 sont livrées, l'app tourne sur l'iPhone de la founder, et une série s'y suit épisode par épisode.** Installée par câble, réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux vagues d'usage réel ont produit **sept retours le 23/09** (traités en cinq PRs, #18 → #22) et **huit le 27/09** (sept PRs, en cours). **338 tests verts**, couverture 84,8 %.
 
-Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
+Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **suivre une série épisode par épisode** — saisons dépliables sur sa fiche, une case par épisode, « tout cocher jusqu'ici », section « Spéciaux » à part, statuts *en cours* (automatique au premier épisode), *terminé* (proposé au dernier, jamais imposé) et *abandonné* (explicite) ; **savoir où on en est** dans un onglet **En cours** qui donne la progression, le prochain épisode et un ✓ qui l'avance sans ouvrir la fiche ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
-**Tranche 2 en cours depuis le 24/09.** Les PR 12 (schéma V2, #29) et 13 (saisons et épisodes chez TMDB, #30) sont fusionnées ; la #31 (épisodes spéciaux) attend. **Rien ne se voit encore à l'écran** : les deux PRs sont de la fondation. La prochaine, la PR 14, est la première visible — cocher un épisode sur la fiche d'une série.
+**Tranche 2 livrée le 27/09**, cinq PRs en quatre jours (#29 → #35) contre 2 à 3 semaines estimées — l'estimation était large, pas le travail court. Trois jours d'usage ont produit **huit retours**, traités en sept petites PRs (§ 2). **La tranche suivante n'est pas tranchée** : le plan dit l'import (T3), la founder a demandé les podcasts (T4) ; reco et décision attendue en § 2.
 
 **La migration V2 a été vérifiée sur l'iPhone de la founder avant fusion**, base sauvegardée et comparée ligne à ligne : rien de perdu. Procédure dans `docs/journal/2026-09-24-lancement-tranche-2.md`. Rien ne se publie sans son action.
 
@@ -54,13 +54,38 @@ Sept retours de la founder, notés mot pour mot dans `docs/product/retours-utili
 | « On peut enregistrer les trucs en double » | Le `+` sur une œuvre déjà loggée demande confirmation | ✅ #22 |
 | « La recherche par auteur marche pour les livres » | Rien à faire : OpenLibrary cherche nativement dans les auteurs | — |
 
+### Tranche 2 — Épisodes (**complète**, 5 PRs sur 5, du 24 au 27/09)
+
+| PR | Feature | État |
+|---|---|---|
+| 12 | Schéma V2 : `Season`, `Episode`, `LogEntry.episode`, étage de migration | ✅ #29 (24/09) — **migration vérifiée sur l'iPhone**, base sauvegardée et comparée ligne à ligne |
+| 13 | Saisons et épisodes chez TMDB (`EpisodeProvider`), une saison chargée au dépliement | ✅ #30 (24/09) |
+| 13b | Épisodes spéciaux : section à part, en dernier, jamais « le prochain épisode » | ✅ #31 (24/09) |
+| 14 | Cocher un épisode sur la fiche d'une série, « tout cocher jusqu'ici » | ✅ #33 (24/09) |
+| 15 | Statuts *en cours* (automatique), *terminé* (proposé, jamais imposé), *abandonné* (explicite) | ✅ #34 (25/09) |
+| 16 | Onglet « En cours » : progression, prochain épisode, ✓ qui fait avancer | ✅ #35 (27/09) |
+
+### Corrections d'usage — après la Tranche 2 (27/09)
+
+Huit retours de la founder après trois jours d'usage des épisodes, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. **Un seul bug** ; le reste est de l'ergonomie, sauf les livres (source de données). Sept PRs, de la plus agaçante au quotidien à la plus confortable.
+
+| PR | Retour | Correction | État |
+|---|---|---|---|
+| 23 | « Le tap n'ouvre la fiche que sur l'image ou le titre » | La ligne du Journal déclare sa zone tactile — la seule des quatre à ne pas le faire | ⏳ |
+| 24 | « Une option qui dit j'ai vu toute une saison » + « je n'avais pas trouvé l'appui long » | « Tout cocher » sur la saison et « jusqu'ici » sur l'épisode, **visibles** | ⏳ |
+| 25 | « Logger une série me la met comme un film au lieu de m'afficher les épisodes » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S2 E5 », cochable ; le `+` d'une série y mène | ⏳ |
+| 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée + retour haptique sur le ✓ | ⏳ |
+| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même bouton sur les lignes du Journal qui portent une série en cours | ⏳ |
+| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche (**founder, 27/09** : sur la fiche, pas dans la ligne de résultat) | ⏳ |
+| 29 | « Quand je cherche les livres c'est bizarre… je tombe pas sur Kafka sur le rivage » | Les éditions **françaises** d'abord chez OpenLibrary, titre et couverture compris | ⏳ |
+
 ### Tranches suivantes
 
-**La Tranche 2 est lancée depuis le 24/09/2026** (feu vert de la founder). Rien n'est encore codé : la PR 12 est la prochaine.
+**La Tranche 2 est livrée** (27/09). La suivante n'est **pas encore tranchée** : le plan dit T3 (import), la founder a demandé les podcasts le 27/09, et ma reco est de **faire les podcasts avant l'import** — son historique Trakt ne va nulle part. À confirmer avec elle avant d'ouvrir la tranche.
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
-| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **en cours : PR 12 ✅ #29, PR 13 ✅ #30, PR 14 → 16 à faire** | non |
+| 2 | Épisodes | saisons / épisodes (**séries seulement** ; les podcasts n'existent qu'en T4), « où j'en suis » **en quatrième onglet**, statuts en cours / abandonné — **livrée, #29 → #35** | non |
 | 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
 | 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
@@ -199,7 +224,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 215, tous verts
+## 4. Tests — 338, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -285,18 +310,18 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/tdd/01…07` | architecture, modèle, protocoles, sources, tests, secrets, RGPD | avant de coder une couche |
 | `docs/decisions/001…012` | les ADRs | quand on se demande « pourquoi » |
 | `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
-| `docs/plans/tranche-2.md` | les 5 PRs de T2 (proposée, pas commencée) | avant chaque PR de T2 |
+| `docs/plans/tranche-2.md` | les 5 PRs de T2 (livrée) | pour l'historique |
 
 ## 8. Ouvert / à faire
 
-**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **fusionner #31** (les épisodes spéciaux) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **continuer à utiliser l'app et noter ce qui coince** (le plus important) · **dire si la tranche suivante est les podcasts ou l'import** · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Prochaine session — par où commencer**
 
-1. Demander ce que **quelques jours de plus** ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
-2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. **T2 en cours** : PR 12 et 13 fusionnées, migration vérifiée sur l'appareil le 24/09. La suite est la **PR 14** (cocher un épisode) — `docs/plans/tranche-2.md`. Vérifier d'abord que **#31** (les spéciaux) est fusionnée, sinon la saison 0 est encore jetée.
-4. Sinon : corrections d'usage, petites PRs, comme le 23/09.
+1. **Les sept correctifs du 27/09** (§ 2), dans l'ordre du tableau. Les retours sont déjà écrits dans `docs/product/retours-utilisateurs.md` ; ce qui reste est du code.
+2. **Trancher la tranche suivante** : podcasts (T4) ou import (T3) ? La founder a demandé les podcasts, ma reco est de les faire avant l'import. Rien ne s'ouvre avant sa réponse.
+3. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
+4. **Dette de documentation assumée** : les § 3 (arborescence) et § 4 (inventaire des tests) décrivent l'app **d'avant les écrans de la T2** — ni `Season`, ni `Episode`, ni l'onglet « En cours » n'y figurent. Les cinq PRs de la T2 ne les ont pas mis à jour. À reprendre **à la fin des sept correctifs**, en même temps que la page de journal.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
@@ -306,5 +331,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Tranché le 23/09 après usage réel** : le Journal s'ouvre sur **Tout** · tap sur une ligne du Journal = **la fiche** (ce qui inverse la décision de la veille — l'usage a tranché) · la ligne montre le commentaire, pas la date · date sans heure · « Logger » depuis la fiche ouvre un formulaire et n'écrit rien avant validation · le `+` demande avant un deuxième log · une recherche de personne suit son métier (un réalisateur ramène ce qu'il a réalisé, pas ce qu'il a doublé).
 
 **Tranché le 24/09** : « où j'en suis » (T2) vit dans **un quatrième onglet « En cours »** (design § 6, q. 7), contre la reco du bandeau — sa place exacte dans la barre se confirme à l'écran, à la démo de la PR 16 · les **épisodes spéciaux** (saison 0 de TMDB) vivent dans une section à part en bas de la fiche, cochables, **jamais** « le prochain épisode » : TMDB ne dit pas à quelle saison ils se rattachent, et 37 des 39 de Friends n'ont pas de date de diffusion.
+
+**Tranché le 27/09 après trois jours d'épisodes** : l'onglet « En cours » **reste en troisième position** (« oui c'est bien ») — la question laissée ouverte par la PR 16 est close · **un geste caché n'existe pas** : l'appui long « tout cocher jusqu'ici » n'a jamais été trouvé, il devient un bouton visible (troisième fois qu'un geste caché tombe, après l'appui long de l'Envie le 22/09) · « je le commence » va **sur la fiche**, pas dans la ligne de résultat · logger une série ne veut plus dire la logger d'un bloc : le `+` mène à ses épisodes.
 
 **Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en comptera déjà quatre — design § 6, question 9. À trancher en T5, pas avant.
