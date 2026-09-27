@@ -1,6 +1,6 @@
 import SwiftData
 
-extension KulturstackSchemaV3 {
+extension KulturstackSchemaV2 {
     @Model
     final class ExternalRef {
         @Attribute(.unique) var key: String
@@ -11,10 +11,8 @@ extension KulturstackSchemaV3 {
         init(provider: String, value: String, item: MediaItem? = nil) {
             self.provider = provider
             self.value = value
-            self.key = Self.key(provider: provider, value: value)
+            self.key = "\(provider):\(value)"
             self.item = item
         }
-
-        static func key(provider: String, value: String) -> String { "\(provider):\(value)" }
     }
 }

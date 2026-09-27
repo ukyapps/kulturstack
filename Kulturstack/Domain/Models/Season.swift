@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV2 {
+extension KulturstackSchemaV3 {
     @Model
     final class Season {
         @Attribute(.unique) var key: String

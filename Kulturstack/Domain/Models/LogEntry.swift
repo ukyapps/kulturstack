@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV2 {
+extension KulturstackSchemaV3 {
     @Model
     final class LogEntry {
         @Attribute(.unique) var id: UUID
