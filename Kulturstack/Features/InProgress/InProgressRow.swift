@@ -16,6 +16,9 @@ struct InProgressRow: View {
                 Text(model.detail)
                     .font(.subheadline)
                     .foregroundStyle(Color.textSecondary)
+                if let progress = model.progress {
+                    ProgressBar(fraction: progress.fraction)
+                }
                 if let next = model.next {
                     Text(next.label)
                         .font(.caption.weight(.semibold))
@@ -27,6 +30,8 @@ struct InProgressRow: View {
         }
         .padding(.vertical, Spacing.xs)
         .contentShape(Rectangle())
+        // Le tap se sent autant qu'il se voit : la ligne bouge peu, la main doit savoir.
+        .sensoryFeedback(.success, trigger: model.progress?.position)
     }
 
     // Une série a une suite à cocher ; un livre, ou une série arrivée au bout, se termine.
@@ -35,9 +40,11 @@ struct InProgressRow: View {
             Button(action: onAdvance) {
                 Image(systemName: "checkmark")
                     .font(.body.weight(.semibold))
-                    .frame(width: 24, height: 24)
+                    .foregroundStyle(Color.surface)
+                    .frame(width: 40, height: 40)
+                    .background(Color.accent, in: Circle())
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.press)
             .accessibilityLabel(next.label)
             .accessibilityHint(String(localized: "inprogress.advance.hint"))
         } else {
