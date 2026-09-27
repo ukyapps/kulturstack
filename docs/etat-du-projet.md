@@ -70,9 +70,23 @@ Deux corrections trouvées en relisant le travail, pas à l'usage : une `Seasons
 
 **Hors périmètre, assumé** : la progression d'un livre (« p. 212 sur 480 » — pas de page courante dans le modèle, il faudrait un `SchemaV3`) et les podcasts (T4 : le modèle est écrit pour eux, seules les séries sont câblées).
 
+### Corrections d'usage — après la Tranche 2 (27/09)
+
+Trois jours d'épisodes, **huit retours**, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. **Un seul bug** (la zone tactile du Journal) ; le reste est de l'ergonomie, sauf les livres — une source de données mal interrogée. Sept PRs, de la plus agaçante au quotidien à la plus confortable.
+
+| PR | Retour | Correction | État |
+|---|---|---|---|
+| 23 | « Le tap n'ouvre la fiche que sur l'image ou le titre » | `JournalRow` déclare sa zone tactile — la seule des quatre lignes à ne pas le faire | ✅ #38 |
+| 24 | « Une option qui dit j'ai vu toute une saison » + « je n'avais pas trouvé l'appui long » | « J'ai vu toute la saison » sous la saison dépliée, « Jusqu'ici » en bouton visible, appui long retiré | ✅ #39 |
+| 25 | « Logger une série me la met comme un film » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S2 E5 », cochable ; le `+` d'une série y mène | ⏳ |
+| 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée + retour haptique sur le ✓ | ⏳ |
+| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même bouton sur les lignes du Journal qui portent une série en cours | ⏳ |
+| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ⏳ |
+| 29 | « Je tombe pas du tout sur Kafka sur le rivage » | Les éditions **françaises** d'abord chez OpenLibrary : titre, couverture et nom d'auteur | ✅ #40 |
+
 ### Tranches suivantes
 
-**La Tranche 3 n'est pas lancée.** Avant de l'ouvrir : quelques jours d'usage réel et les retours qui vont avec, comme le 23/09.
+**La Tranche 3 n'est pas lancée, et son tour n'est plus acquis.** Les retours du 27/09 sont arrivés, et avec eux une demande : « maintenant je voudrais qu'on ajoute les podcasts et tout, c'est prévu pour quand ça ? ». Les podcasts sont en **T4**, après l'import. **Ma reco : les faire avant l'import** — la founder les demande, son historique Trakt ne va nulle part. **Pas tranché : à confirmer avec elle avant d'ouvrir quoi que ce soit.**
 
 | # | Tranche | Contenu | Serveur |
 |---|---|---|---|
@@ -345,17 +359,17 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 **Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
-**Deux choses à juger à l'écran, pas sur le papier** — elles ne bloquent rien, elles attendent l'usage :
+**Les deux choses qui attendaient son verdict à l'écran ont leur réponse (27/09)** :
 
-1. **La place de l'onglet « En cours »** dans la barre : troisième aujourd'hui (Journal · Envie · En cours · Recherche), pour ne déplacer ni Journal ni Envie. Deuxième si c'est ce qu'on ouvre le soir. Une ligne de `RootView` (design § 6, q. 7).
-2. **« Tout cocher jusqu'ici » est derrière un appui long** sur un épisode. C'est l'idiome iOS et ça n'encombre pas la ligne, mais ça ne se devine pas. À rendre visible si la founder ne le trouve pas seule.
+1. **La place de l'onglet « En cours »** : « oui c'est bien » — il **reste en troisième position**, la barre ne bouge plus.
+2. **« Tout cocher jusqu'ici » derrière un appui long** : « je ne l'avais pas trouvé, faut le rendre visible ». Devenu un bouton visible (#39). **Troisième fois qu'un geste caché tombe** après l'appui long de l'Envie le 22/09 : dans cette app, ce qui ne se voit pas n'existe pas.
 
 **Prochaine session — par où commencer**
 
-1. Demander ce que les jours d'usage ont donné et l'écrire dans `docs/product/retours-utilisateurs.md` **avant de coder quoi que ce soit**. Le 23/09 a montré ce que ça vaut : sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
-2. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device`.
-3. **La Tranche 2 est close** — les cinq PRs sont fusionnées. Rien n'est en cours, aucune PR n'est ouverte.
-4. Ensuite, au choix de la founder : les corrections d'usage de la T2 (petites PRs, comme le 23/09), ou **ouvrir la Tranche 3** (import du passé — Trakt, CSV). Le plan T3 n'est pas écrit : il se rédige avant de coder, comme celui de la T2.
+1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
+2. **Les correctifs du 27/09** (§ 2), dans l'ordre du tableau : les PRs 25 à 28 restent à faire.
+3. **Trancher la tranche suivante** : podcasts (T4) ou import (T3) ? La founder a demandé les podcasts, ma reco est de les faire avant l'import. Rien ne s'ouvre avant sa réponse, et le plan de la tranche s'écrit avant de coder.
+4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
 **Dettes techniques connues, aucune urgente** : le Journal et l'onglet « En cours » filtrent en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs. Le prochain épisode ne vient que des saisons déjà ouvertes (pas d'appel réseau depuis l'onglet). Pas de progression de lecture pour les livres (« p. 212 sur 480 » demanderait un `SchemaV3`). Test du plan pas encore écrit : T-17 (conversion des notes, T3).
@@ -363,6 +377,8 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
 
 **Question d'ergonomie ouverte** : où va la **Bibliothèque** (T5), puisque la barre en compte déjà quatre — design § 6, question 9. À trancher en T5, pas avant.
+
+**Tranché le 27/09 après trois jours d'épisodes** : l'onglet « En cours » **reste troisième** · un **geste caché n'existe pas** — « tout cocher jusqu'ici » devient un bouton · « je le commence » va **sur la fiche**, pas dans la ligne de résultat · logger une série ne veut plus dire la logger d'un bloc : le `+` mène à ses épisodes · les livres se cherchent **dans leur édition française** d'abord.
 
 **Tranché le 22/09 à l'écran** : tap sur un résultat = fiche, `+` = loggé, ♡ = envie · Journal groupé par jour · Envie en onglet (pas en chip), hors des compteurs.
 
