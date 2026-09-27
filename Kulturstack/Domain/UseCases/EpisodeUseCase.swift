@@ -60,6 +60,20 @@ struct EpisodeUseCase {
         }
     }
 
+    // « J'ai vu toute la saison » : la même règle que « jusqu'ici », appliquée au dernier épisode.
+    // Une saison sans épisode en mémoire n'a rien à cocher.
+    func checkAll(_ season: Season, of item: MediaItem, now: Date = .now) throws {
+        guard let last = season.orderedEpisodes.last else { return }
+        try checkUpTo(last, of: item, now: now)
+    }
+
+    // Décocher une saison ne touche qu'elle : les autres gardent ce qu'elles ont.
+    func uncheckAll(_ season: Season, of item: MediaItem) throws {
+        for episode in season.orderedEpisodes {
+            for entry in episode.logs.filter({ $0.item?.id == item.id }) { try edit.delete(entry) }
+        }
+    }
+
     private func episodes(season number: Int, of item: MediaItem) async throws -> [EpisodeSummary] {
         guard item.kind.hasEpisodes else { return [] }
         for provider in providers {
