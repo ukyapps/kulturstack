@@ -119,4 +119,67 @@ struct ItemDetailModelTests {
 
         #expect(ItemDetailModel(item: item).source == expected)
     }
+
+    // MARK: - « Je le commence » (retour du 27/09)
+
+    @Test @MainActor func aBookCanBeStarted() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let book = MediaItem(kind: .book, title: "Piranesi")
+        container.mainContext.insert(book)
+        try container.mainContext.save()
+
+        let model = ItemDetailModel(item: book)
+
+        #expect(model.canStart)
+        #expect(model.watchStatus == nil)
+        withExtendedLifetime(container) {}
+    }
+
+    // Un film ne se commence pas : le statut « en cours » ne lui est pas permis.
+    @Test @MainActor func aFilmCannotBeStarted() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let film = MediaItem(kind: .film, title: "La Planète sauvage")
+        container.mainContext.insert(film)
+        try container.mainContext.save()
+
+        #expect(ItemDetailModel(item: film).canStart == false)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test @MainActor func aWorkAlreadyStartedDoesNotOfferItAgain() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let book = MediaItem(kind: .book, title: "Piranesi")
+        context.insert(book)
+        context.insert(try LogEntry.make(item: book, status: .inProgress))
+        try context.save()
+
+        let model = ItemDetailModel(item: book)
+
+        #expect(model.watchStatus == .inProgress)
+        #expect(model.canStart == false)
+        withExtendedLifetime(container) {}
+    }
+
+    // Un livre lu puis reposé se recommence : « en cours » n'est pas réservé aux inédits.
+    @Test @MainActor func aFinishedBookCanBeStartedAgain() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let book = MediaItem(kind: .book, title: "Piranesi")
+        context.insert(book)
+        context.insert(try LogEntry.make(item: book, status: .done))
+        try context.save()
+
+        #expect(ItemDetailModel(item: book).canStart)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func aCandidateIsInProgressOfNothing() {
+        let candidate = MockProvider.candidate("ol:work:1", kind: .book, title: "Piranesi")
+
+        let model = ItemDetailModel(candidate: candidate)
+
+        #expect(model.watchStatus == nil)
+        #expect(model.canStart)
+    }
 }

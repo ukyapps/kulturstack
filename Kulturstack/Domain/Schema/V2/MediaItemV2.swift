@@ -1,7 +1,10 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV3 {
+// Copie figée du modèle tel qu'il était en V2 — elle décrit la base installée sur l'iPhone
+// de la founder depuis le 24/09. On ne la modifie plus : c'est contre elle que T-01 migre.
+// Seules les propriétés stockées comptent ici ; les règles et le confort vivent dans la V3.
+extension KulturstackSchemaV2 {
     @Model
     final class MediaItem {
         @Attribute(.unique) var id: UUID
@@ -38,24 +41,6 @@ extension KulturstackSchemaV3 {
             self.externalRefs = []
             self.logs = []
             self.seasons = []
-        }
-
-        var kind: MediaKind {
-            get { MediaKind(rawValue: kindRaw) ?? .film }
-            set { kindRaw = newValue.rawValue }
-        }
-
-        var orderedSeasons: [Season] { seasons.sorted { $0.number < $1.number } }
-
-        var details: (any DetailsPayload)? {
-            guard let detailsData else { return nil }
-            return try? DetailsCodec.decode(kind: kind, from: detailsData)
-        }
-
-        func setDetails(_ payload: some DetailsPayload) throws {
-            detailsData = try DetailsCodec.encode(payload)
-            detailsVersion = DetailsCodec.currentVersion
-            updatedAt = .now
         }
     }
 }
