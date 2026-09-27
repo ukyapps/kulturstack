@@ -14,6 +14,15 @@ final class StubHTTPClient: HTTPClient, Sendable {
     init(data: Data) { respond = { _ in .success(data) } }
     init(error: Error) { respond = { _ in .failure(error) } }
 
+    // Une réponse par appel, dans l'ordre : pour les sources qui s'y reprennent à deux fois
+    // (les livres cherchent d'abord dans la langue de l'app, puis sans filtre).
+    init(sequence: [Result<Data, Error>]) {
+        let remaining = Mutex(sequence)
+        respond = { _ in
+            remaining.withLock { $0.isEmpty ? .failure(HTTPError.status(404)) : $0.removeFirst() }
+        }
+    }
+
     // Une réponse par route, reconnue à un morceau de chemin : « search/multi », « combined_credits »…
     init(routes: [String: Result<Data, Error>]) {
         respond = { url in
