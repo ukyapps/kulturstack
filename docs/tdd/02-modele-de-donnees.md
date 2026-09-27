@@ -67,11 +67,34 @@ enum LogStatus: String, Codable, CaseIterable, Sendable {
     var statusRaw: String                // LogStatus.rawValue
     var rating: Int?                     // 1...10 = 0,5 à 5 ★ (ADR-006)
     var note: String?
-    var source: String                   // "manual" | "import:trakt" | "import:csv:goodreads"…
+    var source: String                   // "manual" | "episodes" (posé par l'app) | "import:trakt"…
     var createdAt: Date
     var item: MediaItem?
+    var episode: Episode?                // V2 — nil pour un log qui parle de l'œuvre entière
 
     var status: LogStatus { get { LogStatus(rawValue: statusRaw)! } set { statusRaw = newValue.rawValue } }
+}
+
+// V2 — livrés le 24/09/2026 (#29). Du cache de source, pas de la donnée utilisatrice.
+@Model final class Season {
+    @Attribute(.unique) var key: String  // "<itemID>:s<n>" — la saison 0 est celle des spéciaux
+    var number: Int
+    var title: String?
+    var item: MediaItem?
+    @Relationship(deleteRule: .cascade, inverse: \Episode.season) var episodes: [Episode]
+}
+
+@Model final class Episode {
+    @Attribute(.unique) var key: String  // "<seasonKey>:e<n>"
+    var number: Int
+    var title: String?
+    var airDate: Date?
+    var runtimeMinutes: Int?
+    var season: Season?
+    // nullify, et pas cascade : recharger une saison détache les logs, ça ne les efface pas.
+    @Relationship(deleteRule: .nullify, inverse: \LogEntry.episode) var logs: [LogEntry]
+
+    var isWatched: Bool { logs.contains { $0.status == .done } }
 }
 ```
 
@@ -110,7 +133,7 @@ Décodage : `switch item.kind` → le bon type. Un champ manquant dans un vieux 
 
 | Tranche | Entité | Schéma |
 |---|---|---|
-| 2 | `Season { number, title?, item }`, `Episode { number, title?, airDate?, season }`, et `LogEntry.episode: Episode?` | V2, lightweight |
+| 2 | ✅ **fait le 24/09/2026** — `Season`, `Episode`, `LogEntry.episode` | V2, lightweight |
 | 5 | `OwnedCopy { id, format: String, editionRef: String?, acquiredAt: Date?, notes, item }` | V3, lightweight |
 | 7 | rien de nouveau : théâtre/expos = `MediaItem` sans `ExternalRef`, `LiveDetails` | — |
 
@@ -122,6 +145,7 @@ Décodage : `switch item.kind` → le bon type. Un champ manquant dans un vieux 
 | Journal par type | `LogEntry` où `item.kindRaw == "book"` |
 | Compteurs semaine / mois / année | count des mêmes prédicats |
 | Envie | `LogEntry` où `statusRaw == "wishlist"` |
-| Où j'en suis (T2) | `LogEntry` où `statusRaw == "inProgress"` |
+| Où j'en suis (T2) | les œuvres dont le **dernier** log parlant d'elles (`episode == nil`, envies exclues) dit `inProgress` — un `done` ou un `dropped` postérieur les en sort. `WatchStatusUseCase.status(of:)` est le seul endroit qui en décide. |
+| Prochain épisode (T2) | premier `Episode` non coché des saisons **en cache**, saison 0 exclue — aucun appel réseau |
 | Ma bibliothèque (T5) | `OwnedCopy` groupé par `format` |
 | Dédup | `ExternalRef` où `key == …` |

@@ -103,9 +103,15 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 ## Périmètre courant
 
-**Tranche 1 livrée** (`docs/plans/tranche-1.md`), installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22).
+**Tranches 1 et 2 livrées.** T1 (`docs/plans/tranche-1.md`) installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **T2 — épisodes — close le 27/09/2026** (`docs/plans/tranche-2.md`) : les cinq PRs sont fusionnées (#29, #30, #31, #33, #34, #35). **338 tests verts**, couverture Domain 97 % · Data 95 % · Features 88 %.
 
-**Tranche 2 — épisodes — en cours depuis le 24/09/2026.** Le plan fait foi : `docs/plans/tranche-2.md`. **PR 12 ✅ (#29) et PR 13 ✅ (#30) fusionnées** ; la suite est la **PR 14** (cocher un épisode), première PR visible à l'écran. « Où j'en suis » sera **un quatrième onglet « En cours »** (design § 6, q. 7) ; les **épisodes spéciaux** vivent à part, cochables, jamais « le prochain épisode ».
+**Aucune PR ouverte, rien en cours.** La suite se décide avec la founder : soit les corrections d'usage de la T2 (petites PRs, comme le 23/09), soit l'ouverture de la **Tranche 3** (import du passé) — dont le plan reste à écrire avant de coder.
+
+**Avant d'ouvrir quoi que ce soit** : lui demander ce que les jours d'usage ont donné et l'écrire dans `docs/product/retours-utilisateurs.md`. Le 23/09 a donné sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
+
+**Deux choses attendent son verdict à l'écran** (aucune ne bloque) : la **place de l'onglet « En cours »** dans la barre (troisième aujourd'hui) et **« tout cocher jusqu'ici » derrière un appui long**, qui ne se devine pas.
+
+**Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Les podcasts restent en T4 même « vite fait » : le modèle `Season` / `Episode` est écrit pour eux, seules les séries sont câblées. Pas de progression de lecture pour les livres (il faudrait un `SchemaV3`).
 
 > **La migration V2 a été vérifiée sur l'appareil le 24/09** : base sauvegardée, comparée ligne à ligne, rien de perdu. Toute migration suivante se vérifie de la même façon — mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
 
@@ -113,7 +119,7 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 > **Vérifier l'état d'une PR avant de pousser sur sa branche** (`gh pr view <n> --json state`). La founder fusionne vite, dans le navigateur, sans le dire : un commit poussé sur une branche déjà fusionnée reste orphelin et recrée la branche côté GitHub. C'est arrivé le 24/09 (#30 → #31).
 
-**Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. En T2 même « vite fait » : les podcasts (ils arrivent en T4, le modèle est écrit pour eux mais seules les séries sont câblées) et les notes par épisode. Si une PR déborde d'une journée, la couper.
+> **Un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer.** Comparer les PNG des états entre eux (`#expect(Set(shots).count == 3)`) — c'est ce qui tient la règle « vide ≠ erreur ≠ edge ». Les captures des PRs se produisent de la même façon, par un `CaptureHarness.swift` temporaire supprimé avant le commit : pièges et mode d'emploi dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`.
 
 ## Contexte founder — à garder en tête
 
