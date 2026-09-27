@@ -136,11 +136,17 @@ Tout est en file : le schéma d'abord, les données ensuite, l'interface après,
 - [x] Captures vide **et** rempli dans chaque PR — `docs/captures/t2-pr-14/`, `t2-pr-15/`, `t2-pr-16/`.
 - [x] Les podcasts n'ont pas été câblés « en passant ».
 
-## Ce qui reste à regarder sur l'iPhone
+## Ce que l'iPhone a répondu, trois jours après (27/09)
 
-1. **La place de l'onglet** dans la barre — troisième aujourd'hui ; deuxième si « En cours » devient ce qu'on ouvre le soir (design § 6, q. 7).
-2. **« Tout cocher jusqu'ici » derrière un appui long** — à rendre visible si la founder ne le trouve pas seule.
-3. **La progression d'un livre** — à rouvrir si le manque se fait sentir (schéma V3).
+1. **La place de l'onglet** — « oui c'est bien » : il reste **troisième**. Question close.
+2. **« Tout cocher jusqu'ici » derrière un appui long** — « je ne l'avais pas trouvé, faut le rendre visible ». Devenu un **bouton visible**, l'appui long est retiré (#39).
+3. **La progression d'un livre** — toujours pas demandée. Reste ouvert (schéma V3).
+
+## Ce que l'usage a dit de cette tranche
+
+Huit retours le 27/09 (`docs/product/retours-utilisateurs.md`), dont **aucun ne remet en cause le modèle** : ce sont des questions de chemin le plus court. La leçon principale : **la tranche a livré la donnée, pas assez le geste**. Cocher un épisode demandait d'ouvrir la fiche, de déplier une saison, puis de deviner un appui long ; la founder voulait dire « j'ai vu toute la saison 2 » d'un coup, et savoir « où j'en suis » dès le haut de la fiche.
+
+Une phrase de ce plan s'est retournée contre lui : *« les épisodes sont une option, pas un passage obligé »*. C'est vrai du **modèle**, mais le `+` de la Recherche, lui, loggeait une série d'un bloc comme un film — et c'est le premier geste qu'elle a essayé. Pour une série, le chemin par défaut devient ses épisodes ; logger la série en une ligne reste possible depuis sa fiche.
 
 ## Ce que cette tranche ne résout pas
 

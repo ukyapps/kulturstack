@@ -105,15 +105,17 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 **Tranches 1 et 2 livrées.** T1 (`docs/plans/tranche-1.md`) installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **T2 — épisodes — close le 27/09/2026** (`docs/plans/tranche-2.md`) : les cinq PRs sont fusionnées (#29, #30, #31, #33, #34, #35). **338 tests verts**, couverture Domain 97 % · Data 95 % · Features 88 %.
 
-**Aucune PR ouverte, rien en cours.** La suite se décide avec la founder : soit les corrections d'usage de la T2 (petites PRs, comme le 23/09), soit l'ouverture de la **Tranche 3** (import du passé) — dont le plan reste à écrire avant de coder.
+**En cours : les corrections d'usage du 27/09.** Huit retours après trois jours d'épisodes (`docs/product/retours-utilisateurs.md`), traités en sept petites PRs — tableau et état dans `docs/etat-du-projet.md` § 2. Les PRs **25 à 28 restent à faire**.
 
-**Avant d'ouvrir quoi que ce soit** : lui demander ce que les jours d'usage ont donné et l'écrire dans `docs/product/retours-utilisateurs.md`. Le 23/09 a donné sept retours, cinq corrections, dont un « bug » qui n'en était pas un.
+**La tranche suivante n'est pas tranchée.** Le plan dit T3 (import) ; la founder a demandé les podcasts (T4) le 27/09. Reco : **podcasts avant import**. Sa réponse d'abord, le plan de la tranche ensuite, le code après.
 
-**Deux choses attendent son verdict à l'écran** (aucune ne bloque) : la **place de l'onglet « En cours »** dans la barre (troisième aujourd'hui) et **« tout cocher jusqu'ici » derrière un appui long**, qui ne se devine pas.
+**Ses deux verdicts du 27/09** : l'onglet « En cours » **reste troisième** ; l'appui long « tout cocher jusqu'ici » **n'avait jamais été trouvé** — il est devenu un bouton visible. Troisième geste caché abandonné après l'appui long de l'Envie : ici, ce qui ne se voit pas n'existe pas.
 
 **Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Les podcasts restent en T4 même « vite fait » : le modèle `Season` / `Episode` est écrit pour eux, seules les séries sont câblées. Pas de progression de lecture pour les livres (il faudrait un `SchemaV3`).
 
 > **La migration V2 a été vérifiée sur l'appareil le 24/09** : base sauvegardée, comparée ligne à ligne, rien de perdu. Toute migration suivante se vérifie de la même façon — mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
+
+> **`git fetch` avant de lire quoi que ce soit.** Un dépôt propre peut être en retard de plusieurs heures. Le 27/09, une session de l'après-midi a lu un `main` vieux de quatre heures, refait une partie des docs que la #36 venait de mettre à jour, et ouvert une PR en conflit. `gh pr list --state open` ne protège pas de ça : une PR **fusionnée** n'y apparaît pas.
 
 > **Lire `gh pr list --state open` en début de session.** Une PR ouverte est du travail en cours que `docs/etat-du-projet.md` ne montre pas. Le 24/09, deux sessions ont posé la même question à la founder et ouvert trois PRs pour la même décision.
 
