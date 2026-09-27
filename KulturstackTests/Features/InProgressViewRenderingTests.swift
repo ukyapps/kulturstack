@@ -56,6 +56,30 @@ struct InProgressViewRenderingTests {
         #expect(empty != filled)
     }
 
+    // La barre se remplit : deux avancements différents ne donnent pas la même image.
+    @Test func theBarFillsAsTheSeasonAdvances() async throws {
+        var shots: [Data] = []
+        for watched in [[1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]] {
+            let container = try ModelContainerFactory.inMemory()
+            let context = container.mainContext
+            let item = MediaItem(kind: .series, title: "Severance")
+            context.insert(item)
+            let season = try Season.make(number: 2, item: item)
+            context.insert(season)
+            for number in 1...10 { context.insert(Episode(number: number, season: season)) }
+            try context.save()
+            for episode in season.orderedEpisodes where watched.contains(episode.number) {
+                context.insert(try LogEntry.make(item: item, status: .done, episode: episode))
+            }
+            try context.save()
+            shots.append(await render(InProgressRow(model: InProgressRowModel(item: item),
+                                                    onAdvance: {}, onFinish: {})))
+            withExtendedLifetime(container) {}
+        }
+
+        #expect(Set(shots).count == 2)
+    }
+
     // Une série a une suite à cocher ; un livre se termine. Deux lignes, deux actions.
     @Test func rendersARowWithANextEpisodeAndOneWithout() async throws {
         let context = container.mainContext

@@ -30,7 +30,9 @@ struct NextEpisodeCard: View {
             .background(Color.surfaceSecondary, in: RoundedRectangle(cornerRadius: Radius.m))
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.press)
+        // Cocher depuis la fiche se sent comme cocher depuis « En cours » : même geste, même retour.
+        .sensoryFeedback(.success, trigger: next)
         .accessibilityLabel(label)
         .accessibilityHint(String(localized: "series.next.hint"))
     }
