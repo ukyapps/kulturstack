@@ -3,6 +3,7 @@ import SwiftUI
 struct SeasonsSection: View {
     @State private var viewModel: SeriesEpisodesViewModel
     @State private var expanded: Set<Int>
+    @State private var uncheckingSeason: Int?
 
     private let opened: Set<Int>
 
@@ -25,6 +26,14 @@ struct SeasonsSection: View {
             for number in opened.sorted() { await viewModel.open(number) }
         }
         .alert(String(localized: "series.check.failed"), isPresented: $viewModel.didFailToCheck) {}
+        .confirmationDialog(String(localized: "series.season.uncheck.title"), isPresented: isUnchecking,
+                            titleVisibility: .visible, presenting: uncheckingSeason) { number in
+            Button(String(localized: "series.season.uncheckAll"), role: .destructive) {
+                viewModel.uncheckSeason(number)
+            }
+        } message: { _ in
+            Text(String(localized: "series.season.uncheck.message"))
+        }
         .alert(String(localized: "series.finish.title"), isPresented: $viewModel.proposesFinish) {
             Button(String(localized: "series.finish.confirm")) { viewModel.finish() }
             Button(String(localized: "series.finish.later"), role: .cancel) {}
@@ -119,6 +128,7 @@ struct SeasonsSection: View {
         switch viewModel.episodes[season.number] {
         case .loaded(let rows):
             VStack(alignment: .leading, spacing: 0) {
+                wholeSeason(season)
                 ForEach(rows) { row in
                     EpisodeRow(model: row,
                                toggle: { viewModel.toggle(episode: row.number, in: season.number) },
@@ -143,6 +153,29 @@ struct SeasonsSection: View {
         case .loading, .none:
             ProgressView().frame(maxWidth: .infinity).padding(.vertical, Spacing.s)
         }
+    }
+
+    // « J'ai vu toute la saison » en un bouton, sous la saison dépliée — c'est là qu'on sait
+    // enfin ce qu'elle contient. Décocher est destructeur : ça se confirme.
+    @ViewBuilder private func wholeSeason(_ season: SeasonRowModel) -> some View {
+        Group {
+            if season.isComplete {
+                Button(String(localized: "series.season.uncheckAll"), systemImage: "arrow.uturn.backward") {
+                    uncheckingSeason = season.number
+                }
+            } else {
+                Button(String(localized: "series.season.checkAll"), systemImage: "checkmark.circle") {
+                    viewModel.checkSeason(season.number)
+                }
+            }
+        }
+        .buttonStyle(.bordered)
+        .font(.subheadline.weight(.semibold))
+        .padding(.vertical, Spacing.s)
+    }
+
+    private var isUnchecking: Binding<Bool> {
+        Binding(get: { uncheckingSeason != nil }, set: { if !$0 { uncheckingSeason = nil } })
     }
 
     // Une saison n'est chargée qu'au dépliement : une série de dix saisons ne fait pas dix appels.

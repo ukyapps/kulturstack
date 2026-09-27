@@ -2633,6 +2633,22 @@
         }
       }
     },
+    "series.checkUpTo.short": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to here"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’ici"
+          }
+        }
+      }
+    },
     "series.drop": {
       "localizations": {
         "en": {
@@ -2841,6 +2857,22 @@
         }
       }
     },
+    "series.season.checkAll": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I watched the whole season"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J’ai vu toute la saison"
+          }
+        }
+      }
+    },
     "series.season.complete": {
       "localizations": {
         "en": {
@@ -2869,6 +2901,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vus : %1$lld / %2$lld"
+          }
+        }
+      }
+    },
+    "series.season.uncheck.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Its checked episodes will be unchecked. The other seasons stay as they are."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ses épisodes cochés seront décochés. Les autres saisons ne bougent pas."
+          }
+        }
+      }
+    },
+    "series.season.uncheck.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uncheck this whole season?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout décocher cette saison ?"
+          }
+        }
+      }
+    },
+    "series.season.uncheckAll": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uncheck everything"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout décocher"
           }
         }
       }

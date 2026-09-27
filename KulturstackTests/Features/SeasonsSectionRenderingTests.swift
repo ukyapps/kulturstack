@@ -121,6 +121,47 @@ struct SeasonsSectionRenderingTests {
         #expect(Set(shots).count == 2)
     }
 
+    // MARK: - Ce qui se voit maintenant (retour du 27/09)
+
+    // « J'ai vu toute la saison » sous une saison à finir, « Tout décocher » sous une saison finie.
+    @Test func anOpenedSeasonOffersToCheckItWholeAndAFinishedOneToUndoIt() async throws {
+        let provider = StubEpisodeProvider(key: Self.key(41),
+                                           seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (itemID, services) = try series(provider, id: 41)
+        let toFinish = await render(SeasonsSection(itemID: itemID, services: services, opened: [1]), settles: true)
+
+        let item = try #require(try services.mediaRepository.find(itemID: itemID))
+        let repository = SwiftDataEpisodeRepository(context: container.mainContext)
+        let season = try #require(try repository.season(ofItem: itemID, number: 1))
+        try services.episodeUseCase.checkAll(season, of: item)
+        let finished = await render(SeasonsSection(itemID: itemID, services: services, opened: [1]), settles: true)
+
+        #expect(!toFinish.isEmpty)
+        #expect(toFinish != finished)
+    }
+
+    // « Jusqu'ici » se voit sur l'épisode qui laisse un trou derrière lui, et nulle part ailleurs.
+    @Test func onlyAnEpisodeWithAHoleBehindItShowsTheUpToHereButton() async throws {
+        let context = container.mainContext
+        let item = MediaItem(kind: .series, title: "Severance")
+        context.insert(item)
+        let season = try Season.make(number: 1, item: item)
+        context.insert(season)
+        for number in 1...3 { context.insert(Episode(number: number, season: season)) }
+        try context.save()
+        context.insert(try LogEntry.make(item: item, status: .done, episode: season.orderedEpisodes[0]))
+        try context.save()
+
+        let first = try #require(season.orderedEpisodes.first)
+        let last = try #require(season.orderedEpisodes.last)
+        let withoutButton = await render(EpisodeRow(model: EpisodeRowModel(first), toggle: {}, checkUpTo: {}))
+        let withButton = await render(EpisodeRow(model: EpisodeRowModel(last), toggle: {}, checkUpTo: {}))
+
+        #expect(EpisodeRowModel(last).canCheckUpTo)
+        #expect(withoutButton != withButton)
+    }
+
     // Une série ouverte depuis la recherche, pas encore en base, n'a pas d'épisodes à cocher.
     @Test func theDetailOfASeriesShowsItsSeasonsAndACandidateDoesNot() async throws {
         let (itemID, services) = try series(

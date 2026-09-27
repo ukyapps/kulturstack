@@ -169,6 +169,64 @@ struct SeriesEpisodesViewModelTests {
         #expect(try rows(viewModel.seasons).first?.isComplete == true)
     }
 
+    // MARK: - Toute la saison d'un geste (retour du 27/09)
+
+    @Test func checkingTheWholeSeasonChecksEveryEpisodeAndTheSeriesFollows() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 5),
+                                                              StubEpisodeProvider.season(2, episodes: 4)]),
+                                           episodes: [1: .success((1...5).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+
+        viewModel.checkSeason(1)
+
+        #expect(try rows(viewModel.episodes[1]).allSatisfy { $0.isWatched })
+        #expect(try rows(viewModel.seasons).first?.isComplete == true)
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    // Cocher toute la dernière saison finit la série : la proposition est la même qu'au dernier épisode.
+    @Test func checkingTheWholeLastSeasonProposesToFinish() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+
+        viewModel.checkSeason(1)
+
+        #expect(viewModel.proposesFinish)
+    }
+
+    @Test func uncheckingTheWholeSeasonClearsItAndTheStatus() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 4)]),
+                                           episodes: [1: .success((1...4).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+        await viewModel.open(1)
+        viewModel.checkSeason(1)
+
+        viewModel.uncheckSeason(1)
+
+        #expect(try rows(viewModel.episodes[1]).allSatisfy { !$0.isWatched })
+        #expect(try rows(viewModel.seasons).first?.watchedCount == 0)
+        #expect(viewModel.watchStatus == nil)
+    }
+
+    // Une saison qu'on n'a pas dépliée n'a pas d'épisode en mémoire : rien à cocher, rien qui plante.
+    @Test func checkingASeasonThatIsNotOpenChangesNothing() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+
+        viewModel.checkSeason(1)
+
+        #expect(viewModel.watchStatus == nil)
+        #expect(viewModel.didFailToCheck == false)
+    }
+
     // Replier puis redéplier ne rappelle pas la source : la saison est déjà en cache.
     @Test func reopeningASeasonDoesNotAskTheSourceAgain() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),

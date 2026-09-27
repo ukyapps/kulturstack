@@ -207,4 +207,78 @@ struct EpisodeUseCaseTests {
 
         #expect(try logs().count == 3)
     }
+
+    // MARK: - Toute une saison (retour du 27/09)
+
+    @Test func checkingAWholeSeasonChecksEveryEpisode() async throws {
+        let provider = StubEpisodeProvider(episodes: [1: .success((1...5).map { StubEpisodeProvider.episode($0) })])
+        let (item, useCase) = try make(provider: provider)
+        let season = try await useCase.open(StubEpisodeProvider.season(1), of: item)
+
+        try useCase.checkAll(season, of: item)
+
+        #expect(season.orderedEpisodes.allSatisfy { $0.isWatched })
+        #expect(try logs().count == 5)
+    }
+
+    // « J'ai vu toute la saison » alors que trois épisodes l'étaient déjà : cinq logs, pas huit.
+    @Test func checkingAWholeSeasonDoesNotDoubleWhatIsAlreadyChecked() async throws {
+        let provider = StubEpisodeProvider(episodes: [1: .success((1...5).map { StubEpisodeProvider.episode($0) })])
+        let (item, useCase) = try make(provider: provider)
+        let season = try await useCase.open(StubEpisodeProvider.season(1), of: item)
+        for index in [0, 2, 4] { try useCase.toggle(season.orderedEpisodes[index], of: item) }
+
+        try useCase.checkAll(season, of: item)
+
+        #expect(season.orderedEpisodes.allSatisfy { $0.isWatched })
+        #expect(try logs().count == 5)
+    }
+
+    @Test func checkingAnEmptySeasonChangesNothing() async throws {
+        let provider = StubEpisodeProvider(episodes: [1: .success([])])
+        let (item, useCase) = try make(provider: provider)
+        let season = try stored(season: 1, of: item)
+
+        try useCase.checkAll(season, of: item)
+
+        #expect(try logs().isEmpty)
+    }
+
+    @Test func uncheckingAWholeSeasonRemovesItsLogs() async throws {
+        let provider = StubEpisodeProvider(episodes: [1: .success((1...4).map { StubEpisodeProvider.episode($0) })])
+        let (item, useCase) = try make(provider: provider)
+        let season = try await useCase.open(StubEpisodeProvider.season(1), of: item)
+        try useCase.checkAll(season, of: item)
+
+        try useCase.uncheckAll(season, of: item)
+
+        #expect(season.orderedEpisodes.allSatisfy { !$0.isWatched })
+        #expect(try logs().isEmpty)
+    }
+
+    // Décocher une saison ne touche qu'elle : la saison 2 garde ce qui a été vu.
+    @Test func uncheckingASeasonLeavesTheOtherSeasonsAlone() async throws {
+        let provider = StubEpisodeProvider(episodes: [
+            1: .success((1...3).map { StubEpisodeProvider.episode($0) }),
+            2: .success((1...3).map { StubEpisodeProvider.episode($0) }),
+        ])
+        let (item, useCase) = try make(provider: provider)
+        let first = try await useCase.open(StubEpisodeProvider.season(1), of: item)
+        let second = try await useCase.open(StubEpisodeProvider.season(2), of: item)
+        try useCase.checkAll(first, of: item)
+        try useCase.checkAll(second, of: item)
+
+        try useCase.uncheckAll(first, of: item)
+
+        #expect(first.orderedEpisodes.allSatisfy { !$0.isWatched })
+        #expect(second.orderedEpisodes.allSatisfy { $0.isWatched })
+        #expect(try logs().count == 3)
+    }
+
+    private func stored(season number: Int, of item: MediaItem) throws -> Season {
+        let repository = SwiftDataEpisodeRepository(context: container.mainContext)
+        let season = try Season.make(number: number, item: item)
+        try repository.add(season)
+        return season
+    }
 }

@@ -77,6 +77,16 @@ final class SeriesEpisodesViewModel {
         perform(episode: number, in: season) { try useCase.checkUpTo($1, of: $0) }
     }
 
+    // « J'ai vu toute la saison » en un geste. Une saison non dépliée n'a pas ses épisodes
+    // en mémoire : il n'y a rien à cocher, et rien à signaler.
+    func checkSeason(_ number: Int) {
+        performSeason(number) { try useCase.checkAll($1, of: $0) }
+    }
+
+    func uncheckSeason(_ number: Int) {
+        performSeason(number) { try useCase.uncheckAll($1, of: $0) }
+    }
+
     func finish() { record { try status.finish($0) } }
 
     func drop() { record { try status.drop($0) } }
@@ -84,16 +94,27 @@ final class SeriesEpisodesViewModel {
     func resume() { record { try status.resume($0) } }
 
     private func perform(episode number: Int, in season: Int, _ action: (MediaItem, Episode) throws -> Void) {
-        guard let item = item(),
-              let episode = stored[season]?.episodes.first(where: { $0.number == number }) else { return }
+        guard let episode = stored[season]?.episodes.first(where: { $0.number == number }) else { return }
+        apply(in: season, trigger: episode) { try action($0, episode) }
+    }
+
+    // Cocher toute une saison, c'est cocher son dernier épisode du point de vue du statut :
+    // même déclencheur, donc même proposition de « terminé » sur la dernière saison.
+    private func performSeason(_ number: Int, _ action: (MediaItem, Season) throws -> Void) {
+        guard let season = stored[number] else { return }
+        apply(in: number, trigger: season.orderedEpisodes.last) { try action($0, season) }
+    }
+
+    private func apply(in season: Int, trigger: Episode?, _ action: (MediaItem) throws -> Void) {
+        guard let item = item() else { return }
         do {
-            try action(item, episode)
+            try action(item)
             try status.refreshAfterChecking(item)
             didFailToCheck = false
             refresh(season)
             watchStatus = WatchStatusUseCase.status(of: item)
             // Finir la dernière saison propose « terminé » ; une série qui continue n'est pas finie.
-            if watchStatus != .done, WatchStatusUseCase.finishes(episode, seasons: summaries) {
+            if watchStatus != .done, let trigger, WatchStatusUseCase.finishes(trigger, seasons: summaries) {
                 proposesFinish = true
             }
             onChange()

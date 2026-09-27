@@ -49,6 +49,51 @@ struct EpisodeRowModelTests {
         #expect(EpisodeRowModel(try episode(1, watched: true)).isWatched)
     }
 
+    // MARK: - « Jusqu'ici », rendu visible (retour du 27/09)
+
+    // Le bouton ne s'affiche que là où il sert : s'il reste un épisode non coché derrière.
+    @Test func anEpisodeWithAHoleBehindItOffersToCheckUpToHere() throws {
+        let season = try season(of: 5, watched: [1, 2])
+
+        let rows = season.orderedEpisodes.map(EpisodeRowModel.init)
+
+        #expect(rows.map(\.canCheckUpTo) == [false, false, false, true, true])
+    }
+
+    @Test func theFirstEpisodeNeverOffersIt() throws {
+        let season = try season(of: 3, watched: [])
+
+        #expect(EpisodeRowModel(season.orderedEpisodes[0]).canCheckUpTo == false)
+    }
+
+    // Déjà coché ne veut pas dire inutile : on peut avoir coché E5 sans avoir coché E1 à E4.
+    @Test func aCheckedEpisodeStillOffersItWhenSomethingIsMissingBehind() throws {
+        let season = try season(of: 5, watched: [5])
+
+        #expect(EpisodeRowModel(season.orderedEpisodes[4]).canCheckUpTo)
+    }
+
+    @Test func aSeasonWatchedInOrderOffersItNowhere() throws {
+        let season = try season(of: 4, watched: [1, 2, 3, 4])
+
+        #expect(season.orderedEpisodes.map(EpisodeRowModel.init).allSatisfy { !$0.canCheckUpTo })
+    }
+
+    private func season(of count: Int, watched: [Int]) throws -> Season {
+        let context = container.mainContext
+        let item = MediaItem(kind: .series, title: "Severance")
+        context.insert(item)
+        let season = try Season.make(number: 1, item: item)
+        context.insert(season)
+        for number in 1...count { context.insert(Episode(number: number, season: season)) }
+        try context.save()
+        for episode in season.orderedEpisodes where watched.contains(episode.number) {
+            context.insert(try LogEntry.make(item: item, status: .done, episode: episode))
+        }
+        try context.save()
+        return season
+    }
+
     // Une envie posée sur l'œuvre n'est pas « j'ai vu cet épisode ».
     @Test func onlyADoneLogChecksAnEpisode() throws {
         let context = container.mainContext
