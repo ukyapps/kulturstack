@@ -21,3 +21,4 @@ Un fichier par session de travail : ce qui a été décidé, fait, cassé, appri
 | 2026-09-23 | [Les premiers retours d'usage (PR #18 → #22)](2026-09-23-retours-usage.md) |
 | 2026-09-24 | [Docs remises d'aplomb, puis lancement de la Tranche 2 (#25 → #31)](2026-09-24-lancement-tranche-2.md) |
 | 2026-09-24 → 27 | [Fin de la Tranche 2 : épisodes, statuts, onglet « En cours » (#33 → #35)](2026-09-27-fin-de-la-tranche-2.md) |
+| 2026-09-27 | [Huit retours d'usage, sept correctifs (#38 → #45)](2026-09-27-huit-retours.md) |
