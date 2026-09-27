@@ -11,6 +11,12 @@ struct ItemDetailModel: Equatable {
     let coverURL: URL?
     let logs: [ItemLogRowModel]
     let source: String?
+    let watchStatus: LogStatus?
+
+    // « Quand je cherche un livre je peux pas dire en cours dans les boutons en haut »
+    // (founder, 27/09). Ce qui ne dure pas — un film, un concert — ne se commence pas ;
+    // ce qui est déjà en cours non plus, il est déjà commencé.
+    var canStart: Bool { watchStatus != .inProgress && kind.allowedStatuses.contains(.inProgress) }
 
     private static let maxSubjects = 3
     // Les sources qu'on interroge d'abord, les clés secondaires (IMDb, Trakt…) ensuite.
@@ -33,6 +39,7 @@ struct ItemDetailModel: Equatable {
             .sorted { ($0.date, $0.createdAt) > ($1.date, $1.createdAt) }
             .map(ItemLogRowModel.init)
         source = Self.source(of: item.externalRefs)
+        watchStatus = WatchStatusUseCase.status(of: item)
     }
 
     // Aperçu d'un résultat de recherche pas encore en base : mêmes rubriques, aucun log.
@@ -48,6 +55,8 @@ struct ItemDetailModel: Equatable {
         facts = Self.facts(for: candidate.details)
         logs = []
         source = Self.providerNames.first { $0.0 == candidate.providerID }?.1 ?? candidate.providerID
+        // Une œuvre pas encore en base n'a aucun log : elle n'est en cours de rien.
+        watchStatus = nil
     }
 
     private static func headline(kind: MediaKind, runtime: Int?, creator: String?) -> String {

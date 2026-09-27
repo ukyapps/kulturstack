@@ -105,13 +105,13 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 **Tranches 1 et 2 livrées.** T1 (`docs/plans/tranche-1.md`) installée sur l'iPhone de la founder et corrigée après deux jours d'usage réel (#18 → #22). **T2 — épisodes — close le 27/09/2026** (`docs/plans/tranche-2.md`) : les cinq PRs sont fusionnées (#29, #30, #31, #33, #34, #35). **338 tests verts**, couverture Domain 97 % · Data 95 % · Features 88 %.
 
-**En cours : les corrections d'usage du 27/09.** Huit retours après trois jours d'épisodes (`docs/product/retours-utilisateurs.md`), traités en sept petites PRs — tableau et état dans `docs/etat-du-projet.md` § 2. Les PRs **25 à 28 restent à faire**.
+**Les corrections d'usage du 27/09 sont livrées.** Huit retours après trois jours d'épisodes (`docs/product/retours-utilisateurs.md`), traités en sept petites PRs (#38 → #45) — tableau et état dans `docs/etat-du-projet.md` § 2. **384 tests verts**, couverture Domain 97 % · Data 95,5 % · Features 89,7 %.
 
-**La tranche suivante n'est pas tranchée.** Le plan dit T3 (import) ; la founder a demandé les podcasts (T4) le 27/09. Reco : **podcasts avant import**. Sa réponse d'abord, le plan de la tranche ensuite, le code après.
+**La suivante, ce sont les podcasts** (décision founder du 27/09 : avant l'import). Plan : `docs/plans/podcasts.md`. Les **numéros de tranche du PRD ne bougent pas**, seul l'ordre d'exécution change. Une **question attend la founder** avant la PR 3 du plan : Apple ne publie pas les flux RSS de Radio France.
 
 **Ses deux verdicts du 27/09** : l'onglet « En cours » **reste troisième** ; l'appui long « tout cocher jusqu'ici » **n'avait jamais été trouvé** — il est devenu un bouton visible. Troisième geste caché abandonné après l'appui long de l'Envie : ici, ce qui ne se voit pas n'existe pas.
 
-**Hors périmètre** : import (T3), disques et podcasts (T4), possessions (T5), iPad, widgets, sync. Les podcasts restent en T4 même « vite fait » : le modèle `Season` / `Episode` est écrit pour eux, seules les séries sont câblées. Pas de progression de lecture pour les livres (il faudrait un `SchemaV3`).
+**Hors périmètre de la tranche podcasts** : import (T3), disques (T4b), possessions (T5), iPad, widgets, sync. Et, dans la tranche elle-même : les podcasts n'entrent **pas** dans l'onglet « En cours » ni dans « prochain épisode » — on écoute un podcast par le plus récent, pas par le premier non écouté ; à rouvrir après usage. Pas de progression de lecture pour les livres.
 
 > **La migration V2 a été vérifiée sur l'appareil le 24/09** : base sauvegardée, comparée ligne à ligne, rien de perdu. Toute migration suivante se vérifie de la même façon — mode d'emploi dans `docs/journal/2026-09-24-lancement-tranche-2.md`.
 
@@ -120,6 +120,10 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 > **Lire `gh pr list --state open` en début de session.** Une PR ouverte est du travail en cours que `docs/etat-du-projet.md` ne montre pas. Le 24/09, deux sessions ont posé la même question à la founder et ouvert trois PRs pour la même décision.
 
 > **Vérifier l'état d'une PR avant de pousser sur sa branche** (`gh pr view <n> --json state`). La founder fusionne vite, dans le navigateur, sans le dire : un commit poussé sur une branche déjà fusionnée reste orphelin et recrée la branche côté GitHub. C'est arrivé le 24/09 (#30 → #31).
+
+> **SwiftUI ne laisse pas tester une zone tactile, une animation ni un haptique.** Un `UIHostingController` n'expose qu'une seule `UIView` opaque : `hitTest` y répond pareil avec et sans `contentShape`. Ce qui se teste, c'est la **donnée** qui déclenche l'effet, et le **type du corps de la vue** (`String(describing: type(of: view.body))`) quand il faut prouver qu'un modificateur est là. Le reste se juge sur l'appareil, et se dit tel quel dans la PR.
+
+> **Une PR empilée sur une autre se rebase après le squash de sa base** : `git rebase --onto origin/main <ancienne base> <branche>`. Le squash réécrit l'histoire de la base, et git voit alors les mêmes changements deux fois — conflit garanti sans rebase (27/09, #42).
 
 > **Un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer.** Comparer les PNG des états entre eux (`#expect(Set(shots).count == 3)`) — c'est ce qui tient la règle « vide ≠ erreur ≠ edge ». Les captures des PRs se produisent de la même façon, par un `CaptureHarness.swift` temporaire supprimé avant le commit : pièges et mode d'emploi dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`.
 
