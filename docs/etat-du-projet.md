@@ -357,6 +357,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/decisions/001…012` | les ADRs | quand on se demande « pourquoi » |
 | `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
 | `docs/plans/tranche-2.md` | les 5 PRs de T2 (**livrée**), et ce qui reste à regarder à l'usage | pour l'historique |
+| `docs/plans/podcasts.md` | les 5 PRs de la tranche **Podcasts** (proposée) — et sa question ouverte | avant chaque PR de podcasts |
 
 ## 8. Ouvert / à faire
 
