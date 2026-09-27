@@ -105,6 +105,29 @@ Sept retours d'un coup, après avoir vécu avec l'app. Triés en quatre PRs ; l'
 | Conséquence non demandée, mais créée par ce choix : la barre comptera quatre onglets, et la Bibliothèque (T5) en ferait cinq. | Ouvert comme question 9 du design, **à trancher en T5, pas maintenant**. Pas de décision prise dans le dos. |
 | Sur les épisodes spéciaux, que j'avais écartés : « et pourquoi on peut pas les mettre au sein des saisons ? » | Bonne question, vérifiée sur les vraies données avant de répondre : **TMDB ne dit jamais à quelle saison un spécial se rattache**. Il n'y a pas de champ pour ça, et le seul indice utilisable — la date de diffusion — manque pour **37 des 39** spéciaux de Friends. En français ils n'ont même pas de titre (« Épisode 3 »). Les intercaler serait une devinette. Décision founder : **une section « Spéciaux » en bas de la fiche**, cochable, jamais comptée comme « prochain épisode » (PR 13 pour la donnée, PR 14 pour l'écran). |
 
+## Founder — session du 2026-09-27 (la Tranche 2 à l'usage)
+
+Huit retours après trois jours d'usage des épisodes, plus deux réponses à mes questions. Aucun n'est une perte de données ; **un seul est un bug** (la zone tactile du Journal). Triés en sept PRs, de la plus agaçante au quotidien à la plus confortable.
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| « Quand je clique sur une ligne ça ouvre pas la fiche, c'est uniquement si je clique sur l'image ou le titre » | **Bug.** `JournalRow` était la seule ligne des quatre écrans à ne pas déclarer sa zone tactile (`contentShape`) : SwiftUI ne comptait alors que les pixels dessinés — la jaquette, le titre — et ignorait les vides et la marge. Corrigé (PR 23). |
+| « Quand je veux log une série, ça me met d'abord la série comme un film au lieu de direct m'afficher les épisodes pour que je dise ce que j'ai vu » | Le `+` d'un résultat créait un log « série vue » d'un bloc, comme pour un film. Corrigé (PR 25) : sur une **série**, le `+` ouvre sa fiche, qui s'ouvre elle-même sur « où j'en suis ». Logger une série en une ligne reste possible depuis le bouton « Logger » de la fiche — le plan de la T2 y tenait, une série peut rester une ligne unique. |
+| « Quand je suis sur la fiche série je veux une option qui dit à quel épisode j'en suis genre en haut et j'appuie dessus et ça dit que j'ai vu cet épisode. » | Même PR (25) : une carte « Prochain : S2 E5 » en haut de la fiche, cochable d'un tap, avant les saisons dépliables. |
+| « Et en vrai dans le journal aussi, comme dans en cours » | Le même bouton sur les lignes du Journal qui portent une série en cours (PR 27). |
+| « Je veux ajouter une option qui dit j'ai vu toute une saison, où ça sélectionne tout d'un coup » | « Tout cocher » sur l'en-tête de saison (PR 24), et « jusqu'ici » rendu visible sur chaque épisode — voir la question ci-dessous. |
+| « Dans en cours, quand je clique sur la série pour mettre l'épisode d'après on voit à peine que j'ai cliqué… si je misclick je m'en rends pas compte » | PR 26 : une barre de progression qui se remplit **avec animation**, et un retour haptique au tap. Le ✓ existait, la confirmation manquait. |
+| « Quand je cherche les livres c'est bizarre… quand je tape Murakami je trouve rien de ce que je cherche. Et si je tape murakami kafka, je tombe pas du tout sur kafka sur le rivage. Je vois surtout un livre avec le titre en japonais et la couverture en espagnol. » | **Vérifié sur l'API réelle avant de répondre.** OpenLibrary trouve bien l'œuvre — `murakami kafka` renvoie `海辺のカフカ` en premier résultat, qui **est** Kafka sur le rivage : l'API donne le titre de l'**œuvre originale**, pas celui de l'édition française. Corrigé (PR 29) en demandant les éditions françaises (`language:fre` + sous-requête `editions`) : `murakami kafka` → **Kafka sur le Rivage** avec sa couverture française ; `murakami` → Danse danse danse, 1Q84 au lieu de l'autre Murakami (Ryū) ; `dune` → Le Messie de Dune, Les enfants de Dune. Même API, pas de clé, pas de compte. |
+| « Quand je cherche un livre je peux pas dire en cours dans les boutons en haut. » | Rien ne permettait de dire « je le commence » sans passer par le formulaire : un livre ne pouvait pas entrer dans l'onglet « En cours ». Corrigé (PR 28). **Question posée, trois emplacements proposés ; founder : sur la fiche** (« Sur la fiche du livre »), pas dans la ligne de résultat — la ligne garde `+` et ♡. Le bouton vaut pour tous les types, pas seulement les livres. |
+| « Maintenant je voudrais qu'on ajoute les podcasts et tout, c'est prévu pour quand ça ? » | Réponse honnête : **Tranche 4**, après l'import (T3) — quelques semaines, pas la prochaine chose. Ma reco : **les podcasts avant l'import**, juste après ces sept correctifs, puisqu'elle les demande et que son historique Trakt ne va nulle part. **Pas encore tranché** : à confirmer avant d'ouvrir la tranche suivante. |
+
+### Mes deux questions, ses deux réponses
+
+| Question | Réponse | Ce qu'on en a fait |
+|---|---|---|
+| L'onglet « En cours » est en troisième position. Est-ce là que ton pouce le cherche, ou plus à gauche ? | « Oui c'est bien. » | La barre reste **Journal · Envie · En cours · Recherche**. La question restée ouverte dans le plan de la T2 (PR 16) est close. |
+| Sur un épisode, un appui long propose « Tout cocher jusqu'ici ». Tu l'as trouvé tout seul, ou il faut le rendre visible ? | « Ah non je ne l'avais pas trouvé faut le rendre visible, ça faisait d'ailleurs partie de mes retours enfin sur le toute une saison. » | **Un appui long n'existe pas s'il n'est pas annoncé.** « Jusqu'ici » devient un bouton visible sur la ligne d'épisode, et « Tout cocher » un bouton sur l'en-tête de saison (PR 24). Troisième fois que la découvrabilité tranche contre un geste caché (déjà l'appui long de l'Envie, retiré le 22/09). |
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*
