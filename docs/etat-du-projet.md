@@ -8,7 +8,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **338 tests verts** (415 exécutions), couverture Domain 97 % · Data 95 % · Features 88 %.
+**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **384 tests verts**, couverture Domain 97 % · Data 95,5 % · Features 89,7 %.
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
@@ -78,25 +78,28 @@ Trois jours d'épisodes, **huit retours**, notés mot pour mot dans `docs/produc
 |---|---|---|---|
 | 23 | « Le tap n'ouvre la fiche que sur l'image ou le titre » | `JournalRow` déclare sa zone tactile — la seule des quatre lignes à ne pas le faire | ✅ #38 |
 | 24 | « Une option qui dit j'ai vu toute une saison » + « je n'avais pas trouvé l'appui long » | « J'ai vu toute la saison » sous la saison dépliée, « Jusqu'ici » en bouton visible, appui long retiré | ✅ #39 |
-| 25 | « Logger une série me la met comme un film » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S2 E5 », cochable ; le `+` d'une série y mène | ⏳ |
-| 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée + retour haptique sur le ✓ | ⏳ |
-| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même bouton sur les lignes du Journal qui portent une série en cours | ⏳ |
-| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ⏳ |
+| 25 | « Logger une série me la met comme un film » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S1 E1 », cochable, saison dépliée ; le `+` d'une série y mène | ✅ #42 |
+| 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée, bouton qui s'enfonce, retour haptique | ✅ #43 |
+| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même ✓ sur la ligne de statut d'une série en cours, par le même use case | ✅ #44 |
+| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ⏳ #45 |
 | 29 | « Je tombe pas du tout sur Kafka sur le rivage » | Les éditions **françaises** d'abord chez OpenLibrary : titre, couverture et nom d'auteur | ✅ #40 |
 
 ### Tranches suivantes
 
-**La Tranche 3 n'est pas lancée, et son tour n'est plus acquis.** Les retours du 27/09 sont arrivés, et avec eux une demande : « maintenant je voudrais qu'on ajoute les podcasts et tout, c'est prévu pour quand ça ? ». Les podcasts sont en **T4**, après l'import. **Ma reco : les faire avant l'import** — la founder les demande, son historique Trakt ne va nulle part. **Pas tranché : à confirmer avec elle avant d'ouvrir quoi que ce soit.**
+**Tranché le 27/09 : les podcasts passent avant l'import.** « Maintenant je voudrais qu'on ajoute les podcasts et tout » — la founder les écoute, son historique Trakt ne va nulle part. **Les numéros de tranche ne changent pas** (ils sont cités dans les ADRs et le PRD) : c'est l'**ordre d'exécution** qui change, et il est écrit dans la colonne ci-dessous. Le plan est dans `docs/plans/podcasts.md`, et il porte **une question ouverte** : comment couvrir Radio France, dont Apple ne publie pas les flux.
 
-| # | Tranche | Contenu | Serveur |
-|---|---|---|---|
-| 2 | Épisodes | **✅ livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
-| 3 | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
-| 4 | Disques + Podcasts | Discogs, Apple Podcasts + RSS | non |
-| 5 | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
-| 6 | Jeux + Concerts | IGDB, Setlist.fm, **proxy Supabase** | oui |
-| 7 | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
-| 8 | Social | comptes, partage, sync — nice-to-have | oui |
+| # | Ordre | Tranche | Contenu | Serveur |
+|---|---|---|---|---|
+| 2 | ✅ | Épisodes | **livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
+| 4a | **1ᵉʳ** | **Podcasts** | Apple Podcasts (recherche) + RSS (épisodes) — **la suivante**, décision du 27/09 | non |
+| 3 | 2ᵉ | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
+| 4b | 3ᵉ | Disques | Discogs | non |
+| 5 | 4ᵉ | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
+| 6 | 5ᵉ | Jeux + Concerts | IGDB, Setlist.fm, **proxy Supabase** | oui |
+| 7 | 6ᵉ | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
+| 8 | — | Social | comptes, partage, sync — nice-to-have | oui |
+
+La Tranche 4 était « Disques + Podcasts » ; elle se coupe en deux, les podcasts d'abord. Les numéros restent ceux du PRD : les renuméroter casserait les renvois de douze ADRs.
 
 Le détail de chaque feature : `docs/product/prd.md` §6. Les écrans : `docs/product/design.md`.
 
@@ -367,8 +370,8 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Prochaine session — par où commencer**
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **Les correctifs du 27/09** (§ 2), dans l'ordre du tableau : les PRs 25 à 28 restent à faire.
-3. **Trancher la tranche suivante** : podcasts (T4) ou import (T3) ? La founder a demandé les podcasts, ma reco est de les faire avant l'import. Rien ne s'ouvre avant sa réponse, et le plan de la tranche s'écrit avant de coder.
+2. **La tranche Podcasts** : `docs/plans/podcasts.md`. Sa **PR 1 est un schéma V3** (l'identité d'un épisode de podcast est son `guid` RSS, pas son numéro) — donc une migration, donc la procédure de vérification sur l'appareil du 24/09.
+3. **Une question attend la founder** : Apple ne publie pas les flux RSS de **Radio France** (France Inter, France Culture : 10 podcasts testés, 10 sans flux). Deux options dans le plan, à trancher avec elle avant la PR 3.
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
