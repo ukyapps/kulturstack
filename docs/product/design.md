@@ -57,7 +57,7 @@ Kulturstack
 │   ├── filtre type    : chips (Films · Séries · Livres · …)
 │   └── → Fiche d'une œuvre → Modifier un log
 ├── Envie              ← onglet 2 (T1) — un onglet, pas un chip (founder, 22/09)
-├── En cours           ← onglet 3 (T2) — « où j'en suis » : un onglet (founder, 24/09, § 6 q. 7)
+├── En cours           ← onglet 3 (T2) — **livré #35** ; place dans la barre à confirmer à l'usage (§ 6 q. 7)
 ├── Recherche          ← onglet 4 (tranché le 21/09 : onglet, pas de « + » flottant)
 │   ├── sections par famille : Films & séries · Livres · Disques · Podcasts · Jeux · Live
 │   ├── chips de filtre après la saisie
@@ -213,8 +213,8 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 
 | Tranche | Écran | L'idée en une ligne |
 |---|---|---|
-| 2 | **Où j'en suis** | **Un onglet** (tranché le 24/09, § 6 q. 7). Cartes « Severance · S2 E4 sur 10 · *Prochain : E5* » avec un bouton ✓ qui coche l'épisode suivant. Livres en cours avec « terminé » en un tap. |
-| 2 | **Saisons / épisodes** | Sur la fiche d'une série : liste des saisons dépliables, cases à cocher par épisode, « tout cocher jusqu'ici ». Les **spéciaux** (saison 0 de TMDB) ferment la liste, à part, cochables mais jamais « la suite » (founder, 24/09). |
+| 2 | **Où j'en suis** | ✅ **Livré (#35)**, en troisième position. Une ligne par œuvre : « Severance · S2 · E4 sur 10 · *Prochain : E5* » avec un ✓ qui coche l'épisode suivant sans ouvrir la fiche. Livres en cours avec « Terminé » en un tap — **sans** « p. 212 sur 480 » : le modèle ne suit pas la page courante (il faudrait un `SchemaV3`). |
+| 2 | **Saisons / épisodes** | ✅ **Livré (#33, #34)**. Saisons dépliables sur la fiche, une case par épisode, « tout cocher jusqu'ici » **en appui long** (à confirmer à l'usage). Les **spéciaux** ferment la liste, cochables, jamais « la suite ». Un bandeau de statut (En cours · Terminé · Abandonnée) et un menu ••• pour abandonner ou reprendre. |
 | 3 | **Import** | Choisir un fichier → aperçu « 312 films, 48 séries, 0 doublon » → importer → file « À confirmer » (titre + année, 2-3 candidats, « c'est celui-là » / « ignorer »). |
 | 5 | **Bibliothèque** | Onglet. Grille de jaquettes par format, onglets Vinyles · CD · Livres · DVD. Bouton scan en haut : viseur plein écran, bip, fiche pré-remplie avec « je le possède » coché. |
 | 5 | **Ajouter** (revu) | Sur un résultat : deux cases « ☑ Je l'ai vu » « ☐ Je le possède » — la première cochée par défaut ; format demandé seulement si la seconde est cochée. |
@@ -278,9 +278,9 @@ Liste simple : Langue (suit le système), Import / Export (T3, masqué avant), *
 4. **Étoiles sur la ligne du Journal ou seulement sur la fiche ?** Reco : sur la ligne, discrètes, à droite.
 5. ~~**Envie : chip du Journal ou onglet ?**~~ **Tranché le 22/09/2026 : onglet** (founder), contre la reco chip. Trois onglets Journal · Envie · Recherche ; la Bibliothèque (T5) devra trouver sa place.
 6. ~~**Tap sur une ligne du Journal : fiche ou édition ?**~~ ~~**Tranché le 22/09/2026 : édition directe** (founder) ; la fiche par le titre de la feuille ou par appui long.~~ **Retranché le 23/09/2026 après quelques jours d'usage : la fiche** (founder : « quand je fais un tap sur un film que j'ai vu, je voudrais que ça ouvre la fiche du film, et que j'aie une option pour modifier depuis la fiche »). Modifier reste à l'appui long, et depuis la fiche. Même geste dans l'onglet Envie (#18).
-7. ~~**Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau**.~~ **Tranché le 24/09/2026 : un quatrième onglet « En cours »** (founder), contre la reco du bandeau — comme pour Envie le 22/09. L'écran entier lui appartient : progression, prochain épisode, bouton pour avancer. **Reste à confirmer à l'écran, à la démo de la PR 16** : sa place dans la barre. Trois positions se défendent : **troisième** (Journal · Envie · En cours · Recherche), ce que retient le § 2, pour garder Journal et Envie où ils sont ; **dernière** (Journal · Envie · Recherche · En cours), qui ne déplace *aucun* onglet existant — Recherche est celui que le pouce connaît le mieux ; **deuxième**, si « En cours » devient ce qu'on ouvre le soir. À regarder à l'écran, pas sur le papier.
+7. ~~**Où vit « où j'en suis » (T2) ?** Trois options : chip du Journal (ce que dit le § 4), quatrième onglet (cohérent avec Envie), ou **bandeau de cartes en haut du Journal**. **Reco : le bandeau**.~~ **Tranché le 24/09/2026 : un quatrième onglet « En cours »** (founder), contre la reco du bandeau — comme pour Envie le 22/09. L'écran entier lui appartient : progression, prochain épisode, bouton pour avancer. **Livré le 27/09 (#35) en troisième position** : Journal · Envie · En cours · Recherche — ni Journal ni Envie ne bougent. **Reste ouvert, à l'usage réel et non sur le papier** : si « En cours » devient ce qu'on ouvre le soir, il a sa place en **deuxième**. La position **dernière** (après Recherche) reste défendable — c'est la seule qui ne déplace aucun onglet existant. Une ligne de `RootView` à changer.
 8. ~~**Le Journal s'ouvre-t-il filtré ?**~~ **Tranché le 23/09/2026 : sur Tout** (founder, après qu'un log daté hors de la semaine a eu l'air perdu). Filtrer est un geste, pas un défaut.
-9. **Où va la Bibliothèque (T5) ?** Conséquence directe de la question 7 : la barre en compte quatre, la Bibliothèque en ferait cinq — un de trop sur un iPhone. Options à ouvrir le moment venu : fusionner Journal et En cours, passer Envie dans le Journal, ou un « Plus ». **Pas maintenant** — à trancher en T5, pas avant.
+9. **Où va la Bibliothèque (T5) ?** Conséquence directe de la question 7, et **la barre en compte quatre depuis le 27/09** : la Bibliothèque en ferait cinq — un de trop sur un iPhone. Options à ouvrir le moment venu : fusionner Journal et En cours, passer Envie dans le Journal, ou un « Plus ». **Pas maintenant** — à trancher en T5, pas avant.
 
 ## 7. Ce qu'on ne fait pas en design
 
