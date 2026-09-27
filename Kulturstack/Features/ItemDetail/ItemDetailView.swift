@@ -56,15 +56,7 @@ struct ItemDetailView: View {
         ScrollView {
             VStack(spacing: Spacing.l) {
                 header(model)
-                HStack(spacing: Spacing.s) {
-                    Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
-                        logging = viewModel.logTarget
-                    }
-                    .buttonStyle(.borderedProminent)
-                    Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
-                        .buttonStyle(.bordered)
-                }
-                .sensoryFeedback(.success, trigger: model.logs.count)
+                actions(model)
                 if model.kind.hasEpisodes, let itemID = viewModel.storedItemID {
                     SeasonsSection(itemID: itemID, services: services) { viewModel.load() }
                 }
@@ -80,6 +72,33 @@ struct ItemDetailView: View {
             }
             .padding(Spacing.m)
         }
+    }
+
+    // Deux rangées plutôt qu'une : trois boutons côte à côte ne tiennent pas sur un iPhone.
+    private func actions(_ model: ItemDetailModel) -> some View {
+        VStack(spacing: Spacing.s) {
+            HStack(spacing: Spacing.s) {
+                Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
+                    logging = viewModel.logTarget
+                }
+                .buttonStyle(.borderedProminent)
+                Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
+                    .buttonStyle(.bordered)
+            }
+            // Ce qui dure se commence : un livre entamé part dans l'onglet « En cours ».
+            if model.canStart {
+                Button(String(localized: "detail.start"), systemImage: "play.circle") { viewModel.start() }
+                    .buttonStyle(.bordered)
+            } else if model.watchStatus == .inProgress {
+                Text(LogStatus.inProgress.label)
+                    .font(.subheadline)
+                    .padding(.horizontal, Spacing.m)
+                    .padding(.vertical, Spacing.s)
+                    .background(Color.surfaceSecondary, in: Capsule())
+                    .foregroundStyle(Color.textPrimary)
+            }
+        }
+        .sensoryFeedback(.success, trigger: model.logs.count)
     }
 
     private func header(_ model: ItemDetailModel) -> some View {

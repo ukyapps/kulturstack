@@ -10,9 +10,9 @@ struct WatchStatusUseCase {
 
     // Le statut d'une œuvre, c'est son dernier log qui parle d'elle : une envie n'en est pas un,
     // un épisode coché non plus.
-    static func status(of item: MediaItem) -> LogStatus? { statusLog(of: item)?.status }
+    nonisolated static func status(of item: MediaItem) -> LogStatus? { statusLog(of: item)?.status }
 
-    static func statusLog(of item: MediaItem) -> LogEntry? {
+    nonisolated static func statusLog(of item: MediaItem) -> LogEntry? {
         item.logs
             .filter { $0.episode == nil && $0.status != .wishlist }
             .max { ($0.date, $0.createdAt) < ($1.date, $1.createdAt) }
