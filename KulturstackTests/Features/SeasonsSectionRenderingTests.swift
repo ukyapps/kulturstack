@@ -189,6 +189,39 @@ struct SeasonsSectionRenderingTests {
         #expect(titled != bare)
     }
 
+    // MARK: - Un podcast, pas une série (tranche Podcasts, PR 33)
+
+    // La même donnée, deux types : la fiche d'un podcast ne ressemble pas à celle d'une série.
+    @Test func aPodcastDoesNotLookLikeASeries() async throws {
+        var shots: [Data] = []
+        for (index, kind) in [MediaKind.series, .podcast].enumerated() {
+            let id = 61 + index
+            let provider = StubEpisodeProvider(key: Self.key(id),
+                                               seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                               episodes: [1: .success((1...3).map {
+                                                   StubEpisodeProvider.episode($0, title: "Un épisode")
+                                               })])
+            let context = container.mainContext
+            let repository = SwiftDataMediaRepository(context: context)
+            let item = MediaItem(kind: kind, title: "Une œuvre \(id)")
+            try repository.add(item, refs: [ExternalRef(provider: "tmdb", value: "tv:\(id)")])
+            let services = AppServices(context: context, episodeProviders: [provider])
+            shots.append(await render(SeasonsSection(itemID: item.id, services: services), settles: true))
+        }
+
+        #expect(Set(shots).count == 2)
+    }
+
+    // La carte « prochain épisode » : « S2 · E5 » pour une série, le titre seul pour un podcast.
+    @Test func theNextCardDropsTheSeasonNumberForAPodcast() async throws {
+        let next = SeriesEpisodesViewModel.Next(season: 1, number: 4, title: "Le Français qui a vu naître Google")
+
+        let series = await render(NextEpisodeCard(next: next, kind: .series, check: {}), scrolls: false)
+        let podcast = await render(NextEpisodeCard(next: next, kind: .podcast, check: {}), scrolls: false)
+
+        #expect(series != podcast)
+    }
+
     // Une série ouverte depuis la recherche, pas encore en base, n'a pas d'épisodes à cocher.
     @Test func theDetailOfASeriesShowsItsSeasonsAndACandidateDoesNot() async throws {
         let (itemID, services) = try series(

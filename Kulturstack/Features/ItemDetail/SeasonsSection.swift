@@ -19,7 +19,7 @@ struct SeasonsSection: View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             // Où elle en est vient avant la liste : c'est ce qu'on ouvre la fiche pour savoir.
             if let next = viewModel.next {
-                NextEpisodeCard(next: next) { Task { await viewModel.checkNext() } }
+                NextEpisodeCard(next: next, kind: viewModel.kind) { Task { await viewModel.checkNext() } }
             }
             header
             content
@@ -32,13 +32,13 @@ struct SeasonsSection: View {
             for number in opened.sorted() { await viewModel.open(number) }
         }
         .alert(String(localized: "series.check.failed"), isPresented: $viewModel.didFailToCheck) {}
-        .confirmationDialog(String(localized: "series.season.uncheck.title"), isPresented: isUnchecking,
+        .confirmationDialog(viewModel.kind.uncheckEverythingTitle, isPresented: isUnchecking,
                             titleVisibility: .visible, presenting: uncheckingSeason) { number in
             Button(String(localized: "series.season.uncheckAll"), role: .destructive) {
                 viewModel.uncheckSeason(number)
             }
         } message: { _ in
-            Text(String(localized: "series.season.uncheck.message"))
+            Text(viewModel.kind.uncheckEverythingMessage)
         }
         .alert(String(localized: "series.finish.title"), isPresented: $viewModel.proposesFinish) {
             Button(String(localized: "series.finish.confirm")) { viewModel.finish() }
@@ -51,7 +51,7 @@ struct SeasonsSection: View {
     // Le statut se montre et se change au même endroit : abandonner est une action, jamais une devinette.
     private var header: some View {
         HStack(spacing: Spacing.s) {
-            Text(String(localized: "series.seasons.title"))
+            Text(viewModel.kind.episodesSectionTitle)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color.textSecondary)
                 .textCase(.uppercase)
@@ -66,16 +66,16 @@ struct SeasonsSection: View {
             Spacer(minLength: 0)
             Menu {
                 if viewModel.watchStatus == .dropped {
-                    Button(String(localized: "series.resume"), systemImage: "play.circle") { viewModel.resume() }
+                    Button(viewModel.kind.resumeLabel, systemImage: "play.circle") { viewModel.resume() }
                 } else {
-                    Button(String(localized: "series.drop"), systemImage: "xmark.circle", role: .destructive) {
+                    Button(viewModel.kind.dropLabel, systemImage: "xmark.circle", role: .destructive) {
                         viewModel.drop()
                     }
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")
                     .foregroundStyle(Color.textSecondary)
-                    .accessibilityLabel(String(localized: "series.status.menu"))
+                    .accessibilityLabel(viewModel.kind.statusMenuLabel)
             }
         }
     }
@@ -86,25 +86,31 @@ struct SeasonsSection: View {
             ProgressView().frame(maxWidth: .infinity)
         case .empty:
             EmptyState(
-                icon: "rectangle.stack",
-                title: String(localized: "series.seasons.empty.title"),
-                message: String(localized: "series.seasons.empty.message")
+                icon: viewModel.kind.showsSeasons ? "rectangle.stack" : "mic",
+                title: viewModel.kind.noEpisodesTitle,
+                message: viewModel.kind.noEpisodesMessage
             )
         case .failed:
             EmptyState(
                 icon: "wifi.exclamationmark",
-                title: String(localized: "series.seasons.failed.title"),
+                title: viewModel.kind.episodesFailedTitle,
                 message: String(localized: "series.seasons.failed.message"),
                 action: .init(title: String(localized: "common.retry")) { Task { await viewModel.load() } }
             )
         case .loaded(let seasons):
-            ForEach(seasons) { season in
-                DisclosureGroup(isExpanded: binding(for: season.number)) {
-                    episodes(of: season)
-                } label: {
-                    label(season)
+            // Un podcast n'a qu'une saison, implicite : sa liste s'affiche à plat, sans en-tête
+            // ni dépliement. Une série garde ses saisons, qui veulent dire quelque chose.
+            if !viewModel.kind.showsSeasons, let only = seasons.first {
+                episodes(of: only)
+            } else {
+                ForEach(seasons) { season in
+                    DisclosureGroup(isExpanded: binding(for: season.number)) {
+                        episodes(of: season)
+                    } label: {
+                        label(season)
+                    }
+                    Divider()
                 }
-                Divider()
             }
         }
     }
@@ -170,7 +176,7 @@ struct SeasonsSection: View {
                     uncheckingSeason = season.number
                 }
             } else {
-                Button(String(localized: "series.season.checkAll"), systemImage: "checkmark.circle") {
+                Button(viewModel.kind.checkEverythingLabel, systemImage: "checkmark.circle") {
                     viewModel.checkSeason(season.number)
                 }
             }

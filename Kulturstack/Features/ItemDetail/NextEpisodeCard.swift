@@ -4,6 +4,7 @@ import SwiftUI
 // ça dit que j'ai vu cet épisode » (founder, 27/09). La carte entière est le bouton.
 struct NextEpisodeCard: View {
     let next: SeriesEpisodesViewModel.Next
+    var kind: MediaKind = .series
     let check: () -> Void
 
     var body: some View {
@@ -37,7 +38,12 @@ struct NextEpisodeCard: View {
         .accessibilityHint(String(localized: "series.next.hint"))
     }
 
+    // Une série se repère à sa position — « S2 · E5 ». Un podcast se repère à son titre :
+    // sa position change à chaque publication, elle ne veut rien dire.
     private var label: String {
+        guard kind.showsSeasons else {
+            return next.title ?? String(localized: "series.episode \(next.number)")
+        }
         let position = String(localized: "series.next \(next.season) \(next.number)")
         guard let title = next.title else { return position }
         return position + String(localized: "common.separator") + title
