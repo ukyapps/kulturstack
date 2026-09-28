@@ -26,6 +26,17 @@ struct EpisodeSummary: Sendable, Equatable, Identifiable {
     let title: String?
     let airDate: Date?
     let runtimeMinutes: Int?
+    // L'identité que la source donne à cet épisode — le guid d'un flux RSS. Une série n'en a
+    // pas : TMDB la numérote, et cette numérotation est stable.
+    let externalID: String?
+
+    init(number: Int, title: String?, airDate: Date?, runtimeMinutes: Int?, externalID: String? = nil) {
+        self.number = number
+        self.title = title
+        self.airDate = airDate
+        self.runtimeMinutes = runtimeMinutes
+        self.externalID = externalID
+    }
 
     var id: Int { number }
 }

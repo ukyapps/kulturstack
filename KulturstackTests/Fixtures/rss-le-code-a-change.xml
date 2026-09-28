@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:pa="http://podcastaddict.com" xmlns:podcastRF="http://radiofrance.fr/Lancelot/Podcast#" xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0" version="2.0">
+  <channel>
+    <title>Le code a changé</title>
+    <link>https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change</link>
+    <description>Dans ce podcast qui totalise plus de 6 millions de téléchargements depuis son lancement en 2020, Xavier de La Porte explore l'impact du numérique sur nos vies et propose une réflexion approfondie sur son évolution et ses implications. 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change?at_campaign=desc_podcast&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+    <language>fr</language>
+    <copyright>Radio France</copyright>
+    <lastBuildDate>Sun, 27 Sep 2026 10:17:42 +0200</lastBuildDate>
+    <generator>Radio France</generator>
+    <image>
+      <url>https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/02/2738e1d5-dc5c-4799-a626-5747a9f33d17/1400x1400_sc_fi-lecode-1400x1400.jpg?1790497062672</url>
+      <title>Le code a changé</title>
+      <link>https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change</link>
+    </image>
+    <itunes:author>France Inter</itunes:author>
+    <itunes:category/>
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/02/2738e1d5-dc5c-4799-a626-5747a9f33d17/1400x1400_sc_fi-lecode-1400x1400.jpg?1790497062672"/>
+    <itunes:owner>
+      <itunes:email>podcast@radiofrance.com</itunes:email>
+      <itunes:name>Radio France</itunes:name>
+    </itunes:owner>
+    <itunes:subtitle>Le code a changé</itunes:subtitle>
+    <itunes:summary>Dans ce podcast qui totalise plus de 6 millions de téléchargements depuis son lancement en 2020, Xavier de La Porte explore l'impact du numérique sur nos vies et propose une réflexion approfondie sur son évolution et ses implications. 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change?at_campaign=desc_podcast&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+    <itunes:new-feed-url>https://radiofrance-podcast.net/podcast09/35099478-7c72-4f9e-a6de-1b928400e9e5/podcast_3957c833-0b28-4314-8427-2a1d1e103381.xml</itunes:new-feed-url>
+    <pa:new-feed-url>https://radiofrance-podcast.net/podcast09/d4463877-caa3-4507-9399-f5eb00fde027/podcast_3957c833-0b28-4314-8427-2a1d1e103381.xml</pa:new-feed-url>
+    <podcastRF:originStation>1</podcastRF:originStation>
+    <googleplay:block>yes</googleplay:block>
+    <item>
+      <title>Bande annonce - Bientôt un nouvel épisode du "Code a changé"</title>
+      <link>https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change/bande-annonce-9534870</link>
+      <description>durée : 00:00:52  - Le code a changé - par : Xavier de La Porte - C'est l'histoire d'un jeune artiste russe, Dima Efremov, qui, quand la guerre en Ukraine commence, quitte son pays et décide d'aider d'autres Russes à fuir l'oppression. Mais peut-on échapper au système de surveillance russe ? À partir du 30 septembre sur l'application Radio France.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change/bande-annonce-9534870?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/ef320e91-7ab7-41cf-b591-f01dbb29700f/26821-22.09.2026-ITEMA_24682754-2026F38589E0022-NET_MFI_FD02C827-693B-4536-A13A-8509CFF5F51F-27-e96bc721194b1bd73ca9f84dbff0c5a5.m4a" length="832000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">355a727b-b9d9-4061-87ab-1e389f7a72ab</guid>
+      <pubDate>Wed, 23 Sep 2026 08:00:00 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F38589E0022</podcastRF:magnetothequeID>
+      <itunes:title>Bande annonce - Bientôt un nouvel épisode du "Code a changé"</itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>bande, annonce, bientôt, un, nouvel, épisode, du, "code, changé"</itunes:keywords>
+      <itunes:subtitle>Bande annonce - Bientôt un nouvel épisode du "Code a changé"</itunes:subtitle>
+      <itunes:summary>durée : 00:00:52  - Le code a changé - par : Xavier de La Porte - C'est l'histoire d'un jeune artiste russe, Dima Efremov, qui, quand la guerre en Ukraine commence, quitte son pays et décide d'aider d'autres Russes à fuir l'oppression. Mais peut-on échapper au système de surveillance russe ? À partir du 30 septembre sur l'application Radio France.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change/bande-annonce-9534870?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:00:52</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2025/02/2738e1d5-dc5c-4799-a626-5747a9f33d17/1400x1400_sc_fi-lecode-1400x1400.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+<item>
+      <title>Et si nous vivions dans une simulation  3/3 : Ce qu'on gagne à interroger notre réalité</title>
+      <link>https://www.radiofrance.fr</link>
+      <description>durée : 00:16:57  - Le code a changé - par : Xavier de La Porte - Si notre monde n'était qu'une simulation, faudrait-il vivre autrement ? Au terme de son enquête, le journaliste Loïc Hecht n'adhère pas à cette théorie, mais en retient une invitation à réinterroger ce qu'est la réalité.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/01e395ea-57ee-4462-a696-31bc932a7112/26821-11.06.2026-ITEMA_24547490-2026F38589E0015-NET_MFI_264DDC53-07B8-4CE1-881B-D467BD5EA987-27-45bbebc64ca1e8730ceb70973e892bf1.m4a" length="16272000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">cd6bddd7-24d6-485a-a2ca-aebce783e999</guid>
+      <pubDate>Sat, 22 Aug 2026 18:42:00 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F38589E0015</podcastRF:magnetothequeID>
+      <itunes:title>Et si nous vivions dans une simulation  3/3 : Ce qu'on gagne à interroger notre réalité</itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>ce, on, gagne, interroger, notre, réalité</itunes:keywords>
+      <itunes:subtitle>Ce qu'on gagne à interroger notre réalité</itunes:subtitle>
+      <itunes:summary>durée : 00:16:57  - Le code a changé - par : Xavier de La Porte - Si notre monde n'était qu'une simulation, faudrait-il vivre autrement ? Au terme de son enquête, le journaliste Loïc Hecht n'adhère pas à cette théorie, mais en retient une invitation à réinterroger ce qu'est la réalité.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:16:57</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/cruiser-production-eu3/2026/06/c38513d7-7b09-45e0-a6e9-dab43db0acca/1400x1400_sc_carre-et-si-nous-vivions-dans-une-simulation.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+<item>
+      <title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  3/3 : Ce que font les animaux quand nous ne sommes pas là  </title>
+      <link>https://www.radiofrance.fr</link>
+      <description>durée : 00:24:10  - Le code a changé - par : Xavier de La Porte - L'enthousiasme s'accompagne de garde-fous. Construire une IA suppose un travail d'annotation manuel colossal, long et coûteux — la part humaine, souvent invisible, de ces technologies.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/3962a48c-2f9f-43c2-9f2c-43564bda2647/26821-17.07.2026-ITEMA_24598763-2026F38589E0018-NET_MFI_BB9E351F-EB1F-4B8E-98AB-2AF1B40FF3CB-27-db0e65a1242f9902a96fea7c0ba01d9c.m4a" length="23200000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">33dee26e-1266-4fe4-8117-a5d0d1844ddd</guid>
+      <pubDate>Sat, 15 Aug 2026 18:42:00 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F38589E0018</podcastRF:magnetothequeID>
+      <itunes:title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  3/3 : Ce que font les animaux quand nous ne sommes pas là  </itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>ce, que, font, les, animaux, quand, nous, ne, sommes, pas, là</itunes:keywords>
+      <itunes:subtitle>Ce que font les animaux quand nous ne sommes pas là  </itunes:subtitle>
+      <itunes:summary>durée : 00:24:10  - Le code a changé - par : Xavier de La Porte - L'enthousiasme s'accompagne de garde-fous. Construire une IA suppose un travail d'annotation manuel colossal, long et coûteux — la part humaine, souvent invisible, de ces technologies.  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:24:10</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/rf-cruiser-embed-production/2026/07/da92b324-cae0-497e-814d-c6f821f1df6f/1400x1400_sc_carre-l-internet-des-animaux.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+<item>
+      <title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  2/3 : Les chevaux s’expriment du bout des lèvres </title>
+      <link>https://www.radiofrance.fr</link>
+      <description>durée : 00:22:25  - Le code a changé - par : Xavier de La Porte - Les images postées en ligne ne servent pas seulement d'inspiration : elles deviennent des données.   - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/b7c635a5-4730-430e-99b1-2c294346c217/26821-17.07.2026-ITEMA_24598763-2026F38589E0017-NET_MFI_5505C767-3DAE-4713-A4D4-AEE38524AC1F-27-06546ca20cfb4b58ab1162ed5758fd89.m4a" length="21520000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">b60968c4-340d-4488-af17-5807751a57dd</guid>
+      <pubDate>Sat, 15 Aug 2026 18:29:00 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F38589E0017</podcastRF:magnetothequeID>
+      <itunes:title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  2/3 : Les chevaux s’expriment du bout des lèvres </itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>les, chevaux, s’expriment, du, bout, des, lèvres</itunes:keywords>
+      <itunes:subtitle>Les chevaux s’expriment du bout des lèvres </itunes:subtitle>
+      <itunes:summary>durée : 00:22:25  - Le code a changé - par : Xavier de La Porte - Les images postées en ligne ne servent pas seulement d'inspiration : elles deviennent des données.   - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:22:25</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/rf-cruiser-embed-production/2026/07/da92b324-cae0-497e-814d-c6f821f1df6f/1400x1400_sc_carre-l-internet-des-animaux.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+<item>
+      <title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  1/3 : Les vaches aussi innovent </title>
+      <link>https://www.radiofrance.fr</link>
+      <description>durée : 00:26:13  - Le code a changé - par : Xavier de La Porte - Internet regorge d'images d'animaux, du premier clip YouTube de 2005 aux pièges photographiques et caméras thermiques. Cette matière peut-elle servir la science ?   - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/644a5b7f-2e67-428e-9d23-6676c8d82925/26821-17.07.2026-ITEMA_24598763-2026F38589E0016-NET_MFI_94C3B31A-7027-4F07-9942-0BCFAED40A57-27-63d7ac12cef12e5c8a9c5545d1a4df37.m4a" length="25168000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">e1f6acd8-2d59-49af-8432-ed2144828f87</guid>
+      <pubDate>Sat, 15 Aug 2026 18:11:00 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2026F38589E0016</podcastRF:magnetothequeID>
+      <itunes:title>L'Internet des animaux : comprendre les émotions animales grâce aux technologies  1/3 : Les vaches aussi innovent </itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>les, vaches, aussi, innovent</itunes:keywords>
+      <itunes:subtitle>Les vaches aussi innovent </itunes:subtitle>
+      <itunes:summary>durée : 00:26:13  - Le code a changé - par : Xavier de La Porte - Internet regorge d'images d'animaux, du premier clip YouTube de 2005 aux pièges photographiques et caméras thermiques. Cette matière peut-elle servir la science ?   - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:26:13</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/rf-cruiser-embed-production/2026/07/da92b324-cae0-497e-814d-c6f821f1df6f/1400x1400_sc_carre-l-internet-des-animaux.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+<item>
+      <title>Le Français qui a vu naître Google</title>
+      <link>https://www.radiofrance.fr</link>
+      <description>durée : 00:45:02  - Le code a changé - par : Xavier de La Porte - Serge Abiteboul est des grands informaticiens français. Il a 68 ans et une longue carrière : directeur de recherche à l’INRIA et à l’ENS, aujourd’hui membre de l’ARCEP (L’Autorité de régulation des communications électroniques, des postes et de la distribution de la presse).  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</description>
+      <author>podcast@radiofrance.com (Radio France)</author>
+      <enclosure url="https://proxycast.radiofrance.fr/0760f712-f39e-4aba-a3f2-891453f91f66/3957c833-0b28-4314-8427-2a1d1e103381/964621d9-f3c4-4114-8719-1b8588632a13/20856-22.11.2021-ITEMA_22847045-2021F38589E0027-NET_MFI_CF623C0E-B090-4859-A7E7-84AC76112D3F-27-b9b92a7e34bb1d69bf7be4e7d3269227.m4a" length="43232000" type="audio/x-m4a"/>
+      <guid isPermaLink="false">47a60df5-85d9-4519-9b66-fc3d550cb65e</guid>
+      <pubDate>Sun, 09 Aug 2026 18:10:50 +0200</pubDate>
+      <podcastRF:businessReference>38589</podcastRF:businessReference>
+      <podcastRF:magnetothequeID>2021F38589E0027</podcastRF:magnetothequeID>
+      <itunes:title>Le Français qui a vu naître Google</itunes:title>
+      <itunes:author>Xavier de La Porte</itunes:author>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:keywords>le, français, qui, vu, naître, google</itunes:keywords>
+      <itunes:subtitle>Le Français qui a vu naître Google</itunes:subtitle>
+      <itunes:summary>durée : 00:45:02  - Le code a changé - par : Xavier de La Porte - Serge Abiteboul est des grands informaticiens français. Il a 68 ans et une longue carrière : directeur de recherche à l’INRIA et à l’ENS, aujourd’hui membre de l’ARCEP (L’Autorité de régulation des communications électroniques, des postes et de la distribution de la presse).  - équipe : Séverine Cassar 
+
+Vous aimez ce podcast ? Pour écouter tous les épisodes sans limite, rendez-vous sur &lt;a href="https://www.radiofrance.fr?at_campaign=desc_episode&amp;at_medium=lien_RSS"&gt;Radio France&lt;/a&gt;</itunes:summary>
+      <itunes:duration>00:45:02</itunes:duration>
+      <itunes:image href="https://www.radiofrance.fr/s3/rf-cruiser-embed-production/2026/08/005170de-5496-4d0a-86ef-90447f7514f1/1400x1400_fi_podcast_codechange_1400x1400.jpg"/>
+      <googleplay:block>yes</googleplay:block>
+    </item>
+  <item>
+    <title>Épisode sans durée ni date</title>
+    <guid isPermaLink="false">guid-sans-metadonnees</guid>
+  </item>
+  <item>
+    <title>Épisode dont la durée est en secondes</title>
+    <pubDate>Sat, 12 Jul 2026 18:42:00 +0200</pubDate>
+    <itunes:duration>1017</itunes:duration>
+    <guid isPermaLink="false">guid-duree-en-secondes</guid>
+  </item>
+  <item>
+    <title>Épisode sans guid, reconnu par son lien</title>
+    <pubDate>Sat, 05 Jul 2026 18:42:00 +0200</pubDate>
+    <itunes:duration>00:20:00</itunes:duration>
+    <link>https://www.radiofrance.fr/franceinter/podcasts/le-code-a-change/sans-guid</link>
+  </item>
+</channel>
+</rss>
