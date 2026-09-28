@@ -43,7 +43,7 @@ final class StubEpisodeProvider: EpisodeProvider, Sendable {
         SeasonSummary(number: number, title: nil, episodeCount: episodes, airDate: nil, isSpecials: isSpecials)
     }
 
-    static func episode(_ number: Int, title: String? = nil) -> EpisodeSummary {
-        EpisodeSummary(number: number, title: title, airDate: nil, runtimeMinutes: nil)
+    static func episode(_ number: Int, title: String? = nil, externalID: String? = nil) -> EpisodeSummary {
+        EpisodeSummary(number: number, title: title, airDate: nil, runtimeMinutes: nil, externalID: externalID)
     }
 }
