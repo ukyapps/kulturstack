@@ -125,6 +125,10 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 > **Une PR empilée sur une autre se rebase après le squash de sa base** : `git rebase --onto origin/main <ancienne base> <branche>`. Le squash réécrit l'histoire de la base, et git voit alors les mêmes changements deux fois — conflit garanti sans rebase (27/09, #42).
 
+> **`make test | tail` renvoie le code de sortie de `tail`, pas celui de `xcodebuild`.** Un test rouge passe alors pour vert. Ce qui fait foi, c'est le décompte du bundle : `xcrun xcresulttool get test-results summary --path build/Test.xcresult`. Et `-resultBundlePath` échoue si le bundle existe déjà — d'où le `rm -rf` du Makefile.
+
+> **Le simulateur garde la base d'une autre branche.** Après avoir testé un schéma plus récent, revenir sur une branche antérieure fait hurler CoreData (« Cannot use staged migration with an unknown model version ») sans faire échouer un test : `xcrun simctl uninstall booted com.ukyapps.kulturstack` nettoie.
+
 > **Un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer.** Comparer les PNG des états entre eux (`#expect(Set(shots).count == 3)`) — c'est ce qui tient la règle « vide ≠ erreur ≠ edge ». Les captures des PRs se produisent de la même façon, par un `CaptureHarness.swift` temporaire supprimé avant le commit : pièges et mode d'emploi dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`.
 
 ## Contexte founder — à garder en tête

@@ -36,7 +36,8 @@ Kulturstack/
 │   └── UseCases/           SearchUseCase, LogUseCase, DedupUseCase, StatsUseCase
 ├── Data/
 │   ├── Repositories/       MediaRepository, LogRepository (protocoles + impl SwiftData)
-│   ├── Providers/          MetadataProvider + TMDBProvider, OpenLibraryProvider
+│   ├── Providers/          MetadataProvider : TMDB, OpenLibrary, ApplePodcast
+│   │                        EpisodeProvider  : TMDB (séries), RSSEpisodeProvider (podcasts)
 │   ├── Importers/          HistoryImporter (T3)
 │   └── Network/            HTTPClient, Secrets, UserAgent
 ├── Features/               dossiers PAR FEATURE (Views + ViewModels + sous-modèles)
@@ -81,7 +82,8 @@ Journal
 |---|---|---|
 | 2 | Season / Episode | nouveaux `@Model` + relation sur MediaItem → SchemaV2 |
 | 3 | Import | `HistoryImporter` + `ImportResolver` réutilisant `DedupUseCase` |
-| 4 | Discogs, Apple Podcasts | deux `MetadataProvider` de plus, deux cases de `MediaKind` déjà présentes |
-| 5 | Collection | `OwnedCopy` `@Model` → SchemaV3, scan code-barres → `MetadataProvider.lookup(barcode:)` |
+| — | ✅ **Podcasts (27/09)** | `ApplePodcastProvider` (`MetadataProvider`) + `RSSEpisodeProvider` (`EpisodeProvider` seul, d'où `ProviderRegistry.episodeSources`) — ADR-013 |
+| 4 | Discogs | un `MetadataProvider` de plus, la case `MediaKind.album` est déjà là |
+| 5 | Collection | `OwnedCopy` `@Model` → SchemaV4, scan code-barres → `MetadataProvider.lookup(barcode:)` |
 | 6 | IGDB, Setlist.fm | proxy Supabase ; `HTTPClient` prend une base URL par provider |
 | 7 | Théâtre/expos + LLM | saisie assistée, `LLMEnrichmentProvider` derrière le proxy |

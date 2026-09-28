@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-27
+maj: 2026-09-28
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,7 +8,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **384 tests verts**, couverture Domain 97 % · Data 95,5 % · Features 89,7 %.
+**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **420 tests verts**, couverture Domain 96,6 % · Data 95,6 % · Features 90,4 %.
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
@@ -81,8 +81,23 @@ Trois jours d'épisodes, **huit retours**, notés mot pour mot dans `docs/produc
 | 25 | « Logger une série me la met comme un film » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S1 E1 », cochable, saison dépliée ; le `+` d'une série y mène | ✅ #42 |
 | 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée, bouton qui s'enfonce, retour haptique | ✅ #43 |
 | 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même ✓ sur la ligne de statut d'une série en cours, par le même use case | ✅ #44 |
-| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ⏳ #45 |
+| 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ✅ #45 |
+
+**Les huit retours sont traités.** Reste, à juger à l'usage et non sur le papier : le résumé d'une fiche est passé **sous** les épisodes (les actions avant la lecture), et les libellés d'action restent génériques sur un podcast — design § 6, questions 11 et 12.
 | 29 | « Je tombe pas du tout sur Kafka sur le rivage » | Les éditions **françaises** d'abord chez OpenLibrary : titre, couverture et nom d'auteur | ✅ #40 |
+
+### Tranche Podcasts — en cours (27 → 28/09)
+
+Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question Radio France : `docs/plans/podcasts.md`, décisions de source : ADR-013.
+
+| PR | Feature | État |
+|---|---|---|
+| 30 | Schéma V3 : `Episode.externalID`, l'identité d'un épisode de podcast | ✅ #48 — **migration vérifiée sur l'iPhone** le 27/09, 0 ligne perdue |
+| 31 | Chercher un podcast chez Apple (sans clé ni compte) | ✅ #49 |
+| 32 | Les épisodes par le flux RSS (`XMLParser`, sans dépendance) | ✅ #50 |
+| 33 | Le vocabulaire des podcasts : liste à plat, « J'ai tout écouté » | ✅ #51 |
+| 34 | **Radio France** — Apple ne publie pas leurs flux ; résolveur + clé gratuite au Trousseau | ⏳ attend 5 min de la founder |
+| 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
 
 ### Tranches suivantes
 
@@ -255,7 +270,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 338, tous verts (415 exécutions)
+## 4. Tests — 420, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -338,9 +353,9 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | Identité git | `ukyapps` + email noreply |
 | Domaines | kulturstack.com / .app / .io / .fr **libres au 19/09, pas réservés** |
 
-## 6. Décisions (12 ADRs)
+## 6. Décisions (13 ADRs)
 
-001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI.
+001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09).
 
 ## 7. Carte de la documentation
 
@@ -354,7 +369,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/product/design.md` | l'expérience : écrans, états, design system | avant un écran |
 | `docs/product/retours-utilisateurs.md` | ce que la founder (et plus tard d'autres) a dit, et ce qu'on en a fait | avant de trancher |
 | `docs/tdd/01…07` | architecture, modèle, protocoles, sources, tests, secrets, RGPD | avant de coder une couche |
-| `docs/decisions/001…012` | les ADRs | quand on se demande « pourquoi » |
+| `docs/decisions/001…013` | les ADRs | quand on se demande « pourquoi » |
 | `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
 | `docs/plans/tranche-2.md` | les 5 PRs de T2 (**livrée**), et ce qui reste à regarder à l'usage | pour l'historique |
 | `docs/plans/podcasts.md` | les 5 PRs de la tranche **Podcasts** (proposée) — et sa question ouverte | avant chaque PR de podcasts |
@@ -371,8 +386,8 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Prochaine session — par où commencer**
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **La tranche Podcasts** : `docs/plans/podcasts.md`. Sa **PR 1 est un schéma V3** (l'identité d'un épisode de podcast est son `guid` RSS, pas son numéro) — donc une migration, donc la procédure de vérification sur l'appareil du 24/09.
-3. **Une question attend la founder** : Apple ne publie pas les flux RSS de **Radio France** (France Inter, France Culture : 10 podcasts testés, 10 sans flux). Deux options dans le plan, à trancher avec elle avant la PR 3.
+2. **La tranche Podcasts, PR 34 et 35** : `docs/plans/podcasts.md`. Les quatre premières sont fusionnées.
+3. **Ce qui attend la founder** : cinq minutes d'inscription gratuite à Podcast Index pour couvrir **Radio France** (Apple ne publie pas leurs flux — 10 podcasts testés, 10 sans flux), et **réinstaller l'app depuis `main`** pour vivre avec les podcasts (`make device`, signature à renouveler vers le 01/10 de toute façon).
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
