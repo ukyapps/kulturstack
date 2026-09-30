@@ -1081,6 +1081,23 @@
         }
       }
     },
+    "inprogress.listened %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld episodes listened"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld épisodes écoutés"
+          }
+        }
+      }
+    },
     "inprogress.next %lld": {
       "localizations": {
         "en": {

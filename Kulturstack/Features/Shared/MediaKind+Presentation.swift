@@ -73,8 +73,9 @@ extension MediaKind {
 // a des saisons qu'on regarde ; un podcast a une liste qu'on écoute, du plus récent au plus
 // ancien. Les mots suivent (retour du 27/09 : « les podcasts et tout »).
 extension MediaKind {
-    // Un podcast n'a qu'une saison, implicite : l'afficher serait du bruit.
-    var showsSeasons: Bool { self == .series }
+    // Un podcast n'a qu'une saison, implicite : l'afficher serait du bruit. C'est la même
+    // frontière que « se suit dans l'ordre » — une seule définition, pas deux.
+    var showsSeasons: Bool { isFollowedInOrder }
 
     var episodesSectionTitle: String {
         showsSeasons ? String(localized: "series.seasons.title") : String(localized: "podcast.episodes.title")

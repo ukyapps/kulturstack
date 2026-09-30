@@ -36,6 +36,12 @@ struct InProgressUseCase {
     }
 
     nonisolated static func nextUp(for item: MediaItem) -> NextUp? {
+        // Un podcast se reprend par le plus récent qu'on n'a pas écouté, pas par le plus
+        // ancien : « je suis pas obligée de commencer par le premier » (founder, 30/09).
+        guard item.kind.isFollowedInOrder else {
+            guard let episode = followable(item).last(where: { !$0.isWatched }) else { return nil }
+            return NextUp(season: episode.season?.number ?? 0, number: episode.number, episode: episode)
+        }
         if let episode = next(for: item) {
             return NextUp(season: episode.season?.number ?? 0, number: episode.number, episode: episode)
         }
