@@ -62,7 +62,10 @@ final class JournalViewModel {
         case .failed: return .failed
         case .loaded(let rows):
             let now = now()
-            let kept = StatsUseCase.filter(rows, period: period, kind: selectedKind, now: now, calendar: calendar)
+            // Filtrer d'abord, regrouper ensuite : une œuvre appartient à la période de son
+            // log le plus récent, pas à celle de son premier.
+            let kept = StatsUseCase.groupByItem(
+                StatsUseCase.filter(rows, period: period, kind: selectedKind, now: now, calendar: calendar))
             guard !kept.isEmpty else {
                 return rows.allSatisfy({ $0.status == .wishlist }) ? .empty : .edge(period: period, kind: selectedKind)
             }

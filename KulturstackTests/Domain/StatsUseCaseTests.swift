@@ -34,25 +34,27 @@ struct StatsUseCaseTests {
         return (container, logs.map(JournalRowModel.init))
     }
 
-    @Test func countsLogsNotItemsARewatchCountsTwice() throws {
+    // T-16, retournée le 30/09 : on compte des œuvres, pas des logs. Un film revu compte une
+    // fois, comme il n'occupe qu'une ligne — « une œuvre = une seule fiche dans le journal ».
+    @Test func countsWorksNotLogsARewatchCountsOnce() throws {
         let (container, rows) = try makeRows()
         let now = date(2026, 9, 23)
 
         let week = StatsUseCase.count(rows, period: .week, now: now, calendar: calendar)
-        #expect(week.total == 2)
-        #expect(week.byKind == [.film: 2])
+        #expect(week.total == 1)
+        #expect(week.byKind == [.film: 1])
 
         let month = StatsUseCase.count(rows, period: .month, now: now, calendar: calendar)
-        #expect(month.total == 3)
-        #expect(month.byKind == [.film: 2, .book: 1])
+        #expect(month.total == 2)
+        #expect(month.byKind == [.film: 1, .book: 1])
 
         let year = StatsUseCase.count(rows, period: .year, now: now, calendar: calendar)
-        #expect(year.total == 4)
-        #expect(year.byKind == [.film: 2, .book: 1, .series: 1])
+        #expect(year.total == 3)
+        #expect(year.byKind == [.film: 1, .book: 1, .series: 1])
 
         let all = StatsUseCase.count(rows, period: .all, now: now, calendar: calendar)
-        #expect(all.total == 5)
-        #expect(all.byKind == [.film: 2, .book: 2, .series: 1])
+        #expect(all.total == 3)
+        #expect(all.byKind == [.film: 1, .book: 1, .series: 1])
         withExtendedLifetime(container) {}
     }
 
@@ -60,7 +62,7 @@ struct StatsUseCaseTests {
         let (container, rows) = try makeRows()
         let now = date(2026, 9, 23)
 
-        #expect(StatsUseCase.count(rows, period: .all, now: now, calendar: calendar).total == 5)
+        #expect(StatsUseCase.count(rows, period: .all, now: now, calendar: calendar).total == 3)
         #expect(StatsUseCase.filter(rows, period: .week, kind: .series, now: now, calendar: calendar).isEmpty)
         let wishes = StatsUseCase.pendingWishes(rows)
         #expect(wishes.count == 1)

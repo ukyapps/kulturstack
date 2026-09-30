@@ -48,6 +48,23 @@ struct JournalView: View {
             }
     }
 
+    // Une ligne qui porte plusieurs logs ne se modifie pas depuis la ligne : on ne saurait
+    // pas lequel des deux on touche. La fiche les montre tous, c'est là que ça se décide.
+    @ViewBuilder private func menu(for row: JournalRowModel) -> some View {
+        if row.logCount > 1, let itemID = row.itemID {
+            Button(String(localized: "journal.row.allLogs \(row.logCount)"), systemImage: "list.bullet") {
+                showingItem = ItemReference(id: itemID)
+            }
+        } else {
+            Button(String(localized: "common.edit"), systemImage: "pencil") {
+                editing = LogReference(id: row.id)
+            }
+            Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
+                deleting = LogReference(id: row.id)
+            }
+        }
+    }
+
     private func open(_ action: JournalRowTap) {
         switch action {
         case .showItem(let itemID): showingItem = ItemReference(id: itemID)
@@ -148,14 +165,7 @@ struct JournalView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityHint(row.tapAction.hint)
-                        .contextMenu {
-                            Button(String(localized: "common.edit"), systemImage: "pencil") {
-                                editing = LogReference(id: row.id)
-                            }
-                            Button(String(localized: "common.delete"), systemImage: "trash", role: .destructive) {
-                                deleting = LogReference(id: row.id)
-                            }
-                        }
+                        .contextMenu { menu(for: row) }
                     }
                 } header: {
                     SectionHeader(title: section.title)

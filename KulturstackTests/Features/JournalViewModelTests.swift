@@ -115,10 +115,13 @@ struct JournalFilterTests {
         let container = try ModelContainerFactory.inMemory()
         let context = container.mainContext
         let dune = MediaItem(kind: .film, title: "Dune")
+        let arrival = MediaItem(kind: .film, title: "Premier Contact")
         let book = MediaItem(kind: .book, title: "Dune")
-        for item in [dune, book] { context.insert(item) }
+        for item in [dune, arrival, book] { context.insert(item) }
+        // Dune est vu deux fois : depuis le 30/09 ça fait une ligne, pas deux.
         context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 22)))
-        context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 21)))
+        context.insert(try LogEntry.make(item: dune, status: .done, date: date(2026, 9, 20)))
+        context.insert(try LogEntry.make(item: arrival, status: .done, date: date(2026, 9, 21)))
         context.insert(try LogEntry.make(item: book, status: .done, date: date(2026, 9, 2)))
         context.insert(try LogEntry.make(item: book, status: .wishlist, date: date(2026, 9, 22)))
         try context.save()
@@ -167,6 +170,9 @@ struct JournalFilterTests {
         #expect(content.total == 3)
         #expect(Array(content.sections.map(\.title).prefix(2)) == [String(localized: "journal.day.today"), String(localized: "journal.day.yesterday")])
         #expect(content.sections.count == 3)
+        // Les deux visionnages de Dune tiennent sur la ligne du 22, pas sur deux jours.
+        #expect(content.sections[0].rows.map(\.title) == ["Dune"])
+        #expect(content.sections[0].rows[0].timesSeen == 2)
         #expect(viewModel.kindCounts.map(\.kind) == [.film, .book])
         #expect(viewModel.kindCounts.map(\.count) == [2, 1])
         withExtendedLifetime(container) {}
@@ -367,6 +373,104 @@ struct JournalEpisodeLogsTests {
         let viewModel = JournalViewModel(repository: StubLogRepository(result: .success([])))
 
         #expect(viewModel.canAdvance == false)
+    }
+
+
+    // « Dans journal, tout est toujours dupliqué… une œuvre = une seule fiche » (founder, 30/09).
+    @Test @MainActor func theJournalShowsOneLinePerWorkNotPerLog() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let dune = MediaItem(kind: .film, title: "Dune")
+        let severance = MediaItem(kind: .series, title: "Severance")
+        for item in [dune, severance] { context.insert(item) }
+        let logs = [
+            try LogEntry.make(item: dune, status: .done, date: Self.day(22), rating: 8),
+            try LogEntry.make(item: dune, status: .done, date: Self.day(12)),
+            try LogEntry.make(item: severance, status: .done, date: Self.day(20), note: "Parfaite"),
+            try LogEntry.make(item: severance, status: .inProgress, date: Self.day(21),
+                              source: WatchStatusUseCase.automaticSource),
+        ]
+        for log in logs { context.insert(log) }
+        let viewModel = Self.viewModel(logs: logs)
+
+        await viewModel.load()
+
+        let rows = self.rows(of: viewModel)
+        #expect(rows.count == 2)
+        #expect(rows.map(\.title) == ["Dune", "Severance"])
+        // La note et le commentaire survivent au regroupement, quel que soit le log qui les porte.
+        #expect(rows[0].rating == 8)
+        #expect(rows[1].note == "Parfaite")
+        #expect(rows[1].status == .inProgress)
+        withExtendedLifetime(container) {}
+    }
+
+    // Les compteurs comptent ce que la liste montre : des œuvres. C'est l'inverse de la règle
+    // T-16 d'origine, et c'est la founder qui l'a tranché le 30/09.
+    @Test @MainActor func theCountersCountWorksNotLogs() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let dune = MediaItem(kind: .film, title: "Dune")
+        context.insert(dune)
+        let logs = [
+            try LogEntry.make(item: dune, status: .done, date: Self.day(22)),
+            try LogEntry.make(item: dune, status: .done, date: Self.day(21)),
+            try LogEntry.make(item: dune, status: .done, date: Self.day(20)),
+        ]
+        for log in logs { context.insert(log) }
+        let viewModel = Self.viewModel(logs: logs)
+
+        await viewModel.load()
+
+        guard case .loaded(let content) = viewModel.presentation else {
+            Issue.record("état attendu : loaded")
+            return
+        }
+        #expect(content.total == 1)
+        #expect(viewModel.kindCounts == [JournalContent.KindCount(kind: .film, count: 1)])
+        withExtendedLifetime(container) {}
+    }
+
+    // Le filtre s'applique aux logs, le regroupement à ce qui reste : une œuvre vue cette
+    // semaine et l'an dernier appartient bien à « Semaine », datée de cette semaine.
+    @Test @MainActor func aWorkSeenTwiceBelongsToThePeriodOfItsLatestLog() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let dune = MediaItem(kind: .film, title: "Dune")
+        context.insert(dune)
+        let logs = [
+            try LogEntry.make(item: dune, status: .done, date: Self.day(22)),
+            try LogEntry.make(item: dune, status: .done, date: Self.calendar.date(from: DateComponents(year: 2025, month: 4, day: 3, hour: 12))!),
+        ]
+        for log in logs { context.insert(log) }
+        let viewModel = Self.viewModel(logs: logs)
+        await viewModel.load()
+
+        viewModel.period = .week
+        let week = self.rows(of: viewModel)
+        #expect(week.map(\.date) == [Self.day(22)])
+
+        viewModel.period = .all
+        let all = self.rows(of: viewModel)
+        #expect(all.map(\.date) == [Self.day(22)])
+        #expect(all[0].timesSeen == 2)
+        withExtendedLifetime(container) {}
+    }
+
+    private static var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Paris")!
+        return calendar
+    }
+
+    private static func day(_ day: Int) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 9, day: day, hour: 12))!
+    }
+
+    @MainActor
+    private static func viewModel(logs: [LogEntry]) -> JournalViewModel {
+        JournalViewModel(repository: StubLogRepository(result: .success(logs)),
+                         now: { day(23) }, calendar: calendar)
     }
 
     @MainActor
