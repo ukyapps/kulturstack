@@ -185,14 +185,9 @@ final class SeriesEpisodesViewModel {
     // pour toujours. La liste qu'on vient de charger fait foi — c'est le seul endroit de
     // l'app qui la voit fraîche.
     private func rememberSeasonCount(of item: MediaItem) {
-        guard item.kind == .series else { return }
-        let count = summaries.filter { !$0.isSpecials }.count
-        guard count > 0 else { return }
-        var details = (item.details as? SeriesDetails) ?? SeriesDetails()
-        guard details.seasonCount != count else { return }
-        details.seasonCount = count
+        guard let count = SeasonCount.from(summaries) else { return }
         do {
-            try item.setDetails(details)
+            guard try SeasonCount.remember(count, on: item) else { return }
             try repository.save()
         } catch {
             // Un compte pas rangé n'empêche pas de regarder la série : la fiche s'affiche.
