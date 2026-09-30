@@ -189,8 +189,8 @@ struct SeriesEpisodesViewModelTests {
         #expect(viewModel.watchStatus == .inProgress)
     }
 
-    // Cocher toute la dernière saison finit la série : la proposition est la même qu'au dernier épisode.
-    @Test func checkingTheWholeLastSeasonProposesToFinish() async throws {
+    // Cocher toute la dernière saison finit la série, sans le demander (founder, 30/09).
+    @Test func checkingTheWholeLastSeasonMarksItDone() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
                                            episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
         let (_, viewModel) = try make(provider)
@@ -199,7 +199,7 @@ struct SeriesEpisodesViewModelTests {
 
         viewModel.checkSeason(1)
 
-        #expect(viewModel.proposesFinish)
+        #expect(viewModel.watchStatus == .done)
     }
 
     @Test func uncheckingTheWholeSeasonClearsItAndTheStatus() async throws {
@@ -274,7 +274,7 @@ struct SeriesEpisodesViewModelTests {
         #expect(viewModel.watchStatus == nil)
     }
 
-    @Test func checkingTheLastEpisodeOfTheLastSeasonProposesToFinish() async throws {
+    @Test func checkingTheLastEpisodeOfTheLastSeasonMarksItDone() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
                                            episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
         let (_, viewModel) = try make(provider)
@@ -282,42 +282,26 @@ struct SeriesEpisodesViewModelTests {
         await viewModel.open(1)
 
         viewModel.checkUpTo(episode: 3, in: 1)
-
-        #expect(viewModel.proposesFinish)
-        #expect(viewModel.watchStatus == .inProgress)
-    }
-
-    @Test func acceptingTheProposalMarksTheSeriesDone() async throws {
-        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
-                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
-        let (_, viewModel) = try make(provider)
-        await viewModel.load()
-        await viewModel.open(1)
-        viewModel.checkUpTo(episode: 3, in: 1)
-
-        viewModel.finish()
 
         #expect(viewModel.watchStatus == .done)
-        #expect(viewModel.proposesFinish == false)
     }
 
-    // Une série qui continue n'est pas finie : rien n'est imposé, la proposition se refuse.
-    @Test func decliningTheProposalLeavesTheSeriesInProgress() async throws {
-        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),
-                                           episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+    // Décocher un épisode reprend le « terminé » que l'app avait posé : elle repart en cours,
+    // et il n'y a toujours qu'une ligne de statut, pas une par changement d'avis.
+    @Test func uncheckingAfterTheAutomaticDoneGoesBackToInProgress() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+                                           episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
         let (_, viewModel) = try make(provider)
         await viewModel.load()
         await viewModel.open(1)
-        viewModel.checkUpTo(episode: 2, in: 1)
+        viewModel.checkUpTo(episode: 3, in: 1)
 
-        viewModel.proposesFinish = false
+        viewModel.toggle(episode: 3, in: 1)
 
         #expect(viewModel.watchStatus == .inProgress)
-        let statusLogs = try container.mainContext.fetch(FetchDescriptor<LogEntry>()).filter { $0.episode == nil }
-        #expect(statusLogs.count == 1)
     }
 
-    @Test func aMiddleEpisodeProposesNothing() async throws {
+    @Test func aSeriesWithASeasonLeftStaysInProgress() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3),
                                                               StubEpisodeProvider.season(2, episodes: 3)]),
                                            episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) })])
@@ -327,7 +311,7 @@ struct SeriesEpisodesViewModelTests {
 
         viewModel.checkUpTo(episode: 3, in: 1)
 
-        #expect(viewModel.proposesFinish == false)
+        #expect(viewModel.watchStatus == .inProgress)
     }
 
     @Test func droppingThenResumingIsShown() async throws {

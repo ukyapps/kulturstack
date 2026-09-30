@@ -179,39 +179,37 @@ struct WatchStatusUseCaseTests {
         #expect(WatchStatusUseCase.status(of: item) == nil)
     }
 
-    // MARK: - Proposer « terminé »
+    // MARK: - Terminer toute seule
 
     private func seasons(_ numbers: [Int], specials: Bool = false) -> [SeasonSummary] {
         numbers.map { SeasonSummary(number: $0, title: nil, episodeCount: 3, airDate: nil) }
             + (specials ? [SeasonSummary(number: 0, title: nil, episodeCount: 2, airDate: nil, isSpecials: true)] : [])
     }
 
-    @Test func theLastEpisodeOfTheLastSeasonFinishesTheSeries() throws {
+    @Test func everySeasonWatchedMeansTheSeriesIsFinished() throws {
         let (item, season, _) = try make()
         try check([1, 2, 3], of: season, item: item)
-        let last = try #require(season.orderedEpisodes.last)
 
-        #expect(WatchStatusUseCase.finishes(last, seasons: seasons([1])))
+        #expect(WatchStatusUseCase.isFullyWatched(item, seasons: seasons([1])))
     }
 
     @Test func aSeasonWithAHoleDoesNotFinishTheSeries() throws {
         let (item, season, _) = try make()
         try check([1, 3], of: season, item: item)
-        let last = try #require(season.orderedEpisodes.last)
 
-        #expect(WatchStatusUseCase.finishes(last, seasons: seasons([1])) == false)
+        #expect(WatchStatusUseCase.isFullyWatched(item, seasons: seasons([1])) == false)
     }
 
-    @Test func aMiddleSeasonDoesNotFinishTheSeries() throws {
+    // Une saison jamais ouverte n'est pas une saison vue : on ne finit pas ce qu'on ignore.
+    @Test func aSeasonNeverOpenedDoesNotFinishTheSeries() throws {
         let (item, season, _) = try make()
         try check([1, 2, 3], of: season, item: item)
-        let last = try #require(season.orderedEpisodes.last)
 
-        #expect(WatchStatusUseCase.finishes(last, seasons: seasons([1, 2])) == false)
+        #expect(WatchStatusUseCase.isFullyWatched(item, seasons: seasons([1, 2])) == false)
     }
 
-    // Les bonus ne terminent pas une série : la saison 0 n'est jamais « la dernière ».
-    @Test func theSpecialsNeverFinishASeries() throws {
+    // Les bonus ne terminent pas une série : la saison 0 ne compte pas.
+    @Test func theSpecialsAloneNeverFinishASeries() throws {
         let context = container.mainContext
         let (item, _, _) = try make()
         let specials = try Season.make(number: 0, item: item)
@@ -219,16 +217,98 @@ struct WatchStatusUseCaseTests {
         context.insert(Episode(number: 1, season: specials))
         try context.save()
         try check([1], of: specials, item: item)
-        let last = try #require(specials.orderedEpisodes.last)
 
-        #expect(WatchStatusUseCase.finishes(last, seasons: seasons([1], specials: true)) == false)
+        #expect(WatchStatusUseCase.isFullyWatched(item, seasons: seasons([1], specials: true)) == false)
     }
 
-    @Test func aSeriesWhoseLastSeasonIsCompleteFinishesEvenWithSpecialsAround() throws {
+    @Test func aSeriesFinishesEvenWithSpecialsLeftUnwatched() throws {
+        let context = container.mainContext
+        let (item, season, _) = try make()
+        let specials = try Season.make(number: 0, item: item)
+        context.insert(specials)
+        context.insert(Episode(number: 1, season: specials))
+        try context.save()
+        try check([1, 2, 3], of: season, item: item)
+
+        #expect(WatchStatusUseCase.isFullyWatched(item, seasons: seasons([1], specials: true)))
+    }
+
+    // L'onglet « En cours » n'a pas la liste des saisons : c'est le compte rangé dans la
+    // fiche qui lui dit combien il en existe.
+    @Test func theSeasonCountFromTheDetailsIsEnoughToFinish() throws {
+        let (item, season, _) = try make()
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+        try check([1, 2, 3], of: season, item: item)
+
+        #expect(WatchStatusUseCase.isFullyWatched(item))
+    }
+
+    // Sans savoir combien de saisons existent, rien n'est fini : mieux vaut « en cours »
+    // qu'une série déclarée terminée à tort.
+    @Test func withoutKnowingHowManySeasonsExistNothingIsFinished() throws {
         let (item, season, _) = try make()
         try check([1, 2, 3], of: season, item: item)
-        let last = try #require(season.orderedEpisodes.last)
 
-        #expect(WatchStatusUseCase.finishes(last, seasons: seasons([1], specials: true)))
+        #expect(WatchStatusUseCase.isFullyWatched(item) == false)
+    }
+
+    @Test func aPodcastIsNeverFinished() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        for number in 1...2 { context.insert(Episode(number: number, externalID: "guid-\(number)", season: season)) }
+        try context.save()
+        for episode in season.orderedEpisodes {
+            context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
+        }
+        try context.save()
+
+        #expect(WatchStatusUseCase.isFullyWatched(podcast, seasons: seasons([1])) == false)
+    }
+
+    // MARK: - Ce que cocher pose comme statut
+
+    @Test func watchingEverythingMarksTheSeriesDoneWithoutAsking() throws {
+        let (item, season, useCase) = try make()
+        try check([1, 2, 3], of: season, item: item)
+
+        try useCase.refreshAfterChecking(item, seasons: seasons([1]))
+
+        #expect(WatchStatusUseCase.status(of: item) == .done)
+    }
+
+    @Test func watchingPartOfItLeavesTheSeriesInProgress() throws {
+        let (item, season, useCase) = try make()
+        try check([1, 2], of: season, item: item)
+
+        try useCase.refreshAfterChecking(item, seasons: seasons([1]))
+
+        #expect(WatchStatusUseCase.status(of: item) == .inProgress)
+    }
+
+    // Un « terminé » posé par l'app se reprend : décocher un épisode remet la série en cours.
+    @Test func uncheckingAnEpisodeTakesBackTheAutomaticDone() throws {
+        let (item, season, useCase) = try make()
+        try check([1, 2, 3], of: season, item: item)
+        try useCase.refreshAfterChecking(item, seasons: seasons([1]))
+        let last = try #require(season.orderedEpisodes.last)
+        for entry in last.logs { try EditLogUseCase(repository: SwiftDataLogRepository(context: container.mainContext)).delete(entry) }
+
+        try useCase.refreshAfterChecking(item, seasons: seasons([1]))
+
+        #expect(WatchStatusUseCase.status(of: item) == .inProgress)
+    }
+
+    // Un « terminé » qu'elle a dit elle-même ne se rouvre pas dans son dos.
+    @Test func aManualDoneIsNotTakenBack() throws {
+        let (item, season, useCase) = try make()
+        try check([1, 2], of: season, item: item)
+        try useCase.finish(item)
+
+        try useCase.refreshAfterChecking(item, seasons: seasons([1]))
+
+        #expect(WatchStatusUseCase.status(of: item) == .done)
     }
 }
