@@ -2,6 +2,7 @@ import SwiftUI
 
 struct JournalRow: View {
     let model: JournalRowModel
+    var onAdvance: (() -> Void)?
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.m) {
@@ -22,6 +23,18 @@ struct JournalRow: View {
                         .padding(.vertical, 2)
                         .background(Color.surfaceSecondary, in: Capsule())
                 }
+                // Une série suivie dit où elle en est ici aussi : « comme dans en cours » (27/09).
+                if let position = model.watch?.position {
+                    Text(position.label)
+                        .font(.caption)
+                        .foregroundStyle(Color.textSecondary)
+                    ProgressBar(fraction: position.fraction)
+                }
+                if let next = model.watch?.next {
+                    Text(next.label)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.accent)
+                }
                 // La date du log est déjà l'en-tête de sa section : la place va au commentaire.
                 if let note = model.note {
                     Text(note)
@@ -31,11 +44,26 @@ struct JournalRow: View {
                 }
             }
             Spacer(minLength: 0)
-            if let rating = model.rating {
-                StarRating(rating: rating)
+            VStack(alignment: .trailing, spacing: Spacing.s) {
+                if let rating = model.rating {
+                    StarRating(rating: rating)
+                }
+                if let next = model.watch?.next, let onAdvance {
+                    Button(action: onAdvance) {
+                        Image(systemName: "checkmark")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(Color.surface)
+                            .frame(width: 40, height: 40)
+                            .background(Color.accent, in: Circle())
+                    }
+                    .buttonStyle(.press)
+                    .accessibilityLabel(next.label)
+                    .accessibilityHint(String(localized: "inprogress.advance.hint"))
+                }
             }
         }
         .padding(.vertical, Spacing.xs)
         .contentShape(Rectangle())
+        .sensoryFeedback(.success, trigger: model.watch?.position)
     }
 }

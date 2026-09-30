@@ -22,16 +22,36 @@ final class JournalViewModel {
     var period: Period = .all
     var selectedKind: MediaKind?
     var didFailToDelete = false
+    var didFailToAdvance = false
     private let repository: any LogRepository
     private let editUseCase: EditLogUseCase
+    // Le Journal ne sait avancer une série que si on lui en donne le moyen : les écrans de
+    // test qui ne s'en servent pas ne le fournissent pas, et le bouton ne s'affiche alors pas.
+    private let advanceUseCase: AdvanceUseCase?
     private let now: () -> Date
     private let calendar: Calendar
 
-    init(repository: any LogRepository, now: @escaping () -> Date = { .now }, calendar: Calendar = .current) {
+    init(repository: any LogRepository, advance: AdvanceUseCase? = nil,
+         now: @escaping () -> Date = { .now }, calendar: Calendar = .current) {
         self.repository = repository
+        self.advanceUseCase = advance
         self.now = now
         self.calendar = calendar
         editUseCase = EditLogUseCase(repository: repository)
+    }
+
+    var canAdvance: Bool { advanceUseCase != nil }
+
+    // Le même ✓ que dans « En cours », sur la ligne de la série : même use case, mêmes règles.
+    func advance(_ row: JournalRowModel) async {
+        guard let advanceUseCase, let itemID = row.itemID else { return }
+        do {
+            try advanceUseCase.advance(itemID: itemID)
+            didFailToAdvance = false
+        } catch {
+            didFailToAdvance = true
+        }
+        await load()
     }
 
     // Vide (rien consommé — les envies vivent dans leur onglet) ≠ edge (filtre sans résultat) ≠ erreur.

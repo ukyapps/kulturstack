@@ -12,6 +12,10 @@ struct JournalRowModel: Identifiable, Equatable {
     let note: String?
     let coverURL: URL?
     let symbol: String
+    // « Le prochain épisode dans le journal aussi, comme dans en cours » (founder, 27/09).
+    // Une série n'a qu'une ligne dans le Journal — celle de son statut : c'est là que la
+    // suite se coche, et nulle part ailleurs, sinon la même série s'avancerait à dix endroits.
+    let watch: WatchProgress?
 
     init(log: LogEntry) {
         let kind = log.item?.kind ?? .film
@@ -26,6 +30,13 @@ struct JournalRowModel: Identifiable, Equatable {
         note = Self.comment(log.note)
         coverURL = log.item?.coverURL
         symbol = kind.symbol
+        watch = Self.watch(log: log)
+    }
+
+    private static func watch(log: LogEntry) -> WatchProgress? {
+        guard log.status == .inProgress, let item = log.item,
+              WatchStatusUseCase.statusLog(of: item)?.id == log.id else { return nil }
+        return WatchProgress(item: item)
     }
 
     private static func comment(_ note: String?) -> String? {
