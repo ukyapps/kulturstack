@@ -27,7 +27,14 @@ struct JournalViewRenderingTests {
             return
         }
         #expect(content.sections.count > 1)
-        #expect(content.total == 23)
+        // Le seed pose 23 logs hors envies pour 21 œuvres : deux d'entre elles en portent
+        // deux (un film revu, une série notée puis reprise). Une œuvre = une ligne.
+        #expect(content.total == 21)
+        // Sur l'identité, pas sur le titre : le seed contient un film et un livre qui
+        // s'appellent tous les deux « Dune », et ce sont bien deux œuvres.
+        let items = content.sections.flatMap(\.rows).compactMap(\.itemID)
+        #expect(items.count == 21)
+        #expect(Set(items).count == items.count)
 
         viewModel.period = .week
         viewModel.selectedKind = .podcast

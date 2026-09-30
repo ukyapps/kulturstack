@@ -15,6 +15,13 @@ struct JournalRow: View {
                 Text(model.subtitle)
                     .font(.subheadline)
                     .foregroundStyle(Color.textSecondary)
+                // Une œuvre n'a qu'une ligne : c'est ici que se dit ce qu'on aurait lu en
+                // comptant les lignes d'avant — « vu 3 fois » plutôt que trois fois la même.
+                if model.timesSeen > 1 {
+                    Text(String(localized: "journal.row.times \(model.timesSeen)"))
+                        .font(.caption)
+                        .foregroundStyle(Color.textSecondary)
+                }
                 if model.status != .done {
                     Text(model.status.label)
                         .font(.caption)

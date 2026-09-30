@@ -6,9 +6,10 @@ enum StatsUseCase {
         let byKind: [MediaKind: Int]
     }
 
-    // T-16 : on compte des logs, pas des fiches — un film revu compte deux fois.
+    // T-16, retournée le 30/09 : on compte des œuvres, pas des logs. Le compteur dit ce que
+    // la liste montre — un film revu occupe une ligne, il compte pour un.
     static func count(_ rows: [JournalRowModel], period: Period, now: Date, calendar: Calendar) -> Counts {
-        let kept = filter(rows, period: period, kind: nil, now: now, calendar: calendar)
+        let kept = groupByItem(filter(rows, period: period, kind: nil, now: now, calendar: calendar))
         var byKind: [MediaKind: Int] = [:]
         for row in kept { byKind[row.kind, default: 0] += 1 }
         return Counts(total: kept.count, byKind: byKind)
@@ -21,7 +22,22 @@ enum StatsUseCase {
             .filter { $0.status != .wishlist }
             .filter { range?.contains($0.date) ?? true }
             .filter { kind == nil || $0.kind == kind }
-            .sorted { $0.date > $1.date }
+            .sorted(by: JournalRowModel.newestFirst)
+    }
+
+    // « Une œuvre = une seule fiche dans le journal » (founder, 30/09). Le regroupement vient
+    // après le filtre, jamais avant : une œuvre vue cette semaine et l'an dernier appartient
+    // à « Semaine », datée de cette semaine. Un log orphelin n'a pas d'œuvre à partager —
+    // il reste sa propre ligne plutôt que de se confondre avec les autres orphelins.
+    static func groupByItem(_ rows: [JournalRowModel]) -> [JournalRowModel] {
+        var order: [UUID] = []
+        var groups: [UUID: [JournalRowModel]] = [:]
+        for row in rows.sorted(by: JournalRowModel.newestFirst) {
+            let key = row.itemID ?? row.id
+            if groups[key] == nil { order.append(key) }
+            groups[key, default: []].append(row)
+        }
+        return order.compactMap { key in groups[key].flatMap(JournalRowModel.init(group:)) }
     }
 
     // Une envie est en attente tant que l'œuvre n'a pas été consommée après ; l'envie elle-même reste dans l'historique (ADR-006).
@@ -31,14 +47,14 @@ enum StatsUseCase {
             .filter { wish in
                 !rows.contains { $0.status != .wishlist && $0.itemID == wish.itemID && $0.date >= wish.date }
             }
-            .sorted { $0.date > $1.date }
+            .sorted(by: JournalRowModel.newestFirst)
     }
 
     static func groupByDay(_ rows: [JournalRowModel], now: Date, calendar: Calendar) -> [JournalDaySection] {
         let today = calendar.startOfDay(for: now)
         let yesterday = calendar.date(byAdding: .day, value: -1, to: today)
         var sections: [JournalDaySection] = []
-        for row in rows.sorted(by: { $0.date > $1.date }) {
+        for row in rows.sorted(by: JournalRowModel.newestFirst) {
             let day = calendar.startOfDay(for: row.date)
             if let last = sections.last, last.id == day {
                 sections[sections.count - 1].rows.append(row)
