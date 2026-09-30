@@ -9,9 +9,14 @@ enum RSSFeedParser {
         parser.delegate = collector
         parser.shouldProcessNamespaces = false
         parser.parse()
-        // Le flux est publié du plus récent au plus ancien : c'est l'ordre dans lequel on
-        // écoute un podcast, et donc celui de la liste.
-        return collector.episodes.enumerated().map { index, item in
+        // Le flux est publié du plus récent au plus ancien ; la liste, elle, se lit comme une
+        // série : du premier épisode au dernier (founder, 30/09 — « je voulais comme sur les
+        // séries donc à l'envers »). On numérote donc à rebours du flux, le plus ancien en 1.
+        //
+        // Ce numéro n'est qu'une position : il se réécrit à chaque rafraîchissement, et c'est
+        // le `guid` qui tient les coches. Il porte quand même « tout cocher jusqu'ici », qui
+        // veut dire « celui-ci et tous les plus anciens » — d'où ce sens-là.
+        return collector.episodes.reversed().enumerated().map { index, item in
             EpisodeSummary(number: index + 1, title: item.title, airDate: item.date,
                            runtimeMinutes: item.runtimeMinutes, externalID: item.identity)
         }

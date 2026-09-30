@@ -218,6 +218,10 @@ final class SeriesEpisodesViewModel {
     // La suite, c'est le premier épisode non coché de ce qu'on connaît. Quand une saison est
     // finie, la suivante se devine par la liste des saisons, sans avoir à la charger.
     private func nextEpisode(of item: MediaItem) -> Next? {
+        // « Je suis pas obligée de commencer par le premier podcast, y'a pas toujours d'ordre »
+        // (founder, 30/09). Un podcast n'a pas de suite imposée — le plan de la tranche le
+        // disait déjà, la carte était passée quand même.
+        guard item.kind.showsSeasons else { return nil }
         if let episode = InProgressUseCase.next(for: item), let season = episode.season {
             return Next(season: season.number, number: episode.number, title: episode.title)
         }
