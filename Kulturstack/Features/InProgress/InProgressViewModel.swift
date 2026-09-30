@@ -15,14 +15,14 @@ final class InProgressViewModel {
 
     private let useCase: InProgressUseCase
     private let repository: any MediaRepository
-    private let episodes: EpisodeUseCase
     private let status: WatchStatusUseCase
+    private let advanceUseCase: AdvanceUseCase
 
     init(useCase: InProgressUseCase, repository: any MediaRepository,
-         episodes: EpisodeUseCase, status: WatchStatusUseCase) {
+         advance: AdvanceUseCase, status: WatchStatusUseCase) {
         self.useCase = useCase
         self.repository = repository
-        self.episodes = episodes
+        self.advanceUseCase = advance
         self.status = status
     }
 
@@ -36,12 +36,15 @@ final class InProgressViewModel {
     }
 
     // Le ✓ coche la suite, une seule : il ne comble pas ce qui a été sauté derrière.
+    // Le Journal fait la même chose par le même chemin.
     func advance(_ row: InProgressRowModel) async {
-        await change(row) { item in
-            guard let next = InProgressUseCase.next(for: item) else { return }
-            try episodes.toggle(next, of: item)
-            try status.refreshAfterChecking(item)
+        do {
+            try advanceUseCase.advance(itemID: row.itemID)
+            didFailToAdvance = false
+        } catch {
+            didFailToAdvance = true
         }
+        await load()
     }
 
     func finish(_ row: InProgressRowModel) async {

@@ -331,4 +331,47 @@ struct JournalEpisodeLogsTests {
         #expect(model.logs.count == 1)
         #expect(model.logs.first?.status == .inProgress)
     }
+
+    // MARK: - Le prochain épisode depuis le Journal (retour du 27/09)
+
+    @Test @MainActor func advancingFromTheJournalChecksTheNextEpisodeAndMovesTheLine() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let services = AppServices(context: context)
+        let item = MediaItem(kind: .series, title: "Severance")
+        context.insert(item)
+        let season = try Season.make(number: 2, item: item)
+        context.insert(season)
+        for number in 1...5 { context.insert(Episode(number: number, season: season)) }
+        try context.save()
+        context.insert(try LogEntry.make(item: item, status: .done, episode: season.orderedEpisodes[0]))
+        context.insert(try LogEntry.make(item: item, status: .inProgress,
+                                         source: WatchStatusUseCase.automaticSource))
+        try context.save()
+        let viewModel = JournalViewModel(repository: services.logRepository, advance: services.advanceUseCase)
+        await viewModel.load()
+        let row = try #require(rows(of: viewModel).first { $0.watch != nil })
+        #expect(row.watch?.next?.number == 2)
+
+        await viewModel.advance(row)
+
+        let after = try #require(rows(of: viewModel).first { $0.watch != nil })
+        #expect(after.watch?.position?.position == 2)
+        #expect(after.watch?.next?.number == 3)
+        #expect(viewModel.didFailToAdvance == false)
+        withExtendedLifetime(container) {}
+    }
+
+    // Sans de quoi avancer, le Journal ne propose pas le bouton plutôt que de mentir.
+    @Test @MainActor func aJournalWithoutTheMeansToAdvanceDoesNotOfferIt() async throws {
+        let viewModel = JournalViewModel(repository: StubLogRepository(result: .success([])))
+
+        #expect(viewModel.canAdvance == false)
+    }
+
+    @MainActor
+    private func rows(of viewModel: JournalViewModel) -> [JournalRowModel] {
+        guard case .loaded(let content) = viewModel.presentation else { return [] }
+        return content.sections.flatMap(\.rows)
+    }
 }

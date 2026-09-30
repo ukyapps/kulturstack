@@ -55,7 +55,7 @@ Le besoin n'est pas un tracker de plus. C'est **un seul geste, pour tout, au mom
 | Séries | TMDB | l'épisode |
 | Livres | OpenLibrary | l'œuvre |
 | Disques | Discogs | l'album |
-| Podcasts | Apple Podcasts + RSS | l'épisode |
+| Podcasts | Apple Podcasts (chercher) + flux RSS (épisodes) | l'épisode |
 | Jeux vidéo | IGDB | le jeu |
 | Concerts | Setlist.fm | le concert |
 | Théâtre | saisie assistée | la représentation |
@@ -76,6 +76,13 @@ Le besoin n'est pas un tracker de plus. C'est **un seul geste, pour tout, au mom
 - Saisons et épisodes **pour les séries** ; cocher un épisode ; « tout cocher jusqu'ici » ; « prochain épisode ». *(Les podcasts arrivent en T4 : le modèle est écrit pour eux, seules les séries sont câblées.)*
 - « Où j'en suis » : un **quatrième onglet « En cours »** — séries et livres, avec le ✓ qui avance d'un épisode. *(Les jeux arrivent en T6.)*
 - Statuts *en cours* et *abandonné*, automatiques pour le premier, explicites pour le second.
+
+**Tranche Podcasts — avancée avant l'import** (décision founder du 27/09 : « faisons les podcasts avant l'import »)
+- Chercher un podcast (Apple Podcasts, sans clé ni compte) ✅ #49.
+- Ses épisodes, lus dans son flux RSS, du plus récent au plus ancien ✅ #50.
+- Les cocher un par un, « jusqu'ici » pour rattraper ✅ #50, #51.
+- **Pas** dans l'onglet « En cours » : un podcast s'écoute par le plus récent, pas par le premier non écouté — à rouvrir après usage.
+- **Reste** : les podcasts de Radio France, dont Apple ne publie pas les flux (dix testés, dix sans flux). Le plan : `docs/plans/podcasts.md`.
 
 **Tranche 3 — Le passé**
 - Importer : Trakt (export JSON), Goodreads / IMDb / Letterboxd (CSV), CSV générique.
