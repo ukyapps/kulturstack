@@ -16,6 +16,8 @@ Les champs **communs** vivent sur la fiche et sont interrogeables. Les champs **
 
 La seule exception : `Season` / `Episode` *(T2)* sont de vrais modèles, parce qu'on les interroge (progression, prochain épisode).
 
+**Schéma courant : V3.** V1 (T1) → V2 (T2, saisons et épisodes) → V3 (Podcasts, l'identité d'un épisode). Les trois versions sont figées dans `Domain/Schema/` : les modèles vivants sont ceux de la **V3**, ceux de la V1 et de la V2 sont des copies **qu'on ne modifie plus** — c'est contre elles que le test T-01 fait migrer une base peuplée. Sans ces copies, T-01 écrirait une fausse base « ancienne » contenant déjà la nouvelle version, et ne testerait plus rien.
+
 ## Schéma V1 (Tranche 1)
 
 ```swift
@@ -85,11 +87,12 @@ enum LogStatus: String, Codable, CaseIterable, Sendable {
 }
 
 @Model final class Episode {
-    @Attribute(.unique) var key: String  // "<seasonKey>:e<n>"
+    @Attribute(.unique) var key: String  // "<seasonKey>:e<n>" — ou "<seasonKey>:g<guid>" si externalID
     var number: Int
     var title: String?
     var airDate: Date?
     var runtimeMinutes: Int?
+    var externalID: String?              // V3 — le guid d'un flux RSS ; nil pour une série
     var season: Season?
     // nullify, et pas cascade : recharger une saison détache les logs, ça ne les efface pas.
     @Relationship(deleteRule: .nullify, inverse: \LogEntry.episode) var logs: [LogEntry]
@@ -113,7 +116,7 @@ struct FilmDetails: Codable    { var runtimeMinutes: Int?; var genres: [String];
 struct SeriesDetails: Codable  { var seasonCount: Int?; var episodeCount: Int?; var status: String?; var genres: [String] }
 struct BookDetails: Codable    { var pageCount: Int?; var publisher: String?; var firstPublishYear: Int?; var subjects: [String] }
 struct AlbumDetails: Codable   { var label: String?; var genres: [String]; var trackCount: Int? }            // T4
-struct PodcastDetails: Codable { var feedURL: URL?; var publisher: String? }                                 // T4
+struct PodcastDetails: Codable { var feedURL: URL?; var episodeCount: Int?; var publisher: String?; var genre: String? }  // ✅ #49
 struct GameDetails: Codable    { var platforms: [String]; var developers: [String] }                         // T6
 struct ConcertDetails: Codable { var venue: String?; var city: String?; var setlist: [String] }              // T6
 struct LiveDetails: Codable    { var venue: String?; var city: String?; var company: String? }               // T7 théâtre/expo
@@ -129,12 +132,21 @@ Décodage : `switch item.kind` → le bon type. Un champ manquant dans un vieux 
 4. Un log créé sans date reçoit `.now`.
 5. Deux logs importés pour la même fiche **le même jour civil** avec la même source → un seul est gardé (ADR-004).
 
+## Règles posées en T2 et dans la tranche Podcasts (testées)
+
+6. Une `Season` n'existe que pour un type à épisodes (`kind.hasEpisodes`), sinon `DomainError.seasonsNotAllowed`.
+7. **L'identité d'un épisode dépend de sa source.** Un épisode de série est reconnu à son **numéro** — TMDB le numérote, et cette numérotation est stable. Un épisode de podcast est reconnu à son **`externalID`**, le `guid` de son flux RSS. La clé unique suit : `<saison>:e<numéro>` sans identité, `<saison>:g<guid>` avec. Les clés des épisodes de séries **n'ont pas changé** en V3 — une clé réécrite, c'est une coche perdue.
+8. Pourquoi : un flux RSS est **tronqué par son éditeur** (The Daily a publié des milliers d'épisodes, son flux n'en garde que 64) et publie en tête. Une numérotation par position décalerait tout ce qui est déjà coché à la première publication.
+9. Cocher un épisode = un `LogEntry` `done` qui le porte ; décocher = supprimer ce log. Le statut de l'œuvre (`en cours`, `terminé`) est un log **sans** épisode, marqué `source = "episodes"` quand il a été posé automatiquement.
+10. **Un podcast ne se termine pas** : `WatchStatusUseCase.finishes` ne propose « terminé » que pour une série. Un podcast publiera encore.
+
 ## Ce qui arrive plus tard (pour ne pas se coincer)
 
 | Tranche | Entité | Schéma |
 |---|---|---|
 | 2 | ✅ **fait le 24/09/2026** — `Season`, `Episode`, `LogEntry.episode` | V2, lightweight |
-| 5 | `OwnedCopy { id, format: String, editionRef: String?, acquiredAt: Date?, notes, item }` | V3, lightweight |
+| — | ✅ **fait le 27/09/2026** — `Episode.externalID` (le `guid` d'un flux RSS) | **V3, lightweight** |
+| 5 | `OwnedCopy { id, format: String, editionRef: String?, acquiredAt: Date?, notes, item }` | V4, lightweight |
 | 7 | rien de nouveau : théâtre/expos = `MediaItem` sans `ExternalRef`, `LiveDetails` | — |
 
 ## Requêtes que l'app doit savoir faire (et qui n'utilisent que les champs communs)
