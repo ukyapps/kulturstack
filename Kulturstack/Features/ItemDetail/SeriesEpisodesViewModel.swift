@@ -32,7 +32,6 @@ final class SeriesEpisodesViewModel {
     private(set) var episodes: [Int: EpisodesState] = [:]
     private(set) var watchStatus: LogStatus?
     var didFailToCheck = false
-    var proposesFinish = false
 
     private let itemID: UUID
     private let repository: any MediaRepository
@@ -114,37 +113,31 @@ final class SeriesEpisodesViewModel {
         performSeason(number) { try useCase.uncheckAll($1, of: $0) }
     }
 
-    func finish() { record { try status.finish($0) } }
-
     func drop() { record { try status.drop($0) } }
 
     func resume() { record { try status.resume($0) } }
 
     private func perform(episode number: Int, in season: Int, _ action: (MediaItem, Episode) throws -> Void) {
         guard let episode = stored[season]?.episodes.first(where: { $0.number == number }) else { return }
-        apply(in: season, trigger: episode) { try action($0, episode) }
+        apply(in: season) { try action($0, episode) }
     }
 
-    // Cocher toute une saison, c'est cocher son dernier épisode du point de vue du statut :
-    // même déclencheur, donc même proposition de « terminé » sur la dernière saison.
     private func performSeason(_ number: Int, _ action: (MediaItem, Season) throws -> Void) {
         guard let season = stored[number] else { return }
-        apply(in: number, trigger: season.orderedEpisodes.last) { try action($0, season) }
+        apply(in: number) { try action($0, season) }
     }
 
-    private func apply(in season: Int, trigger: Episode?, _ action: (MediaItem) throws -> Void) {
+    private func apply(in season: Int, _ action: (MediaItem) throws -> Void) {
         guard let item = item() else { return }
         do {
             try action(item)
-            try status.refreshAfterChecking(item)
+            // La liste des saisons fait autorité ici : l'écran l'a chargée, il sait donc si
+            // tout est vu — et « tout vu » pose « terminé » sans le demander (founder, 30/09).
+            try status.refreshAfterChecking(item, seasons: summaries)
             didFailToCheck = false
             refresh(season)
             next = nextEpisode(of: item)
             watchStatus = WatchStatusUseCase.status(of: item)
-            // Finir la dernière saison propose « terminé » ; une série qui continue n'est pas finie.
-            if watchStatus != .done, let trigger, WatchStatusUseCase.finishes(trigger, seasons: summaries) {
-                proposesFinish = true
-            }
             onChange()
         } catch {
             didFailToCheck = true
@@ -156,7 +149,6 @@ final class SeriesEpisodesViewModel {
         do {
             try action(item)
             didFailToCheck = false
-            proposesFinish = false
             watchStatus = WatchStatusUseCase.status(of: item)
             onChange()
         } catch {

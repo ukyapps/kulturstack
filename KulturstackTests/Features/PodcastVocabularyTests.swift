@@ -61,13 +61,11 @@ struct PodcastVocabularyTests {
             context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
         }
         try context.save()
-        let last = try #require(season.orderedEpisodes.last)
-
-        #expect(WatchStatusUseCase.finishes(last, seasons: [SeasonSummary(number: 1, title: nil,
-                                                                         episodeCount: 3, airDate: nil)]) == false)
+        #expect(WatchStatusUseCase.isFullyWatched(podcast, seasons: [SeasonSummary(number: 1, title: nil,
+                                                                                   episodeCount: 3, airDate: nil)]) == false)
     }
 
-    // La même règle, pour une série : là, « terminé » se propose bien.
+    // La même règle, pour une série : là, tout écouter la termine bien.
     @Test func watchingEverythingStillFinishesASeries() throws {
         let context = container.mainContext
         let series = MediaItem(kind: .series, title: "Severance")
@@ -80,9 +78,7 @@ struct PodcastVocabularyTests {
             context.insert(try LogEntry.make(item: series, status: .done, episode: episode))
         }
         try context.save()
-        let last = try #require(season.orderedEpisodes.last)
-
-        #expect(WatchStatusUseCase.finishes(last, seasons: [SeasonSummary(number: 1, title: nil,
-                                                                         episodeCount: 3, airDate: nil)]))
+        #expect(WatchStatusUseCase.isFullyWatched(series, seasons: [SeasonSummary(number: 1, title: nil,
+                                                                                  episodeCount: 3, airDate: nil)]))
     }
 }

@@ -40,12 +40,6 @@ struct SeasonsSection: View {
         } message: { _ in
             Text(viewModel.kind.uncheckEverythingMessage)
         }
-        .alert(String(localized: "series.finish.title"), isPresented: $viewModel.proposesFinish) {
-            Button(String(localized: "series.finish.confirm")) { viewModel.finish() }
-            Button(String(localized: "series.finish.later"), role: .cancel) {}
-        } message: {
-            Text(String(localized: "series.finish.message"))
-        }
     }
 
     // Le statut se montre et se change au même endroit : abandonner est une action, jamais une devinette.
