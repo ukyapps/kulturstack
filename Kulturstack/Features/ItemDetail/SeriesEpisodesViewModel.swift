@@ -26,6 +26,8 @@ final class SeriesEpisodesViewModel {
 
     private(set) var next: Next?
     private(set) var currentSeason: Int?
+    // Une série se regarde par saisons, un podcast s'écoute à plat : les mots et l'écran suivent.
+    private(set) var kind: MediaKind = .series
     private(set) var seasons: SeasonsState = .loading
     private(set) var episodes: [Int: EpisodesState] = [:]
     private(set) var watchStatus: LogStatus?
@@ -56,6 +58,7 @@ final class SeriesEpisodesViewModel {
             return
         }
         watchStatus = WatchStatusUseCase.status(of: item)
+        kind = item.kind
         do {
             summaries = try await useCase.seasons(of: item)
             seasons = summaries.isEmpty ? .empty : .loaded(seasonRows())

@@ -23,8 +23,10 @@ struct WatchStatusUseCase {
     }
 
     // Le dernier épisode de la dernière saison, spéciaux exclus : un bonus ne finit pas une série.
+    // Un podcast n'a pas de fin : il publiera encore la semaine prochaine. Proposer « terminé »
+    // parce qu'on a écouté ce que le flux contient n'aurait pas de sens.
     static func finishes(_ episode: Episode, seasons: [SeasonSummary]) -> Bool {
-        guard let season = episode.season, !season.episodes.isEmpty,
+        guard let season = episode.season, season.item?.kind == .series, !season.episodes.isEmpty,
               let last = seasons.filter({ !$0.isSpecials }).map(\.number).max(),
               season.number == last else { return false }
         return season.orderedEpisodes.allSatisfy(\.isWatched)

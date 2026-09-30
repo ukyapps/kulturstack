@@ -49,6 +49,44 @@ struct EpisodeRowModelTests {
         #expect(EpisodeRowModel(try episode(1, watched: true)).isWatched)
     }
 
+    // MARK: - Un épisode de podcast (tranche Podcasts, PR 33)
+
+    // Le rang d'un épisode de podcast bouge à chaque publication : il ne s'affiche pas.
+    @Test func aPodcastEpisodeShowsItsTitleWithoutItsRank() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        let episode = Episode(number: 3, title: "Le Français qui a vu naître Google",
+                              externalID: "guid-abc", season: season)
+        context.insert(episode)
+        try context.save()
+
+        #expect(EpisodeRowModel(episode).label == "Le Français qui a vu naître Google")
+    }
+
+    // Un épisode de série, lui, garde son numéro : c'est celui que TMDB lui donne.
+    @Test func aSeriesEpisodeKeepsItsNumberInTheLabel() throws {
+        let row = EpisodeRowModel(try episode(4, title: "Woe’s Hollow"))
+
+        #expect(row.label == String(localized: "series.episode.titled \(4) \("Woe’s Hollow")"))
+    }
+
+    // Sans titre — un spécial de Friends, par exemple —, le numéro reste le seul repère.
+    @Test func anEpisodeWithoutATitleFallsBackOnItsNumberEvenWithAnIdentity() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Un podcast")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        let episode = Episode(number: 7, externalID: "guid-sans-titre", season: season)
+        context.insert(episode)
+        try context.save()
+
+        #expect(EpisodeRowModel(episode).label == String(localized: "series.episode \(7)"))
+    }
+
     // MARK: - « Jusqu'ici », rendu visible (retour du 27/09)
 
     // Le bouton ne s'affiche que là où il sert : s'il reste un épisode non coché derrière.

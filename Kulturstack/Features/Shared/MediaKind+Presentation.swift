@@ -68,3 +68,51 @@ extension MediaKind {
         }
     }
 }
+
+// Le vocabulaire des épisodes n'est pas le même pour une série et pour un podcast. Une série
+// a des saisons qu'on regarde ; un podcast a une liste qu'on écoute, du plus récent au plus
+// ancien. Les mots suivent (retour du 27/09 : « les podcasts et tout »).
+extension MediaKind {
+    // Un podcast n'a qu'une saison, implicite : l'afficher serait du bruit.
+    var showsSeasons: Bool { self == .series }
+
+    var episodesSectionTitle: String {
+        showsSeasons ? String(localized: "series.seasons.title") : String(localized: "podcast.episodes.title")
+    }
+
+    var checkEverythingLabel: String {
+        showsSeasons ? String(localized: "series.season.checkAll") : String(localized: "podcast.checkAll")
+    }
+
+    var dropLabel: String {
+        showsSeasons ? String(localized: "series.drop") : String(localized: "podcast.drop")
+    }
+
+    var resumeLabel: String {
+        showsSeasons ? String(localized: "series.resume") : String(localized: "podcast.resume")
+    }
+
+    var statusMenuLabel: String {
+        showsSeasons ? String(localized: "series.status.menu") : String(localized: "podcast.status.menu")
+    }
+
+    var uncheckEverythingTitle: String {
+        showsSeasons ? String(localized: "series.season.uncheck.title") : String(localized: "podcast.uncheck.title")
+    }
+
+    var uncheckEverythingMessage: String {
+        showsSeasons ? String(localized: "series.season.uncheck.message") : String(localized: "podcast.uncheck.message")
+    }
+
+    var noEpisodesTitle: String {
+        showsSeasons ? String(localized: "series.seasons.empty.title") : String(localized: "podcast.episodes.empty.title")
+    }
+
+    var noEpisodesMessage: String {
+        showsSeasons ? String(localized: "series.seasons.empty.message") : String(localized: "podcast.episodes.empty.message")
+    }
+
+    var episodesFailedTitle: String {
+        showsSeasons ? String(localized: "series.seasons.failed.title") : String(localized: "podcast.episodes.failed.title")
+    }
+}
