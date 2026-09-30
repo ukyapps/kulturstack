@@ -81,4 +81,82 @@ struct JournalRowModelTests {
         container.mainContext.insert(log)
         return (container, log)
     }
+
+    // MARK: - Le prochain épisode dans le Journal (retour du 27/09)
+
+    @MainActor
+    private func startedSeries(episodes count: Int, watched: [Int], in container: ModelContainer) throws -> MediaItem {
+        let context = container.mainContext
+        let item = MediaItem(kind: .series, title: "Severance")
+        context.insert(item)
+        let season = try Season.make(number: 2, item: item)
+        context.insert(season)
+        for number in 1...count { context.insert(Episode(number: number, season: season)) }
+        try context.save()
+        for episode in season.orderedEpisodes where watched.contains(episode.number) {
+            context.insert(try LogEntry.make(item: item, status: .done, episode: episode))
+        }
+        context.insert(try LogEntry.make(item: item, status: .inProgress,
+                                         source: WatchStatusUseCase.automaticSource))
+        try context.save()
+        return item
+    }
+
+    @MainActor
+    @Test func theLineOfASeriesInProgressCarriesItsProgressAndItsNext() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let item = try startedSeries(episodes: 10, watched: [1, 2, 3], in: container)
+        let statusLog = try #require(WatchStatusUseCase.statusLog(of: item))
+
+        let watch = try #require(JournalRowModel(log: statusLog).watch)
+
+        #expect(watch.position?.position == 3)
+        #expect(watch.position?.total == 10)
+        #expect(watch.next?.number == 4)
+        withExtendedLifetime(container) {}
+    }
+
+    // Un épisode coché ne crée pas de ligne : c'est la ligne de statut qui porte le bouton,
+    // sinon la même série s'avancerait depuis dix endroits différents.
+    @MainActor
+    @Test func onlyTheStatusLineCarriesTheButton() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let item = try startedSeries(episodes: 5, watched: [1], in: container)
+        let context = container.mainContext
+        let older = try LogEntry.make(item: item, status: .inProgress,
+                                      date: Date(timeIntervalSince1970: 1), source: WatchStatusUseCase.automaticSource)
+        context.insert(older)
+        try context.save()
+
+        #expect(JournalRowModel(log: older).watch == nil)
+        withExtendedLifetime(container) {}
+    }
+
+    @MainActor
+    @Test func aFilmLineCarriesNothingToCheck() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let film = MediaItem(kind: .film, title: "La Planète sauvage")
+        context.insert(film)
+        let log = try LogEntry.make(item: film, status: .done)
+        context.insert(log)
+        try context.save()
+
+        #expect(JournalRowModel(log: log).watch == nil)
+        withExtendedLifetime(container) {}
+    }
+
+    // Une série terminée ou abandonnée n'a plus de suite à cocher depuis le Journal.
+    @MainActor
+    @Test func aFinishedSeriesCarriesNothing() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let item = try startedSeries(episodes: 3, watched: [1, 2, 3], in: container)
+        let context = container.mainContext
+        let done = try LogEntry.make(item: item, status: .done)
+        context.insert(done)
+        try context.save()
+
+        #expect(JournalRowModel(log: done).watch == nil)
+        withExtendedLifetime(container) {}
+    }
 }

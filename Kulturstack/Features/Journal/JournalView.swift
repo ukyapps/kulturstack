@@ -10,7 +10,8 @@ struct JournalView: View {
     private let onSearch: () -> Void
 
     init(services: AppServices, onSearch: @escaping () -> Void = {}) {
-        _viewModel = State(initialValue: JournalViewModel(repository: services.logRepository))
+        _viewModel = State(initialValue: JournalViewModel(repository: services.logRepository,
+                                                          advance: services.advanceUseCase))
         self.services = services
         self.onSearch = onSearch
     }
@@ -37,6 +38,7 @@ struct JournalView: View {
                 Text(String(localized: "log.edit.delete.confirm.message"))
             }
             .alert(String(localized: "journal.delete.failed"), isPresented: $viewModel.didFailToDelete) {}
+            .alert(String(localized: "inprogress.advance.failed"), isPresented: $viewModel.didFailToAdvance) {}
             .toolbar {
                 NavigationLink {
                     SettingsView(services: services)
@@ -141,7 +143,8 @@ struct JournalView: View {
                         Button {
                             open(row.tapAction)
                         } label: {
-                            JournalRow(model: row)
+                            JournalRow(model: row,
+                                       onAdvance: viewModel.canAdvance ? { Task { await viewModel.advance(row) } } : nil)
                         }
                         .buttonStyle(.plain)
                         .accessibilityHint(row.tapAction.hint)

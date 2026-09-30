@@ -80,7 +80,7 @@ Trois jours d'épisodes, **huit retours**, notés mot pour mot dans `docs/produc
 | 24 | « Une option qui dit j'ai vu toute une saison » + « je n'avais pas trouvé l'appui long » | « J'ai vu toute la saison » sous la saison dépliée, « Jusqu'ici » en bouton visible, appui long retiré | ✅ #39 |
 | 25 | « Logger une série me la met comme un film » + « une option en haut qui dit à quel épisode j'en suis » | La fiche série s'ouvre sur « Prochain : S1 E1 », cochable, saison dépliée ; le `+` d'une série y mène | ✅ #42 |
 | 26 | « On voit à peine que j'ai cliqué, si je misclick je m'en rends pas compte » | Barre de progression animée, bouton qui s'enfonce, retour haptique | ✅ #43 |
-| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même ✓ sur la ligne de statut d'une série en cours, par le même use case | ✅ #44 |
+| 27 | « Le prochain épisode dans le journal aussi, comme dans en cours » | Le même ✓ sur la ligne de statut d'une série en cours, par le même use case | ⚠️ **#44 fusionnée dans le vide** — récupérée le 30/09, voir ci-dessous |
 | 28 | « Je peux pas dire en cours dans les boutons en haut » | « Je le commence » sur la fiche — **founder** : sur la fiche, pas dans la ligne de résultat | ✅ #45 |
 
 **Les huit retours sont traités.** Reste, à juger à l'usage et non sur le papier : le résumé d'une fiche est passé **sous** les épisodes (les actions avant la lecture), et les libellés d'action restent génériques sur un podcast — design § 6, questions 11 et 12.
