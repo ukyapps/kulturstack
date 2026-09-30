@@ -74,29 +74,18 @@ struct ItemDetailView: View {
         }
     }
 
-    // Deux rangées plutôt qu'une : trois boutons côte à côte ne tiennent pas sur un iPhone.
+    // Deux boutons, pas trois : « Logger » ouvre le formulaire et écrit une entrée, « Envie »
+    // la met de côté. « Je le commence » (#45) était un troisième bouton qui écrivait lui
+    // aussi un log — « quelle différence entre logger et j'ai commencé, c'est bizarre »
+    // (founder, 30/09). Le statut se choisit dans le formulaire, où il a toujours été.
     private func actions(_ model: ItemDetailModel) -> some View {
-        VStack(spacing: Spacing.s) {
-            HStack(spacing: Spacing.s) {
-                Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
-                    logging = viewModel.logTarget
-                }
-                .buttonStyle(.borderedProminent)
-                Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
-                    .buttonStyle(.bordered)
+        HStack(spacing: Spacing.s) {
+            Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
+                logging = viewModel.logTarget
             }
-            // Ce qui dure se commence : un livre entamé part dans l'onglet « En cours ».
-            if model.canStart {
-                Button(String(localized: "detail.start"), systemImage: "play.circle") { viewModel.start() }
-                    .buttonStyle(.bordered)
-            } else if model.watchStatus == .inProgress {
-                Text(LogStatus.inProgress.label)
-                    .font(.subheadline)
-                    .padding(.horizontal, Spacing.m)
-                    .padding(.vertical, Spacing.s)
-                    .background(Color.surfaceSecondary, in: Capsule())
-                    .foregroundStyle(Color.textPrimary)
-            }
+            .buttonStyle(.borderedProminent)
+            Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
+                .buttonStyle(.bordered)
         }
         .sensoryFeedback(.success, trigger: model.logs.count)
     }

@@ -84,13 +84,6 @@ final class ItemDetailViewModel {
         record(stored: { try logUseCase.wish($0) }, candidate: { try logUseCase.wish($0) })
     }
 
-    // Commencer, c'est un log « en cours » daté de maintenant — ce que l'onglet « En cours »
-    // lit pour savoir quoi proposer. Un type qui n'admet pas ce statut est refusé par le modèle.
-    func start() {
-        record(stored: { try logUseCase.log($0, status: .inProgress) },
-               candidate: { try logUseCase.logNow($0, status: .inProgress) })
-    }
-
     private func record(stored: (MediaItem) throws -> LogEntry, candidate: (MediaCandidate) throws -> LogEntry) {
         do {
             switch subject {
