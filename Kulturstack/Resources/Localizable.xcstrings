@@ -2876,6 +2876,74 @@
         }
       }
     },
+    "series.checkAll": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I watched the whole series"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J’ai vu toute la série"
+          }
+        }
+      }
+    },
+    "series.checkAll.confirm.message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every episode of every season will be checked, and the series will be marked finished."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tous les épisodes de toutes les saisons seront cochés, et la série passera en terminée."
+          }
+        }
+      }
+    },
+    "series.checkAll.confirm.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The whole series?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toute la série ?"
+          }
+        }
+      }
+    },
+    "series.checkAll.running": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking every season…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je coche toutes les saisons…"
+          }
+        }
+      }
+    },
     "series.checkUpTo": {
       "localizations": {
         "en": {
@@ -3116,6 +3184,23 @@
         }
       }
     },
+    "series.season.checkAll.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check all"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout cocher"
+          }
+        }
+      }
+    },
     "series.season.complete": {
       "localizations": {
         "en": {
@@ -3186,6 +3271,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uncheck everything"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout décocher"
+          }
+        }
+      }
+    },
+    "series.season.uncheckAll.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uncheck all"
           }
         },
         "fr": {

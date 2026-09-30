@@ -4,6 +4,7 @@ struct SeasonsSection: View {
     @State private var viewModel: SeriesEpisodesViewModel
     @State private var expanded: Set<Int>
     @State private var uncheckingSeason: Int?
+    @State private var isCheckingEverything = false
 
     private let opened: Set<Int>
 
@@ -40,6 +41,13 @@ struct SeasonsSection: View {
         } message: { _ in
             Text(viewModel.kind.uncheckEverythingMessage)
         }
+        // Cocher toute une série écrit des dizaines de logs : ça se confirme une fois.
+        .confirmationDialog(String(localized: "series.checkAll.confirm.title"),
+                            isPresented: $isCheckingEverything, titleVisibility: .visible) {
+            Button(String(localized: "series.checkAll")) { Task { await viewModel.checkEverything() } }
+        } message: {
+            Text(String(localized: "series.checkAll.confirm.message"))
+        }
     }
 
     // Le statut se montre et se change au même endroit : abandonner est une action, jamais une devinette.
@@ -74,6 +82,28 @@ struct SeasonsSection: View {
         }
     }
 
+    // « Sur une série je peux pas dire j'ai tout vu toute la série » (founder, 30/09). Toutes
+    // les saisons d'un coup, y compris celles qu'on n'a jamais ouvertes — d'où l'attente
+    // affichée : c'est un appel par saison.
+    @ViewBuilder private var wholeSeries: some View {
+        if viewModel.isCheckingEverything {
+            HStack(spacing: Spacing.s) {
+                ProgressView()
+                Text(String(localized: "series.checkAll.running"))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.textSecondary)
+            }
+            .padding(.top, Spacing.s)
+        } else if viewModel.watchStatus != .done {
+            Button(String(localized: "series.checkAll"), systemImage: "checkmark.circle.fill") {
+                isCheckingEverything = true
+            }
+            .buttonStyle(.bordered)
+            .font(.subheadline.weight(.semibold))
+            .padding(.top, Spacing.s)
+        }
+    }
+
     @ViewBuilder private var content: some View {
         switch viewModel.seasons {
         case .loading:
@@ -105,6 +135,7 @@ struct SeasonsSection: View {
                     }
                     Divider()
                 }
+                wholeSeries
             }
         }
     }
@@ -125,6 +156,7 @@ struct SeasonsSection: View {
                     .foregroundStyle(Color.accent)
                     .accessibilityLabel(String(localized: "series.season.complete"))
             }
+            wholeSeason(season, compact: true)
         }
         .padding(.vertical, Spacing.xs)
     }
@@ -134,7 +166,8 @@ struct SeasonsSection: View {
         switch viewModel.episodes[season.number] {
         case .loaded(let rows):
             VStack(alignment: .leading, spacing: 0) {
-                wholeSeason(season)
+                // Un podcast n'a pas d'en-tête de saison où poser le bouton : il le garde ici.
+                if !viewModel.kind.showsSeasons { wholeSeason(season, compact: false) }
                 ForEach(rows) { row in
                     EpisodeRow(model: row,
                                toggle: { viewModel.toggle(episode: row.number, in: season.number) },
@@ -161,23 +194,31 @@ struct SeasonsSection: View {
         }
     }
 
-    // « J'ai vu toute la saison » en un bouton, sous la saison dépliée — c'est là qu'on sait
-    // enfin ce qu'elle contient. Décocher est destructeur : ça se confirme.
-    @ViewBuilder private func wholeSeason(_ season: SeasonRowModel) -> some View {
+    // « J'ai vu toute la saison » sur l'en-tête, visible repliée comme dépliée : « quand je
+    // ferme l'onglet d'une saison je peux pas ajouter toute la saison » (founder, 30/09).
+    // Décocher est destructeur : ça se confirme.
+    // Sur l'en-tête, la phrase entière ne tient pas à côté du titre : le bouton se raccourcit.
+    // Un podcast, lui, n'a pas d'en-tête — son bouton reste dans la liste, en toutes lettres.
+    @ViewBuilder private func wholeSeason(_ season: SeasonRowModel, compact: Bool) -> some View {
         Group {
             if season.isComplete {
-                Button(String(localized: "series.season.uncheckAll"), systemImage: "arrow.uturn.backward") {
+                Button(compact ? String(localized: "series.season.uncheckAll.short")
+                               : String(localized: "series.season.uncheckAll"),
+                       systemImage: "arrow.uturn.backward") {
                     uncheckingSeason = season.number
                 }
             } else {
-                Button(viewModel.kind.checkEverythingLabel, systemImage: "checkmark.circle") {
-                    viewModel.checkSeason(season.number)
+                Button(compact ? String(localized: "series.season.checkAll.short")
+                               : viewModel.kind.checkEverythingLabel,
+                       systemImage: "checkmark.circle") {
+                    Task { await viewModel.checkSeason(season.number) }
                 }
             }
         }
         .buttonStyle(.bordered)
         .font(.subheadline.weight(.semibold))
-        .padding(.vertical, Spacing.s)
+        .labelStyle(.titleOnly)
+        .padding(.vertical, compact ? 0 : Spacing.s)
     }
 
     private var isUnchecking: Binding<Bool> {

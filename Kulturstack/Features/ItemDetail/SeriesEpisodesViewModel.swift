@@ -31,6 +31,9 @@ final class SeriesEpisodesViewModel {
     private(set) var seasons: SeasonsState = .loading
     private(set) var episodes: [Int: EpisodesState] = [:]
     private(set) var watchStatus: LogStatus?
+    // Cocher toute une série peut demander plusieurs saisons à la source : le bouton doit
+    // dire qu'il travaille, sinon on appuie deux fois.
+    private(set) var isCheckingEverything = false
     var didFailToCheck = false
 
     private let itemID: UUID
@@ -105,10 +108,29 @@ final class SeriesEpisodesViewModel {
         perform(episode: number, in: season) { try useCase.checkUpTo($1, of: $0) }
     }
 
-    // « J'ai vu toute la saison » en un geste. Une saison non dépliée n'a pas ses épisodes
-    // en mémoire : il n'y a rien à cocher, et rien à signaler.
-    func checkSeason(_ number: Int) {
+    // « J'ai vu toute la saison » en un geste, y compris **repliée** : le bouton vit sur
+    // l'en-tête depuis le 30/09, donc la saison se charge d'abord si on ne la connaît pas.
+    func checkSeason(_ number: Int) async {
+        if stored[number] == nil { await open(number) }
         performSeason(number) { try useCase.checkAll($1, of: $0) }
+    }
+
+    // « J'ai vu toute la série » : toutes les saisons, spéciaux exclus — un bonus ne fait pas
+    // partie de la série. Une saison que la source ne rend pas se signale et n'est pas cochée :
+    // la série n'est alors pas déclarée finie, ce qui est la vérité.
+    func checkEverything() async {
+        isCheckingEverything = true
+        defer { isCheckingEverything = false }
+        var missed = false
+        for summary in summaries where !summary.isSpecials {
+            if stored[summary.number] == nil { await open(summary.number) }
+            guard stored[summary.number] != nil else {
+                missed = true
+                continue
+            }
+            performSeason(summary.number) { try useCase.checkAll($1, of: $0) }
+        }
+        if missed { didFailToCheck = true }
     }
 
     func uncheckSeason(_ number: Int) {
