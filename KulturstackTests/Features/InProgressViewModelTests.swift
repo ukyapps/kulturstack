@@ -15,7 +15,7 @@ struct InProgressViewModelTests {
         let services = AppServices(context: context)
         return (services, InProgressViewModel(useCase: services.inProgressUseCase,
                                               repository: services.mediaRepository,
-                                              episodes: services.episodeUseCase,
+                                              advance: services.advanceUseCase,
                                               status: services.watchStatusUseCase))
     }
 
@@ -133,7 +133,7 @@ struct InProgressViewModelTests {
         let services = AppServices(context: context)
         let viewModel = InProgressViewModel(useCase: InProgressUseCase(repository: UnreadableLogRepository()),
                                             repository: services.mediaRepository,
-                                            episodes: services.episodeUseCase,
+                                            advance: services.advanceUseCase,
                                             status: services.watchStatusUseCase)
 
         await viewModel.load()
