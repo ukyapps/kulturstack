@@ -841,22 +841,6 @@
         }
       }
     },
-    "detail.start": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I’m starting it"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Je le commence"
-          }
-        }
-      }
-    },
     "detail.summary.less": {
       "localizations": {
         "en": {

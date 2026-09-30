@@ -16,8 +16,6 @@ struct ItemDetailModel: Equatable {
     // « Quand je cherche un livre je peux pas dire en cours dans les boutons en haut »
     // (founder, 27/09). Ce qui ne dure pas — un film, un concert — ne se commence pas ;
     // ce qui est déjà en cours non plus, il est déjà commencé.
-    var canStart: Bool { watchStatus != .inProgress && kind.allowedStatuses.contains(.inProgress) }
-
     private static let maxSubjects = 3
     // Les sources qu'on interroge d'abord, les clés secondaires (IMDb, Trakt…) ensuite.
     private static let providerNames = [("tmdb", "TMDB"), ("ol", "OpenLibrary"), ("openlibrary", "OpenLibrary"), ("isbn13", "OpenLibrary"),
