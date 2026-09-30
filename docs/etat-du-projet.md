@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-28
+maj: 2026-09-30
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -98,6 +98,20 @@ Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question R
 | 33 | Le vocabulaire des podcasts : liste à plat, « J'ai tout écouté » | ✅ #51 |
 | 34 | **Radio France** — Apple ne publie pas leurs flux ; résolveur + clé gratuite au Trousseau | ⏳ attend 5 min de la founder |
 | 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
+
+### Corrections d'usage — après deux jours de podcasts (30/09)
+
+Huit retours, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. **Deux bugs**, un déjà corrigé le 28/09, cinq décisions produit. L'ordre suit ce qui gêne au quotidien : le Journal d'abord, puisqu'il double sur **tous** les types.
+
+| PR | Retour | Correction | État |
+|---|---|---|---|
+| 36 | « Dans journal, tout est toujours dupliqué — une œuvre = une seule fiche » | Une ligne de Journal = une **œuvre**, plus un log : le log le plus récent en tête, les autres dans la fiche | ⏳ |
+| 37 | « Quand je finis une saison, ça fait disparaître la série de En cours » | « En cours » passe à la saison suivante sans l'avoir chargée, comme la fiche sait déjà le faire | ⏳ |
+| 38 | « Saison repliée je peux pas tout cocher » + « j'ai tout vu toute la série » + « ça doit passer en terminé » | « Tout cocher » sur l'en-tête replié, « J'ai vu toute la série », et « terminé » posé au lieu d'être proposé quand tout est vu | ⏳ |
+| 39 | « Les podcasts dans l'autre sens, et par année » | Liste du plus ancien au plus récent, regroupée par année, « jusqu'ici » dans le même sens qu'une série | ⏳ |
+| 40 | « Je suis pas obligée de commencer par le premier » + « quelle différence entre logger et j'ai commencé » | Carte « Prochain » retirée des podcasts (le plan le disait déjà) ; le statut redevient un choix dans le formulaire, la fiche garde deux boutons | ⏳ |
+
+**Déjà livré, à re-vérifier sur son iPhone** : « demander quel épisode quand je logge une série ou un podcast » (#42, 27/09) et « cette série n'est pas découpée chez TMDB » sur un podcast (#51, 28/09 à 12h). Son app date peut-être d'avant — signature à renouveler vers le 05/10 de toute façon.
 
 ### Tranches suivantes
 
