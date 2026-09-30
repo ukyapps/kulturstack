@@ -113,6 +113,15 @@ Huit retours, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. *
 
 **Déjà livré, à re-vérifier sur son iPhone** : « demander quel épisode quand je logge une série ou un podcast » (#42, 27/09) et « cette série n'est pas découpée chez TMDB » sur un podcast (#51, 28/09 à 12h). Son app date peut-être d'avant — signature à renouveler vers le 05/10 de toute façon.
 
+### Nouvelles saisons — cadré le 30/09, pas commencé
+
+Né d'une question de la founder (« ça s'update quand y'a une nouvelle saison ? ») qui a trouvé un bug — corrigé en #59 — et laissé une feature derrière lui. **Pas de bandeau, pas de notification** : une série dont une saison sort **réapparaît dans « En cours »**, l'écran qui sert déjà à ça. Plan : `docs/plans/nouvelles-saisons.md`, 2 PRs, 1 à 2 jours.
+
+| PR | Feature | État |
+|---|---|---|
+| 41 | Une série finie qui a du nouveau revient dans « En cours » (aucun réseau) | ⏳ |
+| 42 | Réapprendre les saisons au lancement, une fois par jour, plafonné | ⏳ |
+
 ### Tranches suivantes
 
 **Tranché le 27/09 : les podcasts passent avant l'import.** « Maintenant je voudrais qu'on ajoute les podcasts et tout » — la founder les écoute, son historique Trakt ne va nulle part. **Les numéros de tranche ne changent pas** (ils sont cités dans les ADRs et le PRD) : c'est l'**ordre d'exécution** qui change, et il est écrit dans la colonne ci-dessous. Le plan est dans `docs/plans/podcasts.md`, et il porte **une question ouverte** : comment couvrir Radio France, dont Apple ne publie pas les flux.

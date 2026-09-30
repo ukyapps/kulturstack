@@ -149,7 +149,11 @@ Huit retours après deux jours d'usage des podcasts, plus une demande de vérifi
 
 **Non — et la question a trouvé un bug.** Le nombre de saisons d'une série n'était récupéré qu'une fois et jamais revu : avec le « terminé » automatique, une série finie serait restée finie pour toujours, même après la sortie d'une saison suivante. Corrigé dans la PR 40 : la fiche réapprend le compte à chaque ouverture.
 
-Reste ce qu'elle demandait vraiment : **être prévenue**. « Ah oui j'ai pas prévu l'option mais faudrait qu'on l'ajoute quoi. » Deux formes proposées, avec leur promesse réelle — iOS ne réveille une app fermée que quand ça l'arrange, une vraie notification demanderait le serveur de la T6. **Founder : le bandeau à l'ouverture de l'app**, fiable à 100 %, sans permission ni serveur. À cadrer comme une tranche à part, pas comme un ajout aux correctifs.
+Reste ce qu'elle demandait vraiment : **être prévenue**. « Ah oui j'ai pas prévu l'option mais faudrait qu'on l'ajoute quoi. » Deux formes proposées, avec leur promesse réelle — iOS ne réveille une app fermée que quand ça l'arrange, une vraie notification demanderait le serveur de la T6. Founder : le rafraîchissement à l'ouverture, pas la notification.
+
+Puis, sur ma maquette de bandeau « du nouveau » en haut de l'onglet : **« pourquoi tu veux faire un bandeau ? c'est pas dans suivi que ça apparaît juste quand y'a une suite ? »** — et elle a raison. Un bandeau, c'est un deuxième endroit à consulter pour une information qui a déjà son écran. **Retenu : pas de bandeau.** Une série dont une saison sort **réapparaît dans « En cours »**, comme n'importe quelle série suivie. Plan : `docs/plans/nouvelles-saisons.md`.
+
+**Quatrième fois qu'elle simplifie une de mes propositions d'écran** (chip → onglet Envie le 22/09, bandeau → onglet « En cours » le 24/09, geste caché → bouton visible le 27/09, et ici bandeau → l'onglet existant). La leçon tient en une phrase : **quand une information a déjà un écran qui lui va, elle n'a pas besoin du sien.**
 
 ### Ce que cette session a appris sur la méthode
 
