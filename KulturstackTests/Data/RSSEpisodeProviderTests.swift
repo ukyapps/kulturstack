@@ -42,20 +42,23 @@ struct RSSEpisodeProviderTests {
 
     // MARK: - Les épisodes
 
-    @Test func theMostRecentEpisodeComesFirst() async throws {
+    // Retourné le 30/09 : « je voulais comme sur les séries donc à l'envers ». Le flux arrive
+    // du plus récent au plus ancien ; la liste se lit du premier épisode au dernier.
+    @Test func theOldestEpisodeComesFirst() async throws {
         let episodes = try await makeProvider(try feedClient()).episodes(forKey: Self.feedKey, season: 1)
 
         #expect(episodes.count == 9)
-        #expect(episodes.first?.number == 1)
-        #expect(episodes.first?.title?.hasPrefix("Bande annonce") == true)
         #expect(episodes.map(\.number) == Array(1...9))
+        // La bande annonce est en tête du flux : elle est donc la dernière de la liste.
+        #expect(episodes.last?.title?.hasPrefix("Bande annonce") == true)
+        #expect(episodes.first?.title?.hasPrefix("Bande annonce") == false)
     }
 
     // L'identité vient du flux, pas de la position : c'est elle qui tient les coches.
     @Test func eachEpisodeCarriesItsFeedIdentifier() async throws {
         let episodes = try await makeProvider(try feedClient()).episodes(forKey: Self.feedKey, season: 1)
 
-        #expect(episodes.first?.externalID == "355a727b-b9d9-4061-87ab-1e389f7a72ab")
+        #expect(episodes.last?.externalID == "355a727b-b9d9-4061-87ab-1e389f7a72ab")
         #expect(episodes.allSatisfy { $0.externalID?.isEmpty == false })
     }
 
@@ -75,12 +78,13 @@ struct RSSEpisodeProviderTests {
         // 1017 secondes → 17 minutes aussi.
         #expect(episodes.first { $0.title?.contains("en secondes") == true }?.runtimeMinutes == 17)
         // 00:00:52 → une minute, pas zéro : un épisode dure au moins une minute.
-        #expect(episodes.first?.runtimeMinutes == 1)
+        // La bande annonce est en tête du flux, donc en fin de liste.
+        #expect(episodes.last?.runtimeMinutes == 1)
     }
 
     @Test func aDateIsReadInTheFeedFormat() async throws {
         let episodes = try await makeProvider(try feedClient()).episodes(forKey: Self.feedKey, season: 1)
-        let date = try #require(episodes.first?.airDate)
+        let date = try #require(episodes.last?.airDate)
 
         let parts = Calendar(identifier: .gregorian).dateComponents(in: TimeZone(identifier: "Europe/Paris")!, from: date)
         #expect((parts.year, parts.month, parts.day) == (2026, 9, 23))
@@ -108,9 +112,11 @@ struct RSSEpisodeProviderTests {
 
         let episodes = try await provider.episodes(forKey: Self.feedKey, season: 1)
 
+        // Les 300 plus récents sont gardés — le flux les publie en tête —, et rendus à
+        // l'endroit : le plus ancien des 300 d'abord.
         #expect(episodes.count == RSSEpisodeProvider.maxEpisodes)
-        #expect(episodes.first?.title == "Épisode 1")
-        #expect(episodes.last?.title == "Épisode \(RSSEpisodeProvider.maxEpisodes)")
+        #expect(episodes.first?.title == "Épisode \(RSSEpisodeProvider.maxEpisodes)")
+        #expect(episodes.last?.title == "Épisode 1")
     }
 
     @Test func anEmptyFeedHasNoEpisodeAndNoSeason() async throws {

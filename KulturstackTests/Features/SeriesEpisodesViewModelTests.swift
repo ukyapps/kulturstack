@@ -599,4 +599,58 @@ struct SeriesEpisodesViewModelTests {
         #expect(viewModel.didFailToCheck)
         #expect(viewModel.watchStatus == .inProgress)
     }
+
+    // « Je suis pas obligée de commencer par le premier podcast » (founder, 30/09). Le plan de
+    // la tranche disait déjà de ne pas mettre la carte : elle était passée quand même.
+    @Test func aPodcastNeverAnnouncesANextEpisode() async throws {
+        let context = container.mainContext
+        let media = SwiftDataMediaRepository(context: context)
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        try media.add(podcast, refs: [ExternalRef(provider: "feed", value: "https://exemple.fr/flux.xml")])
+        let provider = StubEpisodeProvider(
+            key: "feed:https://exemple.fr/flux.xml",
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 3)]),
+            episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0, externalID: "guid-\($0)") })])
+        let useCase = EpisodeUseCase(repository: SwiftDataEpisodeRepository(context: context),
+                                     providers: [provider],
+                                     log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+                                     edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        let status = WatchStatusUseCase(
+            log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+            edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        let viewModel = SeriesEpisodesViewModel(itemID: podcast.id, repository: media,
+                                                useCase: useCase, status: status)
+
+        await viewModel.load()
+
+        #expect(viewModel.next == nil)
+        #expect(try rows(viewModel.episodes[1]).count == 3)
+    }
+
+    // « Jusqu'ici » veut dire « celui-ci et tous les plus anciens » : c'est le sens de la
+    // liste depuis le 30/09, et celui dans lequel on rattrape un podcast.
+    @Test func checkingUpToOnAPodcastChecksTheOlderEpisodes() async throws {
+        let context = container.mainContext
+        let media = SwiftDataMediaRepository(context: context)
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        try media.add(podcast, refs: [ExternalRef(provider: "feed", value: "https://exemple.fr/flux.xml")])
+        let provider = StubEpisodeProvider(
+            key: "feed:https://exemple.fr/flux.xml",
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 4)]),
+            episodes: [1: .success((1...4).map { StubEpisodeProvider.episode($0, externalID: "guid-\($0)") })])
+        let useCase = EpisodeUseCase(repository: SwiftDataEpisodeRepository(context: context),
+                                     providers: [provider],
+                                     log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+                                     edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        let status = WatchStatusUseCase(
+            log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+            edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        let viewModel = SeriesEpisodesViewModel(itemID: podcast.id, repository: media,
+                                                useCase: useCase, status: status)
+        await viewModel.load()
+
+        viewModel.checkUpTo(episode: 3, in: 1)
+
+        #expect(try rows(viewModel.episodes[1]).map(\.isWatched) == [true, true, true, false])
+    }
 }

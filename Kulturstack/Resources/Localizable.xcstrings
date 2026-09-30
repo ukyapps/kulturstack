@@ -2316,6 +2316,23 @@
         }
       }
     },
+    "podcast.episodes.undated": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undated"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sans date"
+          }
+        }
+      }
+    },
     "podcast.next.hint": {
       "localizations": {
         "en": {

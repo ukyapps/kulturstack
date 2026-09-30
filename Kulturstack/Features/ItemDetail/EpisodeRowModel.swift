@@ -5,6 +5,8 @@ struct EpisodeRowModel: Identifiable, Equatable {
     let label: String
     let detail: String?
     let isWatched: Bool
+    // L'année de diffusion : c'est par elle qu'un podcast se range, faute de saison.
+    let year: Int?
     // « Tout cocher jusqu'ici » n'a de sens que s'il reste quelque chose à combler derrière —
     // ailleurs, le bouton serait du bruit. Un appui long ne se trouve pas (founder, 27/09).
     let canCheckUpTo: Bool
@@ -19,6 +21,7 @@ struct EpisodeRowModel: Identifiable, Equatable {
                            isNumbered: episode.externalID == nil)
         detail = Self.detail(airDate: episode.airDate, runtime: episode.runtimeMinutes)
         isWatched = episode.isWatched
+        year = episode.airDate.map { Calendar.current.component(.year, from: $0) }
         canCheckUpTo = episode.season?.orderedEpisodes
             .contains { $0.number < episode.number && !$0.isWatched } ?? false
     }

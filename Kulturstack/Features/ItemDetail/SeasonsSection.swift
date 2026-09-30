@@ -168,10 +168,14 @@ struct SeasonsSection: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Un podcast n'a pas d'en-tête de saison où poser le bouton : il le garde ici.
                 if !viewModel.kind.showsSeasons { wholeSeason(season, compact: false) }
-                ForEach(rows) { row in
-                    EpisodeRow(model: row,
-                               toggle: { viewModel.toggle(episode: row.number, in: season.number) },
-                               checkUpTo: { viewModel.checkUpTo(episode: row.number, in: season.number) })
+                if viewModel.kind.showsSeasons {
+                    episodeRows(rows, in: season.number)
+                } else {
+                    // Un flux n'a pas de saison : ses épisodes se rangent par année.
+                    ForEach(EpisodeYearGroup.group(rows)) { group in
+                        SectionHeader(title: group.title)
+                        episodeRows(group.rows, in: season.number)
+                    }
                 }
             }
             .sensoryFeedback(.selection, trigger: season.watchedCount)
@@ -191,6 +195,14 @@ struct SeasonsSection: View {
             .padding(.vertical, Spacing.s)
         case .loading, .none:
             ProgressView().frame(maxWidth: .infinity).padding(.vertical, Spacing.s)
+        }
+    }
+
+    private func episodeRows(_ rows: [EpisodeRowModel], in season: Int) -> some View {
+        ForEach(rows) { row in
+            EpisodeRow(model: row,
+                       toggle: { viewModel.toggle(episode: row.number, in: season) },
+                       checkUpTo: { viewModel.checkUpTo(episode: row.number, in: season) })
         }
     }
 
