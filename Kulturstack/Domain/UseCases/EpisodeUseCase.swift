@@ -45,6 +45,14 @@ struct EpisodeUseCase {
         return season
     }
 
+    // Ouvrir une saison à partir de son seul numéro : ce qu'il faut pour cocher le premier
+    // épisode d'une saison suivante sans passer par la fiche. Rend nil quand la source ne la
+    // connaît pas — une saison annoncée par la fiche mais absente du catalogue.
+    func openSeason(_ number: Int, of item: MediaItem) async throws -> Season? {
+        guard let summary = try await seasons(of: item).first(where: { $0.number == number }) else { return nil }
+        return try await open(summary, of: item)
+    }
+
     // Cocher = un log `done` daté maintenant qui porte l'épisode. Décocher = supprimer ce log.
     func toggle(_ episode: Episode, of item: MediaItem, now: Date = .now) throws {
         let watched = episode.logs.filter { $0.item?.id == item.id }

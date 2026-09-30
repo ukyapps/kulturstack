@@ -1113,6 +1113,23 @@
         }
       }
     },
+    "inprogress.next.season %lld %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next: S%1$lld E%2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prochain : S%1$lld E%2$lld"
+          }
+        }
+      }
+    },
     "inprogress.progress %lld %lld %lld": {
       "localizations": {
         "en": {
