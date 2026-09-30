@@ -62,4 +62,40 @@ struct InProgressRowModelTests {
 
         #expect(InProgressRowModel(item: book).progress == nil)
     }
+
+    // « Ça devrait afficher la saison suivante » (founder, 30/09). Une saison finie ne vide
+    // pas la ligne : elle annonce la saison d'après, et le dit — « E1 » tout seul laisserait
+    // croire qu'on recommence la série depuis le début.
+    @Test func aFinishedSeasonAnnouncesTheNextOneWithItsNumber() throws {
+        let item = try series(episodes: 3, watched: [1, 2, 3], season: 1)
+        try item.setDetails(SeriesDetails(seasonCount: 2))
+
+        let row = InProgressRowModel(item: item)
+
+        let next = try #require(row.next)
+        #expect((next.season, next.number) == (2, 1))
+        // Comparer deux String(localized:) ne prouverait rien : si la clé n'existe pas, les
+        // deux côtés rendent la clé et le test passe. On vérifie que la phrase est traduite.
+        #expect(next.label.contains("S2"))
+        #expect(next.label.contains("E1"))
+        #expect(next.label == String(localized: "inprogress.next.season \(2) \(1)"))
+    }
+
+    // Dans la même saison, la ligne reste courte : la saison est déjà dans la progression.
+    @Test func insideTheSameSeasonTheLineOnlyNamesTheEpisode() throws {
+        let row = InProgressRowModel(item: try series(episodes: 3, watched: [1]))
+
+        let next = try #require(row.next)
+        #expect(next.label.contains("E2"))
+        #expect(!next.label.contains("S2"))
+        #expect(next.label == String(localized: "inprogress.next \(2)"))
+    }
+
+    // Une série finie pour de bon n'annonce rien : la ligne propose « Terminé ».
+    @Test func theLastSeasonFinishedLeavesNoNextToAnnounce() throws {
+        let item = try series(episodes: 3, watched: [1, 2, 3], season: 1)
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+
+        #expect(InProgressRowModel(item: item).next == nil)
+    }
 }

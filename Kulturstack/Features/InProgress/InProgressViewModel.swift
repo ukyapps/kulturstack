@@ -39,7 +39,7 @@ final class InProgressViewModel {
     // Le Journal fait la même chose par le même chemin.
     func advance(_ row: InProgressRowModel) async {
         do {
-            try advanceUseCase.advance(itemID: row.itemID)
+            try await advanceUseCase.advance(itemID: row.itemID)
             didFailToAdvance = false
         } catch {
             didFailToAdvance = true

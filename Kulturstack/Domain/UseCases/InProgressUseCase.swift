@@ -25,7 +25,34 @@ struct InProgressUseCase {
         followable(item).last { $0.isWatched }
     }
 
+    // Où se trouve la suite, même quand sa saison n'a jamais été ouverte. L'écran « En cours »
+    // ne va pas sur le réseau — il ferait dix appels à son ouverture —, mais il n'a pas besoin
+    // d'y aller : le nombre de saisons est déjà rangé dans la fiche depuis son enrichissement.
+    struct NextUp: Equatable {
+        let season: Int
+        let number: Int
+        // Nil quand la saison n'est pas encore en base : c'est le ✓ qui ira la chercher.
+        let episode: Episode?
+    }
+
+    nonisolated static func nextUp(for item: MediaItem) -> NextUp? {
+        if let episode = next(for: item) {
+            return NextUp(season: episode.season?.number ?? 0, number: episode.number, episode: episode)
+        }
+        // Tout ce qu'on connaît est vu. Sans savoir combien de saisons existent, on ne devine
+        // pas : mieux vaut proposer « Terminé » qu'inventer une saison qui n'existe pas.
+        guard let known = knownSeasons(item).map(\.number).max(),
+              let total = (item.details as? SeriesDetails)?.seasonCount,
+              known < total else { return nil }
+        return NextUp(season: known + 1, number: 1, episode: nil)
+    }
+
     nonisolated private static func followable(_ item: MediaItem) -> [Episode] {
-        item.orderedSeasons.filter { $0.number > 0 }.flatMap(\.orderedEpisodes)
+        knownSeasons(item).flatMap(\.orderedEpisodes)
+    }
+
+    // Une saison créée sans ses épisodes ne compte pas pour connue : elle ne dit rien.
+    nonisolated private static func knownSeasons(_ item: MediaItem) -> [Season] {
+        item.orderedSeasons.filter { $0.number > 0 && !$0.episodes.isEmpty }
     }
 }
