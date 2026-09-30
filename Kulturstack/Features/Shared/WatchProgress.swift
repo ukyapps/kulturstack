@@ -16,8 +16,15 @@ struct WatchProgress: Equatable {
     struct Next: Equatable {
         let season: Int
         let number: Int
+        // Quand la suite change de saison, « E1 » tout seul laisserait croire qu'on
+        // recommence la série : la ligne dit alors la saison aussi.
+        let showsSeason: Bool
 
-        var label: String { String(localized: "inprogress.next \(number)") }
+        var label: String {
+            showsSeason
+                ? String(localized: "inprogress.next.season \(season) \(number)")
+                : String(localized: "inprogress.next \(number)")
+        }
     }
 
     let position: Position?
@@ -26,9 +33,10 @@ struct WatchProgress: Equatable {
     // Rien de commencé et rien à suivre : il n'y a pas de progression, pas même vide.
     init?(item: MediaItem) {
         guard item.kind.hasEpisodes else { return nil }
-        position = InProgressUseCase.lastWatched(of: item).flatMap(Self.position)
-        next = InProgressUseCase.next(for: item).map {
-            Next(season: $0.season?.number ?? 0, number: $0.number)
+        let seen = InProgressUseCase.lastWatched(of: item).flatMap(Self.position)
+        position = seen
+        next = InProgressUseCase.nextUp(for: item).map {
+            Next(season: $0.season, number: $0.number, showsSeason: $0.season != seen?.season)
         }
         if position == nil && next == nil { return nil }
     }

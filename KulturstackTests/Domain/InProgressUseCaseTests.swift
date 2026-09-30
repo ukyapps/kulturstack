@@ -168,4 +168,70 @@ struct InProgressUseCaseTests {
         #expect(InProgressUseCase.next(for: item)?.number == 2)
         #expect(InProgressUseCase.lastWatched(of: item)?.number == 4)
     }
+
+    // MARK: - La saison suivante, jamais ouverte
+
+    // « Quand je finis une saison, dans en cours, ça fait disparaître la série alors que ça
+    // devrait afficher la saison suivante » (founder, 30/09). L'onglet ne va pas sur le
+    // réseau : c'est le nombre de saisons, déjà rangé dans la fiche, qui le lui apprend.
+    @Test func theNextEpisodeMovesToTheFollowingSeasonEvenWhenItWasNeverOpened() throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 2))
+        let one = try season(1, of: item, episodes: 3)
+        try watch([1, 2, 3], of: one, item: item)
+
+        let next = try #require(InProgressUseCase.nextUp(for: item))
+        #expect(next.season == 2)
+        #expect(next.number == 1)
+        // Elle n'existe pas encore en base : c'est le ✓ qui la chargera.
+        #expect(next.episode == nil)
+    }
+
+    // Sans savoir combien de saisons existent, on ne devine pas : mieux vaut « Terminé »
+    // qu'une saison 2 inventée.
+    @Test func withoutKnowingHowManySeasonsExistThereIsNoNextAfterTheLastKnownOne() throws {
+        let item = work("Severance")
+        let one = try season(1, of: item, episodes: 3)
+        try watch([1, 2, 3], of: one, item: item)
+
+        #expect(InProgressUseCase.nextUp(for: item) == nil)
+    }
+
+    @Test func theLastSeasonFinishedReallyHasNoNext() throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 2))
+        let one = try season(1, of: item, episodes: 2)
+        let two = try season(2, of: item, episodes: 2)
+        try watch([1, 2], of: one, item: item)
+        try watch([1, 2], of: two, item: item)
+
+        #expect(InProgressUseCase.nextUp(for: item) == nil)
+    }
+
+    // Un trou dans une saison connue passe avant la saison suivante : on ne saute rien.
+    @Test func aHoleInAKnownSeasonComesBeforeTheFollowingSeason() throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 2))
+        let one = try season(1, of: item, episodes: 3)
+        try watch([1, 3], of: one, item: item)
+
+        let next = try #require(InProgressUseCase.nextUp(for: item))
+        #expect(next.season == 1)
+        #expect(next.number == 2)
+        #expect(next.episode != nil)
+    }
+
+    // Une saison en base mais vide (créée sans ses épisodes) ne compte pas comme connue.
+    @Test func anEmptySeasonDoesNotPassForAKnownOne() throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 3))
+        let one = try season(1, of: item, episodes: 2)
+        try watch([1, 2], of: one, item: item)
+        let two = try Season.make(number: 2, item: item)
+        context.insert(two)
+        try context.save()
+
+        let next = try #require(InProgressUseCase.nextUp(for: item))
+        #expect(next.season == 2)
+    }
 }

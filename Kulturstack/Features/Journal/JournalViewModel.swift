@@ -46,7 +46,7 @@ final class JournalViewModel {
     func advance(_ row: JournalRowModel) async {
         guard let advanceUseCase, let itemID = row.itemID else { return }
         do {
-            try advanceUseCase.advance(itemID: itemID)
+            try await advanceUseCase.advance(itemID: itemID)
             didFailToAdvance = false
         } catch {
             didFailToAdvance = true
