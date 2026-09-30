@@ -234,4 +234,58 @@ struct InProgressUseCaseTests {
         let next = try #require(InProgressUseCase.nextUp(for: item))
         #expect(next.season == 2)
     }
+
+    // MARK: - Un podcast se reprend par l'autre bout
+
+    // « On écoute un podcast par le plus récent, pas par le premier non écouté » — la liste
+    // va du plus ancien au plus récent depuis le 30/09, donc la suite est le dernier non coché.
+    @Test func theNextEpisodeOfAPodcastIsTheMostRecentNotListened() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        for number in 1...4 {
+            context.insert(Episode(number: number, title: "Épisode \(number)",
+                                   externalID: "guid-\(number)", season: season))
+        }
+        try context.save()
+        for episode in season.orderedEpisodes where episode.number == 2 {
+            context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
+        }
+        try context.save()
+
+        let next = try #require(InProgressUseCase.nextUp(for: podcast))
+
+        // Le 4 est le plus récent du flux : c'est lui qu'on écoute, pas le 1 qu'on a sauté.
+        #expect(next.number == 4)
+        #expect(next.episode?.title == "Épisode 4")
+    }
+
+    // Une série, elle, comble ses trous : le 1 sauté passe avant le 4.
+    @Test func aSeriesStillFillsItsHolesFirst() throws {
+        let item = work("Severance")
+        let one = try season(1, of: item, episodes: 4)
+        try watch([2], of: one, item: item)
+
+        #expect(InProgressUseCase.nextUp(for: item)?.number == 1)
+    }
+
+    @Test func aPodcastEntirelyListenedHasNoNext() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        for number in 1...2 {
+            context.insert(Episode(number: number, externalID: "guid-\(number)", season: season))
+        }
+        try context.save()
+        for episode in season.orderedEpisodes {
+            context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
+        }
+        try context.save()
+
+        #expect(InProgressUseCase.nextUp(for: podcast) == nil)
+    }
 }

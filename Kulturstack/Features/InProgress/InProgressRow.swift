@@ -35,6 +35,8 @@ struct InProgressRow: View {
     }
 
     // Une série a une suite à cocher ; un livre, ou une série arrivée au bout, se termine.
+    // Un podcast, lui, ne se termine pas : il publiera encore la semaine prochaine, et sa
+    // ligne n'offre rien quand tout ce que le flux contient a été écouté.
     @ViewBuilder private var action: some View {
         if let next = model.next {
             Button(action: onAdvance) {
@@ -47,7 +49,7 @@ struct InProgressRow: View {
             .buttonStyle(.press)
             .accessibilityLabel(next.label)
             .accessibilityHint(String(localized: "inprogress.advance.hint"))
-        } else {
+        } else if model.kind.hasAnEnd {
             Button(String(localized: "inprogress.finish"), action: onFinish)
                 .buttonStyle(.bordered)
                 .font(.subheadline.weight(.semibold))

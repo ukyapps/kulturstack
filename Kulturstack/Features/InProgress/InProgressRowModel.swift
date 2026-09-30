@@ -18,7 +18,8 @@ struct InProgressRowModel: Identifiable, Equatable {
         coverURL = item.coverURL
         let watch = WatchProgress(item: item)
         // Sans épisode vu, il n'y a rien à dire de plus précis que le type de l'œuvre.
-        detail = watch?.position?.label ?? item.kind.label
+        // Une série dit sa position dans sa saison, un podcast ce qu'il a écouté.
+        detail = watch?.position?.label ?? watch?.summary ?? item.kind.label
         progress = watch?.position
         next = watch?.next
     }

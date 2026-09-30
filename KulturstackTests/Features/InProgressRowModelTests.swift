@@ -98,4 +98,49 @@ struct InProgressRowModelTests {
 
         #expect(InProgressRowModel(item: item).next == nil)
     }
+
+    // MARK: - La ligne d'un podcast
+
+    private func podcast(episodes count: Int, listened: [Int]) throws -> MediaItem {
+        let context = container.mainContext
+        let item = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(item)
+        let season = try Season.make(number: 1, item: item)
+        context.insert(season)
+        for number in 1...count {
+            context.insert(Episode(number: number, title: "Épisode \(number)",
+                                   externalID: "guid-\(number)", season: season))
+        }
+        try context.save()
+        for episode in season.orderedEpisodes where listened.contains(episode.number) {
+            context.insert(try LogEntry.make(item: item, status: .done, episode: episode))
+        }
+        try context.save()
+        return item
+    }
+
+    // « S1 · E3 sur 96 » ne veut rien dire pour un flux : un éditeur le tronque quand il veut,
+    // et le total ne mesure rien. La ligne dit ce qui est vrai — combien on en a écoutés.
+    @Test func aPodcastCountsWhatItListenedToInsteadOfDrawingABar() throws {
+        let row = InProgressRowModel(item: try podcast(episodes: 20, listened: [1, 2, 5]))
+
+        #expect(row.progress == nil)
+        #expect(row.detail == String(localized: "inprogress.listened \(3)"))
+    }
+
+    // Un épisode de podcast ne montre pas son rang : il change à chaque publication du flux.
+    @Test func theNextPodcastEpisodeIsNamedNotNumbered() throws {
+        let row = InProgressRowModel(item: try podcast(episodes: 5, listened: [1]))
+
+        let next = try #require(row.next)
+        #expect(next.label == "Épisode 5")
+        #expect(next.number == 5)
+    }
+
+    @Test func aPodcastWithNothingListenedStillSaysItsKind() throws {
+        let row = InProgressRowModel(item: try podcast(episodes: 3, listened: []))
+
+        #expect(row.progress == nil)
+        #expect(row.detail == MediaKind.podcast.label)
+    }
 }
