@@ -470,4 +470,58 @@ struct SeriesEpisodesViewModelTests {
 
         #expect(viewModel.seasons == .failed)
     }
+
+    // MARK: - Une saison qui sort après coup
+
+    // Le nombre de saisons vient de l'enrichissement, qui n'a lieu qu'une fois. Sans ça, une
+    // série finie resterait finie même après la sortie d'une saison 2 — et l'onglet
+    // « En cours » ne la reverrait jamais.
+    @Test func openingTheFicheLearnsThatANewSeasonCameOut() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 9),
+                                                              StubEpisodeProvider.season(2, episodes: 10)]),
+                                           episodes: [1: .success((1...9).map { StubEpisodeProvider.episode($0) })])
+        let (item, viewModel) = try make(provider)
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+
+        await viewModel.load()
+
+        #expect((item.details as? SeriesDetails)?.seasonCount == 2)
+    }
+
+    // La conséquence, celle qui compte : la série n'est plus « tout vu ».
+    @Test func aSeriesFinishedBeforeANewSeasonIsNoLongerFullyWatched() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 2),
+                                                              StubEpisodeProvider.season(2, episodes: 2)]),
+                                           episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (item, viewModel) = try make(provider)
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+        await viewModel.load()
+        viewModel.checkUpTo(episode: 2, in: 1)
+        #expect(viewModel.watchStatus == .inProgress)
+
+        #expect(WatchStatusUseCase.isFullyWatched(item) == false)
+    }
+
+    // Les spéciaux ne gonflent pas le compte : la saison 0 n'est pas une saison.
+    @Test func theSpecialsAreNotCountedAsASeason() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 9),
+                                                              StubEpisodeProvider.season(0, episodes: 4, isSpecials: true)]),
+                                           episodes: [1: .success((1...9).map { StubEpisodeProvider.episode($0) })])
+        let (item, viewModel) = try make(provider)
+
+        await viewModel.load()
+
+        #expect((item.details as? SeriesDetails)?.seasonCount == 1)
+    }
+
+    // Une source en panne ne doit pas écraser ce qu'on savait par un zéro.
+    @Test func aFailedLoadLeavesTheSeasonCountAlone() async throws {
+        let provider = StubEpisodeProvider(seasons: .failure(HTTPError.status(500)))
+        let (item, viewModel) = try make(provider)
+        try item.setDetails(SeriesDetails(seasonCount: 3))
+
+        await viewModel.load()
+
+        #expect((item.details as? SeriesDetails)?.seasonCount == 3)
+    }
 }
