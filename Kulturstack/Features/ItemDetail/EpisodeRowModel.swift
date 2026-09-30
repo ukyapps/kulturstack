@@ -13,12 +13,19 @@ struct EpisodeRowModel: Identifiable, Equatable {
 
     init(_ episode: Episode) {
         number = episode.number
-        label = episode.title.map { String(localized: "series.episode.titled \(episode.number) \($0)") }
-            ?? String(localized: "series.episode \(episode.number)")
+        // Un épisode identifié par son flux ne montre pas son rang : il change à chaque
+        // publication du podcast, et un rang qui bouge ne veut rien dire.
+        label = Self.label(number: episode.number, title: episode.title,
+                           isNumbered: episode.externalID == nil)
         detail = Self.detail(airDate: episode.airDate, runtime: episode.runtimeMinutes)
         isWatched = episode.isWatched
         canCheckUpTo = episode.season?.orderedEpisodes
             .contains { $0.number < episode.number && !$0.isWatched } ?? false
+    }
+
+    private static func label(number: Int, title: String?, isNumbered: Bool) -> String {
+        guard let title, !title.isEmpty else { return String(localized: "series.episode \(number)") }
+        return isNumbered ? String(localized: "series.episode.titled \(number) \(title)") : title
     }
 
     private static func detail(airDate: Date?, runtime: Int?) -> String? {
