@@ -182,7 +182,7 @@ struct SeriesEpisodesViewModelTests {
         await viewModel.load()
         await viewModel.open(1)
 
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         #expect(try rows(viewModel.episodes[1]).allSatisfy { $0.isWatched })
         #expect(try rows(viewModel.seasons).first?.isComplete == true)
@@ -197,7 +197,7 @@ struct SeriesEpisodesViewModelTests {
         await viewModel.load()
         await viewModel.open(1)
 
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         #expect(viewModel.watchStatus == .done)
     }
@@ -208,7 +208,7 @@ struct SeriesEpisodesViewModelTests {
         let (_, viewModel) = try make(provider)
         await viewModel.load()
         await viewModel.open(1)
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         viewModel.uncheckSeason(1)
 
@@ -219,7 +219,10 @@ struct SeriesEpisodesViewModelTests {
 
     // Une saison qu'on n'a pas dépliée n'a pas d'épisode en mémoire : rien à cocher, rien qui
     // plante. La saison 1 s'ouvre toute seule à l'arrivée sur la fiche, la 2 non.
-    @Test func checkingASeasonThatIsNotOpenChangesNothing() async throws {
+    // Retourné le 30/09 : cocher une saison repliée ne faisait rien, et c'est exactement ce
+    // qu'elle reproche — « quand je ferme l'onglet d'une saison je peux pas ajouter toute la
+    // saison ». Elle se charge maintenant avant d'être cochée.
+    @Test func checkingASeasonThatIsNotOpenLoadsItAndChecksIt() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 3),
                                                               StubEpisodeProvider.season(2, episodes: 3)]),
                                            episodes: [1: .success((1...3).map { StubEpisodeProvider.episode($0) }),
@@ -227,9 +230,11 @@ struct SeriesEpisodesViewModelTests {
         let (_, viewModel) = try make(provider)
         await viewModel.load()
 
-        viewModel.checkSeason(2)
+        await viewModel.checkSeason(2)
 
-        #expect(viewModel.watchStatus == nil)
+        #expect(try rows(viewModel.episodes[2]).allSatisfy { $0.isWatched })
+        // La saison 1 n'est pas vue : la série est en cours, pas finie.
+        #expect(viewModel.watchStatus == .inProgress)
         #expect(viewModel.didFailToCheck == false)
     }
 
@@ -367,7 +372,7 @@ struct SeriesEpisodesViewModelTests {
                             episodes: [1: [1, 2], 2: [1, 2, 3, 4]])
         let (_, viewModel) = try make(stub)
         await viewModel.load()
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
         await viewModel.open(2)
         viewModel.checkUpTo(episode: 2, in: 2)
 
@@ -396,7 +401,7 @@ struct SeriesEpisodesViewModelTests {
                             episodes: [1: [1, 2], 2: [1, 2, 3, 4, 5, 6]])
         let (_, viewModel) = try make(stub)
         await viewModel.load()
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         let next = try #require(viewModel.next)
         #expect((next.season, next.number) == (2, 1))
@@ -407,7 +412,7 @@ struct SeriesEpisodesViewModelTests {
         let (_, viewModel) = try make(provider(seasons: [StubEpisodeProvider.season(1, episodes: 2)],
                                                episodes: [1: [1, 2]]))
         await viewModel.load()
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         #expect(viewModel.next == nil)
     }
@@ -419,7 +424,7 @@ struct SeriesEpisodesViewModelTests {
                             episodes: [1: [1, 2], 0: [1, 2, 3]])
         let (_, viewModel) = try make(stub)
         await viewModel.load()
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         #expect(viewModel.next == nil)
     }
@@ -444,7 +449,7 @@ struct SeriesEpisodesViewModelTests {
                             episodes: [1: [1], 2: [1, 2, 3]])
         let (_, viewModel) = try make(stub)
         await viewModel.load()
-        viewModel.checkSeason(1)
+        await viewModel.checkSeason(1)
 
         await viewModel.checkNext()
 
@@ -523,5 +528,75 @@ struct SeriesEpisodesViewModelTests {
         await viewModel.load()
 
         #expect((item.details as? SeriesDetails)?.seasonCount == 3)
+    }
+
+    // MARK: - Tout cocher sans déplier
+
+    // « Quand je ferme l'onglet d'une saison je peux pas ajouter toute la saison » (founder,
+    // 30/09). Le bouton passe sur l'en-tête, donc il faut charger la saison avant de cocher.
+    @Test func checkingAWholeSeasonNeverOpenedLoadsItFirst() async throws {
+        let provider = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 2),
+                               StubEpisodeProvider.season(2, episodes: 3)]),
+            episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) }),
+                       2: .success((1...3).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+
+        await viewModel.checkSeason(2)
+
+        #expect(try rows(viewModel.episodes[2]).allSatisfy { $0.isWatched })
+        #expect(provider.episodeCalls.map(\.season).contains(2))
+    }
+
+    // MARK: - J'ai tout vu la série
+
+    @Test func checkingTheWholeSeriesChecksEverySeasonAndFinishesIt() async throws {
+        let provider = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 2),
+                               StubEpisodeProvider.season(2, episodes: 2)]),
+            episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) }),
+                       2: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+
+        await viewModel.checkEverything()
+
+        #expect(try rows(viewModel.episodes[1]).allSatisfy { $0.isWatched })
+        #expect(try rows(viewModel.episodes[2]).allSatisfy { $0.isWatched })
+        #expect(viewModel.watchStatus == .done)
+        #expect(viewModel.isCheckingEverything == false)
+    }
+
+    // Les bonus ne font pas partie de la série : « tout vu » ne les coche pas.
+    @Test func theSpecialsAreLeftAloneWhenCheckingTheWholeSeries() async throws {
+        let provider = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 2),
+                               StubEpisodeProvider.season(0, episodes: 2, isSpecials: true)]),
+            episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) }),
+                       0: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+
+        await viewModel.checkEverything()
+
+        #expect(viewModel.watchStatus == .done)
+        #expect(provider.episodeCalls.map(\.season).contains(0) == false)
+    }
+
+    // Une saison que la source ne rend pas : on le dit, et la série n'est pas déclarée finie.
+    @Test func aSeasonThatFailsToLoadKeepsTheSeriesUnfinished() async throws {
+        let provider = StubEpisodeProvider(
+            seasons: .success([StubEpisodeProvider.season(1, episodes: 2),
+                               StubEpisodeProvider.season(2, episodes: 2)]),
+            episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) }),
+                       2: .failure(HTTPError.status(500))])
+        let (_, viewModel) = try make(provider)
+        await viewModel.load()
+
+        await viewModel.checkEverything()
+
+        #expect(viewModel.didFailToCheck)
+        #expect(viewModel.watchStatus == .inProgress)
     }
 }
