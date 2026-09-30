@@ -61,6 +61,8 @@ final class SeriesEpisodesViewModel {
         do {
             summaries = try await useCase.seasons(of: item)
             seasons = summaries.isEmpty ? .empty : .loaded(seasonRows())
+            rememberSeasonCount(of: item)
+            watchStatus = WatchStatusUseCase.status(of: item)
         } catch {
             seasons = .failed
             return
@@ -153,6 +155,25 @@ final class SeriesEpisodesViewModel {
             onChange()
         } catch {
             didFailToCheck = true
+        }
+    }
+
+    // Le nombre de saisons n'est récupéré qu'une fois, à l'enrichissement de la fiche : une
+    // saison qui sort après coup ne le changerait jamais, et la série resterait « terminée »
+    // pour toujours. La liste qu'on vient de charger fait foi — c'est le seul endroit de
+    // l'app qui la voit fraîche.
+    private func rememberSeasonCount(of item: MediaItem) {
+        guard item.kind == .series else { return }
+        let count = summaries.filter { !$0.isSpecials }.count
+        guard count > 0 else { return }
+        var details = (item.details as? SeriesDetails) ?? SeriesDetails()
+        guard details.seasonCount != count else { return }
+        details.seasonCount = count
+        do {
+            try item.setDetails(details)
+            try repository.save()
+        } catch {
+            // Un compte pas rangé n'empêche pas de regarder la série : la fiche s'affiche.
         }
     }
 
