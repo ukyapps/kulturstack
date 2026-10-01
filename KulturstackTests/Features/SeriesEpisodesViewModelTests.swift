@@ -653,4 +653,85 @@ struct SeriesEpisodesViewModelTests {
 
         #expect(try rows(viewModel.episodes[1]).map(\.isWatched) == [true, true, true, false])
     }
+
+    // MARK: - Une année de podcast se coche comme une saison
+
+    private func podcastViewModel(_ episodes: [(Int, Int)]) throws -> (MediaItem, SeriesEpisodesViewModel) {
+        let context = container.mainContext
+        let media = SwiftDataMediaRepository(context: context)
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        try media.add(podcast, refs: [ExternalRef(provider: "feed", value: "https://exemple.fr/flux.xml")])
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+        let summaries = episodes.enumerated().map { index, pair in
+            EpisodeSummary(number: index + 1, title: "Épisode \(index + 1)",
+                           airDate: calendar.date(from: DateComponents(year: pair.0, month: pair.1, day: 12)),
+                           runtimeMinutes: 20, externalID: "guid-\(index + 1)")
+        }
+        let provider = StubEpisodeProvider(key: "feed:https://exemple.fr/flux.xml",
+                                           seasons: .success([StubEpisodeProvider.season(1, episodes: episodes.count)]),
+                                           episodes: [1: .success(summaries)])
+        let useCase = EpisodeUseCase(repository: SwiftDataEpisodeRepository(context: context),
+                                     providers: [provider],
+                                     log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+                                     edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        let status = WatchStatusUseCase(
+            log: LogUseCase(repository: media, dedup: DedupUseCase(repository: media)),
+            edit: EditLogUseCase(repository: SwiftDataLogRepository(context: context)))
+        return (podcast, SeriesEpisodesViewModel(itemID: podcast.id, repository: media,
+                                                 useCase: useCase, status: status))
+    }
+
+    // « Chaque année traitée comme une saison, avec l'option tout cocher » (founder, 01/10).
+    @Test func checkingAYearChecksOnlyThatYear() async throws {
+        let (_, viewModel) = try podcastViewModel([(2024, 3), (2024, 9), (2025, 1), (2026, 4)])
+        await viewModel.load()
+
+        viewModel.checkYear(2024, in: 1)
+
+        #expect(try rows(viewModel.episodes[1]).map(\.isWatched) == [true, true, false, false])
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    @Test func uncheckingAYearLeavesTheOthersAlone() async throws {
+        let (_, viewModel) = try podcastViewModel([(2024, 3), (2025, 1), (2025, 9)])
+        await viewModel.load()
+        viewModel.checkYear(2024, in: 1)
+        viewModel.checkYear(2025, in: 1)
+
+        viewModel.uncheckYear(2025, in: 1)
+
+        #expect(try rows(viewModel.episodes[1]).map(\.isWatched) == [true, false, false])
+    }
+
+    // Un podcast n'a pas de fin : tout écouter ne le termine pas.
+    @Test func checkingEveryYearDoesNotFinishAPodcast() async throws {
+        let (_, viewModel) = try podcastViewModel([(2025, 1), (2026, 4)])
+        await viewModel.load()
+
+        viewModel.checkYear(2025, in: 1)
+        viewModel.checkYear(2026, in: 1)
+
+        #expect(viewModel.watchStatus == .inProgress)
+    }
+
+    // C'est l'année la plus récente qu'on écoute : c'est elle qui s'ouvre.
+    @Test func theLatestYearIsTheOneThatOpens() async throws {
+        let (_, viewModel) = try podcastViewModel([(2024, 3), (2025, 1), (2026, 4)])
+
+        await viewModel.load()
+
+        #expect(viewModel.latestYear == 2026)
+    }
+
+    // Une série n'a pas d'année qui s'ouvre : ce sont ses saisons qui comptent.
+    @Test func aSeriesHasNoLatestYear() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 2)]),
+                                           episodes: [1: .success((1...2).map { StubEpisodeProvider.episode($0) })])
+        let (_, viewModel) = try make(provider)
+
+        await viewModel.load()
+
+        #expect(viewModel.latestYear == nil)
+    }
 }

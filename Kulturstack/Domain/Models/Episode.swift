@@ -40,5 +40,9 @@ extension KulturstackSchemaV3 {
 
         // Coché = il existe un log « vu » qui porte cet épisode.
         var isWatched: Bool { logs.contains { $0.status == .done } }
+
+        // L'année de diffusion. Un flux de podcast n'a ni saison ni numéro stable : c'est par
+        // l'année que ses épisodes se rangent, et c'est elle qui tient lieu de saison à l'écran.
+        var year: Int? { airDate.map { Calendar.current.component(.year, from: $0) } }
     }
 }

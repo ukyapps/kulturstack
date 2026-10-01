@@ -68,4 +68,51 @@ struct EpisodeYearGroupTests {
 
         #expect(groups.map(\.year) == [2026, nil, 2026])
     }
+
+    // Une année se lit comme une saison : combien sur combien, et finie ou non.
+    @Test func aYearReportsItsProgressLikeASeason() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        for (index, date) in [day(2025, 1, 5), day(2025, 6, 1), day(2026, 2, 2)].enumerated() {
+            context.insert(Episode(number: index + 1, title: "Épisode \(index + 1)", airDate: date,
+                                   externalID: "guid-\(index + 1)", season: season))
+        }
+        try context.save()
+        let first = try #require(season.orderedEpisodes.first)
+        context.insert(try LogEntry.make(item: podcast, status: .done, episode: first))
+        try context.save()
+
+        let groups = EpisodeYearGroup.group(season.orderedEpisodes.map(EpisodeRowModel.init))
+
+        #expect(groups.map(\.year) == [2025, 2026])
+        #expect(groups[0].watchedCount == 1)
+        #expect(groups[0].isComplete == false)
+        #expect(groups[0].progress == String(localized: "podcast.year.progress \(1) \(2)"))
+        #expect(groups[1].progress == String(localized: "detail.episodes \(1)"))
+    }
+
+    @Test func aYearEntirelyListenedIsComplete() throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let season = try Season.make(number: 1, item: podcast)
+        context.insert(season)
+        for index in 1...2 {
+            context.insert(Episode(number: index, airDate: day(2025, index, 1),
+                                   externalID: "guid-\(index)", season: season))
+        }
+        try context.save()
+        for episode in season.orderedEpisodes {
+            context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
+        }
+        try context.save()
+
+        let groups = EpisodeYearGroup.group(season.orderedEpisodes.map(EpisodeRowModel.init))
+
+        #expect(groups.count == 1)
+        #expect(groups[0].isComplete)
+    }
 }

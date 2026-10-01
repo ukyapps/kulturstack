@@ -21,7 +21,7 @@ struct EpisodeRowModel: Identifiable, Equatable {
                            isNumbered: episode.externalID == nil)
         detail = Self.detail(airDate: episode.airDate, runtime: episode.runtimeMinutes)
         isWatched = episode.isWatched
-        year = episode.airDate.map { Calendar.current.component(.year, from: $0) }
+        year = episode.year
         canCheckUpTo = episode.season?.orderedEpisodes
             .contains { $0.number < episode.number && !$0.isWatched } ?? false
     }
