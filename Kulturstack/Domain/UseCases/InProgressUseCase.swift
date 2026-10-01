@@ -4,15 +4,33 @@ import Foundation
 struct InProgressUseCase {
     let repository: any LogRepository
 
-    // Une œuvre est en cours tant que son dernier log qui parle d'elle dit « en cours ».
-    // La plus récemment commencée d'abord : c'est celle qu'on reprend ce soir.
+    // Ce qu'on reprend ce soir : ce qui est en cours, et ce qu'on avait fini mais qui a
+    // repris. La plus récemment touchée d'abord.
     func items() async throws -> [MediaItem] {
         var seen = Set<UUID>()
         return try await repository.fetchAll()
-            .filter { $0.status == .inProgress && $0.episode == nil }
+            .filter { $0.episode == nil && ($0.status == .inProgress || $0.status == .done) }
             .compactMap(\.item)
             .filter { seen.insert($0.id).inserted }
-            .filter { WatchStatusUseCase.status(of: $0) == .inProgress }
+            .filter(Self.isFollowed)
+    }
+
+    // « C'est pas dans suivi que ça apparaît juste quand y'a une suite ? » (founder, 30/09) :
+    // une série finie revient quand une saison **de plus** est apparue — tout ce qu'on
+    // connaissait est vu, et il en existe une qu'on n'a jamais ouverte.
+    //
+    // Une série qu'elle a dite finie en laissant des épisodes derrière reste finie : c'est un
+    // choix, pas un oubli. Une série abandonnée ne revient jamais, par le même raisonnement.
+    nonisolated static func isFollowed(_ item: MediaItem) -> Bool {
+        switch WatchStatusUseCase.status(of: item) {
+        case .inProgress:
+            return true
+        case .done:
+            guard item.kind.isFollowedInOrder, let next = nextUp(for: item) else { return false }
+            return next.episode == nil
+        default:
+            return false
+        }
     }
 
     // La suite, c'est le premier épisode non coché — un trou au milieu passe avant ce qui suit
