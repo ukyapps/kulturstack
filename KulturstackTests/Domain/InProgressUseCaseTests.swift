@@ -288,4 +288,80 @@ struct InProgressUseCaseTests {
 
         #expect(InProgressUseCase.nextUp(for: podcast) == nil)
     }
+
+    // MARK: - Une série finie qui a du nouveau
+
+    // « C'est pas dans suivi que ça apparaît juste quand y'a une suite ? » (founder, 30/09).
+    // Une saison de plus, et la série revient dans l'onglet, sans écran ni bandeau en plus.
+    @Test func aFinishedSeriesComesBackWhenASeasonAppears() async throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 2))
+        let one = try season(1, of: item, episodes: 3)
+        try watch([1, 2, 3], of: one, item: item)
+        try status(.done, on: item)
+
+        let items = try await useCase().items()
+
+        #expect(items.map(\.title) == ["Severance"])
+    }
+
+    // Une série qu'elle a dite finie en laissant des épisodes derrière reste finie : c'est un
+    // choix, pas un oubli. Seule une saison **de plus** la fait revenir.
+    @Test func aFinishedSeriesWithEpisodesLeftBehindStaysFinished() async throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+        let one = try season(1, of: item, episodes: 4)
+        try watch([1, 2], of: one, item: item)
+        try status(.done, on: item)
+
+        #expect(try await useCase().items().isEmpty)
+    }
+
+    // Abandonner est un choix explicite : trois saisons de plus ne le défont pas.
+    @Test func aDroppedSeriesNeverComesBack() async throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 4))
+        let one = try season(1, of: item, episodes: 2)
+        try watch([1, 2], of: one, item: item)
+        try status(.dropped, on: item)
+
+        #expect(try await useCase().items().isEmpty)
+    }
+
+    @Test func aFinishedSeriesWithNothingNewStaysOut() async throws {
+        let item = work("Severance")
+        try item.setDetails(SeriesDetails(seasonCount: 1))
+        let one = try season(1, of: item, episodes: 3)
+        try watch([1, 2, 3], of: one, item: item)
+        try status(.done, on: item)
+
+        #expect(try await useCase().items().isEmpty)
+    }
+
+    // Un film ou un livre terminé ne revient pas : rien ne sort après coup.
+    @Test func aFinishedFilmNeverComesBack() async throws {
+        let film = work("La Planète sauvage", kind: .film)
+        try status(.done, on: film)
+
+        #expect(try await useCase().items().isEmpty)
+    }
+
+    // Un podcast n'a pas de saison suivante : il publie, ce qui est autre chose.
+    @Test func aFinishedPodcastNeverComesBack() async throws {
+        let context = container.mainContext
+        let podcast = MediaItem(kind: .podcast, title: "Le code a changé")
+        context.insert(podcast)
+        let flux = try Season.make(number: 1, item: podcast)
+        context.insert(flux)
+        for number in 1...2 {
+            context.insert(Episode(number: number, externalID: "guid-\(number)", season: flux))
+        }
+        try context.save()
+        for episode in flux.orderedEpisodes {
+            context.insert(try LogEntry.make(item: podcast, status: .done, episode: episode))
+        }
+        try status(.done, on: podcast)
+
+        #expect(try await useCase().items().isEmpty)
+    }
 }
