@@ -12,13 +12,15 @@ struct AppServices {
     let episodeUseCase: EpisodeUseCase
     let watchStatusUseCase: WatchStatusUseCase
     let inProgressUseCase: InProgressUseCase
+    let refreshSeasonsUseCase: RefreshSeasonsUseCase
     let advanceUseCase: AdvanceUseCase
     let wipeUseCase: WipeUseCase
     let connectivity: any ConnectivityMonitoring
 
     init(context: ModelContext, detailsProviders: [any DetailsProvider] = [],
          episodeProviders: [any EpisodeProvider] = [],
-         connectivity: any ConnectivityMonitoring = NetworkMonitor()) {
+         connectivity: any ConnectivityMonitoring = NetworkMonitor(),
+         refreshHistory: any RefreshHistory = UserDefaultsRefreshHistory()) {
         let logRepository = SwiftDataLogRepository(context: context)
         let mediaRepository = SwiftDataMediaRepository(context: context)
         let dedup = DedupUseCase(repository: mediaRepository)
@@ -33,6 +35,8 @@ struct AppServices {
                                         providers: episodeProviders, log: logUseCase, edit: editUseCase)
         watchStatusUseCase = WatchStatusUseCase(log: logUseCase, edit: editUseCase)
         inProgressUseCase = InProgressUseCase(repository: logRepository)
+        refreshSeasonsUseCase = RefreshSeasonsUseCase(media: mediaRepository, logs: logRepository,
+                                                      episodes: episodeUseCase, history: refreshHistory)
         advanceUseCase = AdvanceUseCase(media: mediaRepository, episodes: episodeUseCase,
                                         status: watchStatusUseCase)
         self.connectivity = connectivity
