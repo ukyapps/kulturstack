@@ -63,6 +63,20 @@ struct EpisodeUseCase {
         try log.log(item, status: .done, date: now, episode: episode)
     }
 
+    // Cocher un ensemble choisi — une année de podcast, par exemple. On ne redouble jamais
+    // ce qui l'est déjà, et décocher ne touche que ce qui est passé en argument.
+    func check(_ episodes: [Episode], of item: MediaItem, now: Date = .now) throws {
+        for episode in episodes where !episode.isWatched {
+            try log.log(item, status: .done, date: now, episode: episode)
+        }
+    }
+
+    func uncheck(_ episodes: [Episode], of item: MediaItem) throws {
+        for episode in episodes {
+            for entry in episode.logs.filter({ $0.item?.id == item.id }) { try edit.delete(entry) }
+        }
+    }
+
     // « Tout cocher jusqu'ici » : on comble les trous de la saison, on ne redouble jamais ce qui l'est déjà.
     func checkUpTo(_ episode: Episode, of item: MediaItem, now: Date = .now) throws {
         guard let season = episode.season else { return }
@@ -80,9 +94,7 @@ struct EpisodeUseCase {
 
     // Décocher une saison ne touche qu'elle : les autres gardent ce qu'elles ont.
     func uncheckAll(_ season: Season, of item: MediaItem) throws {
-        for episode in season.orderedEpisodes {
-            for entry in episode.logs.filter({ $0.item?.id == item.id }) { try edit.delete(entry) }
-        }
+        try uncheck(season.orderedEpisodes, of: item)
     }
 
     // Un épisode de podcast se reconnaît à son identité de flux ; un épisode de série, qui

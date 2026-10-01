@@ -1,9 +1,22 @@
 import SwiftUI
 
 struct SeasonsSection: View {
+    // L'année qu'on s'apprête à décocher, et la saison implicite qui la porte. Un podcast n'en
+    // a qu'une aujourd'hui, mais la coder en dur ici serait un piège pour la prochaine fois.
+    private struct YearToUncheck: Identifiable {
+        let year: Int?
+        let season: Int
+
+        var id: Int { (year ?? 0) * 1000 + season }
+    }
+
     @State private var viewModel: SeriesEpisodesViewModel
     @State private var expanded: Set<Int>
     @State private var uncheckingSeason: Int?
+    // Les années d'un podcast se replient comme les saisons d'une série ; celle où elle en
+    // est — la plus récente — s'ouvre d'elle-même.
+    @State private var expandedYears: Set<Int> = []
+    @State private var uncheckingYear: YearToUncheck?
     @State private var isCheckingEverything = false
 
     private let opened: Set<Int>
@@ -31,12 +44,22 @@ struct SeasonsSection: View {
             // La saison où elle en est s'ouvre d'elle-même : la fiche arrive dépliée au bon endroit.
             if let current = viewModel.currentSeason { expanded.insert(current) }
             for number in opened.sorted() { await viewModel.open(number) }
+            // Pour un podcast, c'est l'année la plus récente : celle qu'on écoute.
+            if let latest = viewModel.latestYear { expandedYears.insert(latest) }
         }
         .alert(String(localized: "series.check.failed"), isPresented: $viewModel.didFailToCheck) {}
         .confirmationDialog(viewModel.kind.uncheckEverythingTitle, isPresented: isUnchecking,
                             titleVisibility: .visible, presenting: uncheckingSeason) { number in
             Button(String(localized: "series.season.uncheckAll"), role: .destructive) {
                 viewModel.uncheckSeason(number)
+            }
+        } message: { _ in
+            Text(viewModel.kind.uncheckEverythingMessage)
+        }
+        .confirmationDialog(viewModel.kind.uncheckEverythingTitle, isPresented: isUncheckingYear,
+                            titleVisibility: .visible, presenting: uncheckingYear) { target in
+            Button(String(localized: "series.season.uncheckAll"), role: .destructive) {
+                viewModel.uncheckYear(target.year, in: target.season)
             }
         } message: { _ in
             Text(viewModel.kind.uncheckEverythingMessage)
@@ -125,7 +148,7 @@ struct SeasonsSection: View {
             // Un podcast n'a qu'une saison, implicite : sa liste s'affiche à plat, sans en-tête
             // ni dépliement. Une série garde ses saisons, qui veulent dire quelque chose.
             if !viewModel.kind.showsSeasons, let only = seasons.first {
-                episodes(of: only)
+                years(of: only)
             } else {
                 ForEach(seasons) { season in
                     DisclosureGroup(isExpanded: binding(for: season.number)) {
@@ -166,17 +189,7 @@ struct SeasonsSection: View {
         switch viewModel.episodes[season.number] {
         case .loaded(let rows):
             VStack(alignment: .leading, spacing: 0) {
-                // Un podcast n'a pas d'en-tête de saison où poser le bouton : il le garde ici.
-                if !viewModel.kind.showsSeasons { wholeSeason(season, compact: false) }
-                if viewModel.kind.showsSeasons {
-                    episodeRows(rows, in: season.number)
-                } else {
-                    // Un flux n'a pas de saison : ses épisodes se rangent par année.
-                    ForEach(EpisodeYearGroup.group(rows)) { group in
-                        SectionHeader(title: group.title)
-                        episodeRows(group.rows, in: season.number)
-                    }
-                }
+                episodeRows(rows, in: season.number)
             }
             .sensoryFeedback(.selection, trigger: season.watchedCount)
         case .empty:
@@ -196,6 +209,79 @@ struct SeasonsSection: View {
         case .loading, .none:
             ProgressView().frame(maxWidth: .infinity).padding(.vertical, Spacing.s)
         }
+    }
+
+    // Un flux n'a pas de saison : ses épisodes se rangent par année, et chaque année se
+    // comporte comme une saison — repliable, cochable d'un bloc, avec sa progression.
+    @ViewBuilder private func years(of season: SeasonRowModel) -> some View {
+        switch viewModel.episodes[season.number] {
+        case .loaded(let rows):
+            VStack(alignment: .leading, spacing: 0) {
+                wholeSeason(season, compact: false)
+                ForEach(EpisodeYearGroup.group(rows)) { group in
+                    DisclosureGroup(isExpanded: yearBinding(for: group.id)) {
+                        episodeRows(group.rows, in: season.number)
+                    } label: {
+                        yearLabel(group, in: season.number)
+                    }
+                    Divider()
+                }
+            }
+            .sensoryFeedback(.selection, trigger: season.watchedCount)
+        default:
+            episodes(of: season)
+        }
+    }
+
+    private func yearLabel(_ group: EpisodeYearGroup, in season: Int) -> some View {
+        HStack(spacing: Spacing.s) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(group.title)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(Color.textPrimary)
+                Text(group.progress)
+                    .font(.caption)
+                    .foregroundStyle(Color.textSecondary)
+            }
+            Spacer(minLength: 0)
+            if group.isComplete {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Color.accent)
+                    .accessibilityLabel(String(localized: "podcast.year.complete"))
+            }
+            wholeYear(group, in: season)
+        }
+        .padding(.vertical, Spacing.xs)
+    }
+
+    @ViewBuilder private func wholeYear(_ group: EpisodeYearGroup, in season: Int) -> some View {
+        Group {
+            if group.isComplete {
+                Button(String(localized: "series.season.uncheckAll.short"), systemImage: "arrow.uturn.backward") {
+                    uncheckingYear = YearToUncheck(year: group.year, season: season)
+                }
+            } else {
+                Button(String(localized: "series.season.checkAll.short"), systemImage: "checkmark.circle") {
+                    viewModel.checkYear(group.year, in: season)
+                }
+            }
+        }
+        .buttonStyle(.bordered)
+        .font(.subheadline.weight(.semibold))
+        .labelStyle(.titleOnly)
+    }
+
+    private func yearBinding(for id: Int) -> Binding<Bool> {
+        Binding(
+            get: { expandedYears.contains(id) },
+            set: { isOpen in
+                if isOpen {
+                    expandedYears.insert(id)
+                } else {
+                    expandedYears.remove(id)
+                }
+            }
+        )
     }
 
     private func episodeRows(_ rows: [EpisodeRowModel], in season: Int) -> some View {
@@ -231,6 +317,10 @@ struct SeasonsSection: View {
         .font(.subheadline.weight(.semibold))
         .labelStyle(.titleOnly)
         .padding(.vertical, compact ? 0 : Spacing.s)
+    }
+
+    private var isUncheckingYear: Binding<Bool> {
+        Binding(get: { uncheckingYear != nil }, set: { if !$0 { uncheckingYear = nil } })
     }
 
     private var isUnchecking: Binding<Bool> {

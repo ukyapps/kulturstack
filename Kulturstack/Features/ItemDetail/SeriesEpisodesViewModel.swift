@@ -137,6 +137,24 @@ final class SeriesEpisodesViewModel {
         performSeason(number) { try useCase.uncheckAll($1, of: $0) }
     }
 
+    // Une année de podcast se coche et se décoche comme une saison : c'est ce qu'elle est à
+    // l'écran. Le flux étant déjà chargé en entier, rien ne part sur le réseau.
+    func checkYear(_ year: Int?, in season: Int) {
+        performYear(year, in: season) { try useCase.check($1, of: $0) }
+    }
+
+    func uncheckYear(_ year: Int?, in season: Int) {
+        performYear(year, in: season) { try useCase.uncheck($1, of: $0) }
+    }
+
+    private func performYear(_ year: Int?, in season: Int,
+                             _ action: (MediaItem, [Episode]) throws -> Void) {
+        guard let stored = stored[season] else { return }
+        let episodes = stored.orderedEpisodes.filter { $0.year == year }
+        guard !episodes.isEmpty else { return }
+        apply(in: season) { try action($0, episodes) }
+    }
+
     func drop() { record { try status.drop($0) } }
 
     func resume() { record { try status.resume($0) } }
@@ -224,6 +242,12 @@ final class SeriesEpisodesViewModel {
         guard let upcoming = summaries.filter({ !$0.isSpecials }).map(\.number).sorted()
             .first(where: { !known.contains($0) }) else { return nil }
         return Next(season: upcoming, number: 1, title: nil)
+    }
+
+    // L'année la plus récente du flux : c'est celle qu'on écoute, donc celle qui s'ouvre.
+    var latestYear: Int? {
+        guard !kind.showsSeasons, case .loaded(let rows) = episodes[1] else { return nil }
+        return EpisodeYearGroup.group(rows).last?.id
     }
 
     private func seasonRows() -> [SeasonRowModel] {

@@ -2414,6 +2414,40 @@
         }
       }
     },
+    "podcast.year.complete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year listened"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Année écoutée"
+          }
+        }
+      }
+    },
+    "podcast.year.progress %lld %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listened: %1$lld / %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écoutés : %1$lld / %2$lld"
+          }
+        }
+      }
+    },
     "privacy.leaves.body": {
       "localizations": {
         "en": {

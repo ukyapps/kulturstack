@@ -1,14 +1,26 @@
 import Foundation
 
-// « Dans les podcasts, ça s'organise pas par saison ? On pourrait le faire par année quand
-// c'est pas rangé par saison » (founder, 30/09). Un flux n'a ni saison ni numéro : l'année de
-// diffusion est le seul repère qu'il donne, et il le donne toujours.
+// « Pour les podcasts, je voudrais que chaque année soit traitée comme une saison, avec
+// l'option tout cocher, et qu'on puisse dérouler et replier » (founder, 01/10).
+//
+// Un flux n'a ni saison ni numéro stable. L'année de diffusion est le seul découpage qu'il
+// porte, et il le porte toujours : elle tient donc lieu de saison — repliable, cochable
+// d'un bloc, avec sa progression, exactement comme une saison de série.
 struct EpisodeYearGroup: Identifiable, Equatable {
     let year: Int?
     let rows: [EpisodeRowModel]
 
     var id: Int { year ?? 0 }
     var title: String { year.map(String.init) ?? String(localized: "podcast.episodes.undated") }
+
+    var watchedCount: Int { rows.filter(\.isWatched).count }
+    var isComplete: Bool { !rows.isEmpty && watchedCount == rows.count }
+
+    var progress: String {
+        watchedCount == 0
+            ? String(localized: "detail.episodes \(rows.count)")
+            : String(localized: "podcast.year.progress \(watchedCount) \(rows.count)")
+    }
 
     // Les épisodes arrivent déjà dans l'ordre de la liste — du plus ancien au plus récent.
     // On découpe là où l'année change, sans jamais réordonner : un épisode sans date reste
