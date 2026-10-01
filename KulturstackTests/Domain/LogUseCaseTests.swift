@@ -185,4 +185,42 @@ struct LogUseCaseTests {
         #expect(try repository.findItem(withAnyKey: ["nope:1"]) == nil)
         #expect(try repository.findItem(withAnyKey: []) == nil)
     }
+
+    // Une œuvre enregistrée sans log n'apparaît nulle part : le Journal, l'Envie et
+    // « En cours » lisent des logs, pas des œuvres. C'est ce qui rend sûr l'enregistrement
+    // à l'ouverture d'une fiche de série.
+    @Test func storingWithoutLoggingLeavesEveryScreenEmpty() async throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        let media = SwiftDataMediaRepository(context: context)
+        let logs = SwiftDataLogRepository(context: context)
+        let useCase = LogUseCase(repository: media, dedup: DedupUseCase(repository: media))
+        let severance = MediaCandidate(id: "tmdb:tv:95396", kind: .series, title: "Severance",
+                                       originalTitle: nil, year: 2022, creators: [], coverURL: nil,
+                                       summary: nil, externalKeys: ["tmdb:tv:95396"],
+                                       details: SeriesDetails(), providerID: "tmdb")
+
+        let item = try useCase.store(severance)
+
+        #expect(item.logs.isEmpty)
+        #expect(try await logs.fetchAll().isEmpty)
+        #expect(try await InProgressUseCase(repository: logs).items().isEmpty)
+        withExtendedLifetime(container) {}
+    }
+
+    @Test func storingTwiceKeepsOneWork() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let media = SwiftDataMediaRepository(context: container.mainContext)
+        let useCase = LogUseCase(repository: media, dedup: DedupUseCase(repository: media))
+        let severance = MediaCandidate(id: "tmdb:tv:95396", kind: .series, title: "Severance",
+                                       originalTitle: nil, year: 2022, creators: [], coverURL: nil,
+                                       summary: nil, externalKeys: ["tmdb:tv:95396"],
+                                       details: SeriesDetails(), providerID: "tmdb")
+
+        let first = try useCase.store(severance)
+        let second = try useCase.store(severance)
+
+        #expect(first.id == second.id)
+        withExtendedLifetime(container) {}
+    }
 }

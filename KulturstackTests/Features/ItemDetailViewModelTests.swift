@@ -168,6 +168,65 @@ struct ItemDetailViewModelTests {
         withExtendedLifetime(container) {}
     }
 
+
+    // MARK: - La fiche d'une série s'ouvre sur ses saisons
+
+    // « Quand je clique sur une fiche, ça me met pas les saisons, je suis obligée de mettre
+    // log » (founder, 01/10). Une série trouvée dans la recherche s'enregistre à l'ouverture
+    // de sa fiche — sans quoi il n'y a rien à cocher.
+    @Test func openingASeriesFromSearchStoresItSoItsSeasonsCanLoad() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let severance = MediaCandidate(id: "tmdb:tv:95396", kind: .series, title: "Severance",
+                                       originalTitle: nil, year: 2022, creators: [], coverURL: nil,
+                                       summary: nil, externalKeys: ["tmdb:tv:95396"],
+                                       details: SeriesDetails(), providerID: "tmdb")
+        let viewModel = ItemDetailViewModel(subject: .candidate(severance), repository: repository,
+                                            logUseCase: logUseCase)
+
+        viewModel.load()
+
+        let stored = try #require(try repository.findItem(withAnyKey: ["tmdb:tv:95396"]))
+        #expect(viewModel.storedItemID == stored.id)
+        // Enregistrée, mais **pas loguée** : rien ne doit apparaître nulle part.
+        #expect(stored.logs.isEmpty)
+        withExtendedLifetime(container) {}
+    }
+
+    // Un film n'a rien à cocher : sa fiche reste un aperçu tant qu'elle n'a pas été loguée.
+    @Test func openingAFilmFromSearchStoresNothing() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let dune = MediaCandidate(id: "tmdb:movie:438631", kind: .film, title: "Dune",
+                                  originalTitle: nil, year: 2021, creators: [], coverURL: nil,
+                                  summary: nil, externalKeys: ["tmdb:movie:438631"],
+                                  details: FilmDetails(), providerID: "tmdb")
+        let viewModel = ItemDetailViewModel(subject: .candidate(dune), repository: repository,
+                                            logUseCase: logUseCase)
+
+        viewModel.load()
+
+        #expect(viewModel.storedItemID == nil)
+        #expect(try repository.findItem(withAnyKey: ["tmdb:movie:438631"]) == nil)
+        withExtendedLifetime(container) {}
+    }
+
+    // Ouvrir deux fois la même fiche n'enregistre qu'une œuvre : la dédup fait son travail.
+    @Test func openingTheSameSeriesTwiceStoresItOnce() throws {
+        let (container, repository, logUseCase) = try makeEmpty()
+        let severance = MediaCandidate(id: "tmdb:tv:95396", kind: .series, title: "Severance",
+                                       originalTitle: nil, year: 2022, creators: [], coverURL: nil,
+                                       summary: nil, externalKeys: ["tmdb:tv:95396"],
+                                       details: SeriesDetails(), providerID: "tmdb")
+
+        ItemDetailViewModel(subject: .candidate(severance), repository: repository,
+                            logUseCase: logUseCase).load()
+        let second = ItemDetailViewModel(subject: .candidate(severance), repository: repository,
+                                         logUseCase: logUseCase)
+        second.load()
+
+        let first = try #require(try repository.findItem(withAnyKey: ["tmdb:tv:95396"]))
+        #expect(second.storedItemID == first.id)
+        withExtendedLifetime(container) {}
+    }
 }
 
 private struct FailingError: Error {}

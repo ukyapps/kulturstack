@@ -9,9 +9,19 @@ struct LogUseCase {
     func logNow(_ candidate: MediaCandidate, status: LogStatus = .done, now: Date = .now,
                 rating: Int? = nil, note: String? = nil) throws -> LogEntry {
         try LogRules.validate(status: status, for: candidate.kind)
+        let item = try store(candidate)
+        return try log(item, status: status, date: now, rating: rating, note: note)
+    }
+
+    // Enregistrer l'œuvre **sans rien loguer**. Ouvrir la fiche d'une série suffit à la faire
+    // exister : on ne peut pas cocher l'épisode d'une œuvre qui n'est nulle part. Sans log,
+    // elle n'apparaît ni dans le Journal, ni dans l'Envie, ni dans « En cours » — ces trois
+    // écrans lisent des logs, pas des œuvres.
+    @discardableResult
+    func store(_ candidate: MediaCandidate) throws -> MediaItem {
         let item = try dedup.existingItem(for: candidate) ?? makeItem(from: candidate)
         try addMissingRefs(of: candidate, to: item)
-        return try log(item, status: status, date: now, rating: rating, note: note)
+        return item
     }
 
     // Le formulaire « Logger » de la fiche : date, note et commentaire posés d'un coup.
