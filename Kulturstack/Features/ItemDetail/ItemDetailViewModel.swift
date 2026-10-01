@@ -44,9 +44,14 @@ final class ItemDetailViewModel {
                 enrichIfNeeded(item)
             case .candidate(let candidate):
                 if let item = try repository.findItem(withAnyKey: candidate.externalKeys) {
-                    subject = .stored(item.id)
-                    state = .loaded(ItemDetailModel(item: item))
-                    enrichIfNeeded(item)
+                    show(item)
+                } else if candidate.kind.hasEpisodes {
+                    // Une série ou un podcast se coche épisode par épisode : la fiche
+                    // l'enregistre en arrivant, sinon elle ouvrirait sur une liste vide et
+                    // il faudrait logger l'œuvre entière avant de pouvoir cocher un seul
+                    // épisode (founder, 01/10). **Aucun log n'est écrit** : l'œuvre reste
+                    // invisible partout tant que rien n'est coché.
+                    show(try logUseCase.store(candidate))
                 } else {
                     state = .loaded(ItemDetailModel(candidate: candidate))
                 }
@@ -54,6 +59,12 @@ final class ItemDetailViewModel {
         } catch {
             state = .failed
         }
+    }
+
+    private func show(_ item: MediaItem) {
+        subject = .stored(item.id)
+        state = .loaded(ItemDetailModel(item: item))
+        enrichIfNeeded(item)
     }
 
     // Une seule tentative par ouverture : si la source ne répond pas, la fiche reste comme elle est.
