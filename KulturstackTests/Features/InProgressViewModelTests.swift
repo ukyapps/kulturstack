@@ -166,4 +166,5 @@ private struct UnreadableLogRepository: LogRepository {
     func find(id: UUID) throws -> LogEntry? { throw Failure() }
     func save() throws { throw Failure() }
     func delete(_ log: LogEntry) throws { throw Failure() }
+    func delete(_ logs: [LogEntry]) throws { throw Failure() }
 }

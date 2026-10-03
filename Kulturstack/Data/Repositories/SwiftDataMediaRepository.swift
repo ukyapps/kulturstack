@@ -36,7 +36,12 @@ struct SwiftDataMediaRepository: MediaRepository {
     }
 
     func add(_ log: LogEntry) throws {
-        context.insert(log)
+        try add([log])
+    }
+
+    func add(_ logs: [LogEntry]) throws {
+        guard !logs.isEmpty else { return }
+        for log in logs { context.insert(log) }
         try context.save()
     }
 

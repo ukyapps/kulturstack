@@ -34,6 +34,19 @@ struct LogUseCase {
         return log
     }
 
+    // Cocher plusieurs épisodes d'un coup : **une seule écriture en base**. Les cocher un par
+    // un, c'était une écriture par épisode — sur un flux de podcast, l'app s'arrêtait de
+    // répondre le temps que ça passe (founder, 03/10).
+    @discardableResult
+    func log(_ item: MediaItem, episodes: [Episode], status: LogStatus = .done,
+             date: Date = .now, source: String = "manual") throws -> [LogEntry] {
+        let entries = try episodes.map {
+            try LogEntry.make(item: item, status: status, date: date, source: source, episode: $0)
+        }
+        try repository.add(entries)
+        return entries
+    }
+
     @discardableResult
     func wish(_ candidate: MediaCandidate, now: Date = .now) throws -> LogEntry {
         try logNow(candidate, status: .wishlist, now: now)
