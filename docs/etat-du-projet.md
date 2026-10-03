@@ -10,7 +10,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 **Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **620 tests verts**, couverture Domain 97,0 % · Data 96,2 % · Features 90,2 %.
 
-**Les podcasts de Radio France ont leurs épisodes depuis le 03/10** (PR 34), et **sans clé ni compte** : leur page déclare son flux RSS, et son adresse se déduit de ce que rend Apple. L'inscription à Podcast Index que le plan prévoyait est devenue inutile (ADR-014). **Couverture mesurée : 73 %** — les émissions passent, les chroniques et les mixes non, et ICI (ex-France Bleu) pas du tout. Il ne reste que la **PR 35** pour clore la tranche.
+**Les podcasts de Radio France ont leurs épisodes depuis le 03/10** (PR 34), et **sans clé ni compte** : leur page déclare son flux RSS, et son adresse se déduit de ce que rend Apple. L'inscription à Podcast Index que le plan prévoyait est devenue inutile (ADR-014). **Couverture mesurée : 76 %**, et **c'est le plafond de cette source** — les émissions passent, les chroniques et les mixes non, et ICI (ex-France Bleu) pas du tout. Les trois autres pistes ont été mesurées et écartées le 03/10 (ADR-014). Il ne reste que la **PR 35** pour clore la tranche.
 
 La session du 30/09 → 03/10 a traité **huit retours**, en a trouvé **deux de plus** (un par une question de la founder, un en la regardant cliquer), **récupéré une PR fusionnée dans le vide** le 27/09, puis corrigé **cinq retours d'usage** après deux jours sur l'appareil. **Aucun changement de schéma sur tout le lot** — donc aucune migration, et rien à sauvegarder avant d'installer.
 
@@ -100,7 +100,7 @@ Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question R
 | 31 | Chercher un podcast chez Apple (sans clé ni compte) | ✅ #49 |
 | 32 | Les épisodes par le flux RSS (`XMLParser`, sans dépendance) | ✅ #50 |
 | 33 | Le vocabulaire des podcasts : liste à plat, « J'ai tout écouté » | ✅ #51 |
-| 34 | **Radio France** — Apple ne publie pas leurs flux ; leur page, si : résolveur **sans clé** (ADR-014) | ✅ 03/10 — **73 % du catalogue** (106 podcasts tirés au sort sur 514), zéro secret, zéro minute de la founder |
+| 34 | **Radio France** — Apple ne publie pas leurs flux ; leur page, si : résolveur **sans clé** (ADR-014) | ✅ 03/10 — **76 % du catalogue** (106 podcasts tirés au sort sur 514), zéro secret, zéro minute de la founder |
 | 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
 
 ### Corrections d'usage — après deux jours de podcasts (30/09 → 01/10)
