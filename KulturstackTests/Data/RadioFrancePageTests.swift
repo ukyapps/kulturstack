@@ -79,6 +79,38 @@ struct RadioFrancePageTests {
         #expect(paths.dropFirst().first == "/franceculture/podcasts/grandes-traversees")
     }
 
+    // Mesuré le 03/10 : quatre des podcasts archivés de franceinfo portent leurs années dans
+    // leur titre chez Apple — « Micro européen (2007-2025) » — et pas dans l'adresse de leur
+    // page. Les quatre pages existent et déclarent leur flux.
+    @Test func aTrailingParenthesisIsDroppedAsASecondTry() {
+        let cases = [("Micro européen (2007-2025)", "micro-europeen-2007-2025", "micro-europeen"),
+                     ("Cinéma week-end (2013-2022)", "cinema-week-end-2013-2022", "cinema-week-end"),
+                     ("C'est dans ma tête (2016-2022)", "c-est-dans-ma-tete-2016-2022", "c-est-dans-ma-tete"),
+                     ("Les baroudeurs (2022-2024)", "les-baroudeurs-2022-2024", "les-baroudeurs")]
+
+        for (title, withYears, withoutYears) in cases {
+            let paths = RadioFrancePage.urls(title: title, publisher: "franceinfo").map { $0.path() }
+            #expect(paths.first == "/franceinfo/podcasts/\(withYears)", "\(title)")
+            #expect(paths.dropFirst().first == "/franceinfo/podcasts/\(withoutYears)", "\(title)")
+        }
+    }
+
+    // La parenthèse n'est retirée qu'en deuxième essai : un podcast qui la porte vraiment dans
+    // l'adresse de sa page est trouvé du premier coup, et rien ne change pour lui.
+    @Test func theFullTitleIsAlwaysTriedFirst() {
+        let paths = RadioFrancePage.urls(title: "Une émission (vraiment)", publisher: "France Inter").map { $0.path() }
+
+        #expect(paths.first == "/franceinter/podcasts/une-emission-vraiment")
+        #expect(paths.dropFirst().first == "/franceinter/podcasts/une-emission")
+    }
+
+    // Une parenthèse au milieu n'est pas une mention d'archive : on n'y touche pas.
+    @Test func aParenthesisInTheMiddleIsLeftAlone() {
+        let paths = RadioFrancePage.urls(title: "L'invité(e) du jour", publisher: "France Musique").map { $0.path() }
+
+        #expect(paths == ["/francemusique/podcasts/l-invite-e-du-jour", "/francemusique/podcasts/invite-e-du-jour"])
+    }
+
     // Chaque essai est une page de 450 Ko : trois suffisent — 21 des 23 podcasts retrouvés
     // l'ont été du premier coup, aucun n'a demandé un quatrième essai.
     @Test func thereAreNeverMoreThanThreeTries() {

@@ -17,7 +17,7 @@ Avant de demander ces cinq minutes, une autre piste a été mesurée le 03/10.
 | Question | Mesure |
 |---|---|
 | La page d'un podcast Radio France déclare-t-elle son flux ? | **Oui.** Une balise `<link rel="alternate" type="application/rss+xml">` dans son `<head>` — celle que lit n'importe quel lecteur de podcasts. Une seule par page, aucune ambiguïté. |
-| Peut-on retrouver la page depuis un résultat Apple ? | **Oui, dans 73 % des cas.** L'adresse se déduit du producteur (`artistName` → `franceinter`) et du titre (`collectionName` → `le-code-a-change`). Chiffre mesuré sur un **échantillon aléatoire de 106 podcasts** tiré des **514** que Radio France publie chez Apple sans flux. |
+| Peut-on retrouver la page depuis un résultat Apple ? | **Oui, dans 76 % des cas.** L'adresse se déduit du producteur (`artistName` → `franceinter`) et du titre (`collectionName` → `le-code-a-change`). Chiffre mesuré sur un **échantillon aléatoire de 106 podcasts** tiré des **514** que Radio France publie chez Apple sans flux. |
 | Combien d'essais ? | **Trois au plus**, et la grande majorité du premier coup. Deux variantes suffisent aux cas tordus : « Les Matins de France Culture » → `les-matins`, « Les Grandes Traversées » → `grandes-traversees`. |
 | Ça marche pour quoi ? | Les **émissions**. Affaires sensibles, Le code a changé, Les Pieds sur terre, LSD, Le Cours de l'histoire : toutes retrouvées. |
 | Ça rate pour quoi ? | Les **chroniques, billets et mixes** — « Le Billet de Thomas Poitevin », « L'édito politique VSD », « Mouv' DJ : Guest ». Deux causes mesurées : soit la page n'existe pas (compilations propres à Apple), soit **elle existe et ne déclare aucun flux** (« L'instant M », « Le pas de côté » : page correcte, zéro balise RSS). Le deuxième cas n'est **pas réparable par du code**. |
@@ -29,17 +29,29 @@ Le détail par station, sur le même échantillon :
 |---|---|---|
 | FIP | 8 | 8 (100 %) |
 | France Musique | 15 | 14 (93 %) |
+| franceinfo | 15 | 13 (87 %) |
 | France Culture | 30 | 23 (77 %) |
 | France Inter | 30 | 20 (67 %) |
-| franceinfo | 15 | 9 (60 %) |
 | Mouv' | 8 | 3 (38 %) |
-| **Total** | **106** | **77 (73 %)** |
+| **Total** | **106** | **81 (76 %)** |
+
+**Les 25 qui restent, classés le 03/10 après la question de la founder (« je veux qu'on vise les 100 % »)** :
+
+| Cause | Nombre | Récupérable ? |
+|---|---|---|
+| La page existe et **ne déclare aucun flux RSS** (« L'instant M », « Le pas de côté ») | 8 | **Non.** Il n'y a rien à lire. |
+| L'adresse de la page ne se déduit pas du titre Apple (« Théâtre », « Les journaux de France Culture ») | 17 | Seulement avec un **index des pages** de Radio France — voir ci-dessous. |
+
+Autrement dit : **les 8 premiers ne se récupéreront jamais** — un flux que Radio France ne publie pas n'existe nulle part. Et les 17 autres ne se récupéreraient qu'avec un index.
+
+> **Construire cet index est exclu.** Le `robots.txt` de radiofrance.fr interdit explicitement « scraping, crawling, or systematic extraction of content ». Lire **une** page quand l'utilisatrice ouvre **une** fiche, pour y prendre le lien de flux que Radio France publie à destination des lecteurs de podcasts, reste ce que fait n'importe quelle application de podcast. Parcourir leur sitemap pour s'en faire une table, non. **Le plafond de cette source est donc 76 %**, et ce qui manque ne se comblera, s'il se comble, que par une autre source.
 
 > **Une première mesure annonçait « 23 sur 24 ».** Elle portait sur les 24 premiers résultats d'Apple pour « france inter » et « france culture » — c'est-à-dire les podcasts les plus connus, qui ont tous une page. Le chiffre était juste pour eux et **faux pour le catalogue**. Corrigé le 03/10 après la question de la founder : « tous tous ? ». La leçon est celle de l'ADR-013, retournée contre moi : **un échantillon choisi n'est pas une mesure.**
 
 ## Décision
 
-1. **Le flux d'un podcast Radio France se lit dans sa page**, par la balise `rel="alternate"` qu'elle publie pour les lecteurs de flux. Pas de deuxième API, **pas de clé, pas de compte, pas de secret**. Ça couvre **73 %** du catalogue, les émissions plutôt que les chroniques — et c'est 73 % de plus qu'avant.
+1. **Le flux d'un podcast Radio France se lit dans sa page**, par la balise `rel="alternate"` qu'elle publie pour les lecteurs de flux. Pas de deuxième API, **pas de clé, pas de compte, pas de secret**. Ça couvre **76 %** du catalogue, les émissions plutôt que les chroniques — et c'est 76 % de plus qu'avant.
+2. **Trois adresses au plus sont essayées**, dans cet ordre : le titre entier, puis le titre sans sa parenthèse de fin (« Micro européen (2007-2025) » → `micro-europeen` : les podcasts archivés portent leurs années dans leur titre chez Apple, jamais dans l'adresse de leur page), puis sans le nom de la station, puis sans l'article. Le titre entier d'abord : la parenthèse est parfois le vrai nom.
 2. **Le résolveur part de la clé `itunes:<collectionId>`** que porte déjà tout podcast en base. Il demande son nom et son producteur à Apple (`lookup`, ~2 Ko), puis essaie **au plus trois adresses** de page. Conséquence voulue : ça marche aussi pour les podcasts **déjà loggés** avant cette PR, sans qu'il faille les rechercher.
 3. **Il n'est appelé que quand le flux manque.** Un podcast dont Apple donne le flux porte une clé `feed:`, et `RSSEpisodeProvider` répond avant lui — il est le dernier des `episodeSources`. Un producteur hors Radio France ne fait charger **aucune page**.
 4. **Une absence n'est pas une panne.** Une page qui n'existe pas (404) fait passer à l'orthographe suivante ; les trois épuisées, la fiche montre son état vide, qui dit déjà « son flux ne les donne pas ». **Toute autre panne remonte** et donne « Impossible de charger les épisodes ». Vide ≠ erreur, comme partout ailleurs.
@@ -61,5 +73,7 @@ L'ADR-013 écartait cette piste en deux mots : « c'est du scraping, et **rien d
 
 - **Podcast Index** (la piste de l'ADR-013) : demande une inscription, une clé au Trousseau, un secret de plus dans le pipeline `make secrets`, et sa couverture de Radio France ne peut pas être vérifiée avant. Reste le recours si la page cesse de marcher.
 - **L'API ouverte de Radio France** (openapi.radiofrance.fr) : demande elle aussi un compte et une clé, pour le même résultat.
+- **fyyd**, réessayé le 03/10 — mais cette fois pour **résoudre**, pas pour chercher, ce qui est un usage différent de celui que l'ADR-013 avait écarté. Mesuré sur les 25 podcasts qui manquent, avec une correspondance **stricte** (titre identique **et** flux hébergé chez `radiofrance-podcast.net`, sans quoi il rend « L'instant cinéma » pour « L'instant M ») : **2 récupérés sur 25**. Une deuxième source, un ADR, un risque de mauvais appariement, et le risque d'afficher les épisodes d'un autre podcast — pour deux podcasts. Écarté.
+- **Podcast Index**, tenté le 03/10 : **l'inscription est fermée aux adresses email gratuites** (« we are not currently allowing signups from free email providers such as Gmail, Outlook »). Il faudrait une adresse sur un domaine à nous — les domaines kulturstack sont sur la liste des choses à réserver, sans urgence. À reconsidérer **si** cette liste avance, pas avant.
 - **Les deux ensemble** : deux sources à maintenir pour un podcast sur 24. Proposé à la founder le 03/10, écarté par elle.
 - **Lire la page par morceaux** pour éviter les 450 Ko : radiofrance.fr n'honore pas l'en-tête `Range` (vérifié le 03/10, la réponse est la page entière), et `HTTPClient` rend un `Data`, pas un flux d'octets. À revoir si le poids devient un sujet.

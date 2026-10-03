@@ -64,24 +64,40 @@ enum RadioFrancePage {
     }
 
     private static func slugs(of title: String, station: Station) -> [String] {
-        let base = slug(title)
-        guard !base.isEmpty else { return [] }
+        let bases = baseSlugs(of: title)
+        guard !bases.isEmpty else { return [] }
+        var ordered: [String] = []
+        func add(_ candidate: String) {
+            guard !candidate.isEmpty, !ordered.contains(candidate) else { return }
+            ordered.append(candidate)
+        }
+        for base in bases { add(base) }
         // « Les Matins de France Culture » chez Apple, « les-matins » sur radiofrance.fr : la
         // station est dans le titre du podcast, pas dans l'adresse de sa page.
         let name = slug(station.appleName)
-        var withoutStation = [base]
-        for suffix in ["-de-\(name)", "-sur-\(name)", "-par-\(name)", "-\(name)"] where base.hasSuffix(suffix) {
-            withoutStation.append(String(base.dropLast(suffix.count)))
+        for base in bases {
+            for suffix in ["-de-\(name)", "-sur-\(name)", "-par-\(name)", "-\(name)"] where base.hasSuffix(suffix) {
+                add(String(base.dropLast(suffix.count)))
+            }
         }
         // « Les Grandes Traversées » chez Apple, « grandes-traversees » sur radiofrance.fr.
-        let withoutArticle = withoutStation.compactMap { candidate in
-            articles.first { candidate.hasPrefix($0) }.map { String(candidate.dropFirst($0.count)) }
-        }
-        var ordered: [String] = []
-        for candidate in withoutStation + withoutArticle where !candidate.isEmpty && !ordered.contains(candidate) {
-            ordered.append(candidate)
+        for candidate in Array(ordered) {
+            guard let article = articles.first(where: candidate.hasPrefix) else { continue }
+            add(String(candidate.dropFirst(article.count)))
         }
         return ordered
+    }
+
+    // « Micro européen (2007-2025) » chez Apple, « micro-europeen » sur radiofrance.fr : les
+    // podcasts archivés portent leurs années dans leur titre, jamais dans l'adresse de leur
+    // page. Le titre entier reste le premier essai — la parenthèse est parfois le vrai nom.
+    private static func baseSlugs(of title: String) -> [String] {
+        let trimmed = title.trimmingCharacters(in: .whitespaces)
+        var bases = [slug(trimmed)]
+        if trimmed.hasSuffix(")"), let opening = trimmed.lastIndex(of: "(") {
+            bases.append(slug(String(trimmed[trimmed.startIndex..<opening])))
+        }
+        return bases.filter { !$0.isEmpty }
     }
 
     // Les adresses de radiofrance.fr sont en ASCII : les accents tombent, tout le reste devient
