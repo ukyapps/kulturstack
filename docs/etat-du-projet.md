@@ -8,7 +8,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **639 tests verts**, couverture Domain 97,1 % · Data 96,0 % · Features 89,6 %.
+**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **645 tests verts**, couverture Domain ~97 % · Data 96,0 % · Features ~90 %.
 
 **Les podcasts de Radio France ont leurs épisodes depuis le 03/10**, **couverture 97 %**, en deux temps. D'abord leur **page**, qui déclare son flux RSS à l'adresse qu'on déduit de ce que rend Apple : 76 %, sans clé ni compte (PR 34, ADR-014). Puis **Podcast Index**, interrogé seulement quand la page ne dit rien : les 21 points restants (PR 36, ADR-015), au prix de deux secrets au Trousseau. ICI (ex-France Bleu) reste hors périmètre. Il ne reste que la **PR 35** pour clore la tranche.
 
@@ -90,7 +90,7 @@ Trois jours d'épisodes, **huit retours**, notés mot pour mot dans `docs/produc
 **Les huit retours sont traités.** Reste, à juger à l'usage et non sur le papier : le résumé d'une fiche est passé **sous** les épisodes (les actions avant la lecture), et les libellés d'action restent génériques sur un podcast — design § 6, questions 11 et 12.
 | 29 | « Je tombe pas du tout sur Kafka sur le rivage » | Les éditions **françaises** d'abord chez OpenLibrary : titre, couverture et nom d'auteur | ✅ #40 |
 
-### Tranche Podcasts — en cours (27 → 28/09)
+### Tranche Podcasts — **complète** (27/09 → 03/10, 7 PRs sur 7)
 
 Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question Radio France : `docs/plans/podcasts.md`, décisions de source : ADR-013.
 
@@ -102,7 +102,7 @@ Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question R
 | 33 | Le vocabulaire des podcasts : liste à plat, « J'ai tout écouté » | ✅ #51 |
 | 34 | **Radio France** — Apple ne publie pas leurs flux ; leur page, si : résolveur **sans clé** (ADR-014) | ✅ 03/10 — **76 % du catalogue** (106 podcasts tirés au sort sur 514), zéro secret, zéro minute de la founder |
 | 36 | **Podcast Index** en second recours, pour Radio France seulement (ADR-015) | ✅ 03/10 — **76 % → 97 %**, deux secrets au Trousseau |
-| 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
+| 35 | Seed DEBUG avec un podcast et des épisodes | ✅ 03/10 — et un repli sur la base quand aucune source ne répond, trouvé en faisant les captures |
 
 ### Corrections d'usage — après deux jours de podcasts (30/09 → 01/10)
 
@@ -316,7 +316,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 639, tous verts
+## 4. Tests — 645, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -325,7 +325,7 @@ Kulturstack/
 | `LogRulesTests` | 7 (paramétrés : 11 cas) | **T-02** statut interdit, **T-03** note hors plage, **T-06** date = maintenant, fabrique refuse un statut interdit |
 | `DetailsCodecTests` | 5 | round-trip, **T-15** champs manquants → défauts, `{}` → défauts, décodage par type, `MediaItem.details` |
 | `SchemaMigrationTests` | 3 | **T-01** store V1 rouvert avec le plan → données intactes ; schéma courant = dernier du plan ; clé `ExternalRef` unique |
-| `DemoSeedTests` | 3 | **T-14** fill × 2 = mêmes comptes ; wipe → 0 ; logs dans les 12 derniers mois, avec notes et commentaires |
+| `DemoSeedTests` | 7 | **T-14** fill × 2 = mêmes comptes, **saisons et épisodes compris** ; wipe → 0 ; logs dans les 12 derniers mois, avec notes et commentaires ; un podcast avec ≥ 6 épisodes sur ≥ 2 ans, chacun portant son identité de flux ; une série à deux saisons, la première finie, la seconde commencée ; les épisodes cochés portent leur œuvre ; chaque type a au moins un log daté (sans quoi son compteur n'apparaît pas) |
 | `SwiftDataLogRepositoryTests` | 2 | tri du plus récent au plus ancien ; base vide → liste vide |
 | `LogHistoryUseCaseTests` | 3 | jamais loggé → nil ; le plus récent gagne ; une envie ne compte pas |
 | `ItemDetailModelTests` | 8 (paramétrés : 11 cas) | aperçu d'un candidat sans log, source du provider ; headline film (type · 2h35 · réalisateur) + genres ; film sans détails ; saisons · épisodes ; pages · éditeur · 3 sujets max ; logs du plus récent au plus ancien ; source TMDB / OpenLibrary / « TMDB, IMDb » / nil |
@@ -435,7 +435,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Prochaine session — par où commencer**
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **La tranche Podcasts, PR 35** : `docs/plans/podcasts.md` — le seed DEBUG ne crée ni podcast, ni saison, ni épisode, et les compteurs du Journal n'affichent pas « Podcasts · n ». **C'est la dernière** : les six autres sont fusionnées.
+2. **La tranche Podcasts est close** (7 PRs sur 7, `docs/plans/podcasts.md`). La suivante au plan est l'**import du passé** (T3) — sauf si l'usage dit autre chose. Un chantier connu attend aussi : **ICI** (ex-France Bleu), 0 % aujourd'hui, ~45 % atteignable en reconnaissant ses stations et en les envoyant directement à Podcast Index (mesuré le 03/10 sur 20 podcasts).
 3. **Ce qui attend la founder** : **réinstaller l'app depuis `main`** (`make device`) pour avoir les épisodes de Radio France, et vérifier au doigt ce qu'aucun test ne prouve (zones tactiles de « Tout cocher », retour haptique sur un podcast). Rien à créer : la clé Podcast Index est posée depuis le 03/10.
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
