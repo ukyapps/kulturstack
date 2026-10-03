@@ -71,6 +71,5 @@ struct JournalRow: View {
         }
         .padding(.vertical, Spacing.xs)
         .contentShape(Rectangle())
-        .sensoryFeedback(.success, trigger: model.watch?.position)
     }
 }

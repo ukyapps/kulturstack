@@ -11,6 +11,10 @@ final class InProgressViewModel {
     }
 
     private(set) var state: State = .loading
+    // Le retour haptique suit le **geste**, pas la donnée. Attaché à une valeur affichée, il
+    // ne se déclenchait pas quand la ligne disparaissait (dernier épisode, série terminée)
+    // ni sur un podcast, qui n'a pas de barre de progression (founder, 03/10).
+    private(set) var feedback = 0
     var didFailToAdvance = false
 
     private let useCase: InProgressUseCase
@@ -39,7 +43,9 @@ final class InProgressViewModel {
     // Le Journal fait la même chose par le même chemin.
     func advance(_ row: InProgressRowModel) async {
         do {
-            try await advanceUseCase.advance(itemID: row.itemID)
+            // Le retour haptique suit ce qui a **vraiment** été coché : une œuvre au bout de
+            // ce qu'on connaît d'elle n'est pas une erreur, mais ce n'est pas un succès non plus.
+            if try await advanceUseCase.advance(itemID: row.itemID) { feedback += 1 }
             didFailToAdvance = false
         } catch {
             didFailToAdvance = true
@@ -53,7 +59,10 @@ final class InProgressViewModel {
 
     private func change(_ row: InProgressRowModel, _ action: (MediaItem) throws -> Void) async {
         do {
-            if let item = try repository.find(itemID: row.itemID) { try action(item) }
+            if let item = try repository.find(itemID: row.itemID) {
+                try action(item)
+                feedback += 1
+            }
             didFailToAdvance = false
         } catch {
             didFailToAdvance = true
