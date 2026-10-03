@@ -23,3 +23,4 @@ Un fichier par session de travail : ce qui a été décidé, fait, cassé, appri
 | 2026-09-24 → 27 | [Fin de la Tranche 2 : épisodes, statuts, onglet « En cours » (#33 → #35)](2026-09-27-fin-de-la-tranche-2.md) |
 | 2026-09-27 | [Huit retours d'usage, sept correctifs (#38 → #45)](2026-09-27-huit-retours.md) |
 | 2026-09-27 → 30 | [La tranche Podcasts : schéma V3, Apple, flux RSS (#47 → #51)](2026-09-28-tranche-podcasts.md) |
+| 2026-09-30 → 10-03 | [Huit retours, une PR perdue, et ce que trois clics ont trouvé (#54 → #70)](2026-10-03-huit-retours-et-les-saisons.md) |

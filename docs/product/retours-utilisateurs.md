@@ -159,6 +159,20 @@ Puis, sur ma maquette de bandeau « du nouveau » en haut de l'onglet : **« pou
 
 **Un plan qui dit « pas ça » doit être relu à la fin de la PR, pas seulement au début.** La carte « Prochain épisode » sur les podcasts et l'ordre de la liste étaient tous les deux écrits noir sur blanc dans `docs/plans/podcasts.md` — et tous les deux livrés à l'envers de ce qui y était écrit. Le plan avait raison sur la carte, tort sur l'ordre : ce n'est pas le plan qui a manqué, c'est la relecture du plan contre le diff.
 
+## Founder — session du 2026-10-03 (deux jours sur l'iPhone, après les correctifs)
+
+Cinq retours après avoir vécu avec la version installée le 01/10. **Deux causes pour les cinq**, et aucune n'était visible en test.
+
+| Retour | Ce qu'on en a fait |
+|---|---|
+| « Il n'y a plus le petit truc satisfaisant quand je valide que j'ai vu ou écouté un épisode… ça le fait sur Dix pour cent ou Peaky Blinders, mais pas sur Arrested Development ou Transfert. J'ai ajouté une série, ça le fait bien. Sur un nouveau podcast, cela fonctionne aussi. » | **Ses exemples étaient le diagnostic.** Le retour haptique était accroché à une **valeur affichée** (la position dans la saison) : muet sur **Transfert**, parce qu'un podcast n'a plus de barre de progression depuis la #63 ; muet sur **Arrested Development**, parce que cocher son dernier épisode la terminait et la faisait **quitter la liste** — la ligne disparaissait avant d'avoir vibré. Dix pour cent et Peaky Blinders, au milieu d'une saison, marchaient. Corrigé (#70) : le déclencheur suit le **geste**, pas la donnée, et vit au niveau de l'écran. |
+| « Ça fait pas la vibration quand c'est le dernier épisode. » | Même cause, et c'est le cas le plus net : la ligne part, le retour partait avec elle. |
+| « Sur tous les boutons en fait, je voudrais la même petite vibration satisfaisante. » | Fait (#70) : cocher, tout cocher, toute la série, abandonner, reprendre, Logger, Envie, et le `+` comme le ♡ de la recherche. Un geste qui n'écrit rien ne vibre pas. |
+| « Petit bug quand je veux cliquer sur "tout décocher"… ça a mis beaucoup de temps pour tout décocher. » | **Ce n'était pas la quantité de données, c'était le nombre d'écritures** : une par épisode. Corrigé (#69) : une seule écriture par geste, et quatre tests qui **comptent les écritures** plutôt que de chronométrer. |
+| « Ça lag quand je veux enregistrer les podcasts tout d'un coup. » | Même cause, en pire : « J'ai tout écouté » sur un flux de 96 épisodes, c'était 96 enregistrements à la suite. |
+
+**Ce que cette session apprend.** Aucun de ces cinq retours n'est sorti d'une relecture de code ni d'un test — la suite était verte à 600 tests. Ils sont sortis de **deux jours d'usage**. Et quand elle donne des exemples qui marchent **et** des exemples qui ne marchent pas, ces exemples discriminent la cause : il faut chercher ce qui les sépare avant de lire le code au hasard.
+
 ## Autres utilisatrices
 
 *(vide — à remplir dès le premier TestFlight)*
