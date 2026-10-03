@@ -31,7 +31,9 @@ struct ProviderRegistry: Sendable {
             RSSEpisodeProvider(client: client, userAgent: userAgent(appVersion: appVersion)),
             // En dernier : il n'a quelque chose à dire que des podcasts dont Apple ne donne
             // pas le flux, et le flux répond pour tous les autres.
-            RadioFranceEpisodeProvider(client: client, userAgent: userAgent(appVersion: appVersion)),
+            RadioFranceEpisodeProvider(client: client, userAgent: userAgent(appVersion: appVersion),
+                                       index: PodcastIndexFeedResolver(secrets: secrets, client: client,
+                                                                       userAgent: userAgent(appVersion: appVersion))),
         ])
     }
 

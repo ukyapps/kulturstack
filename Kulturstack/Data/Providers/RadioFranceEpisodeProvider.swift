@@ -2,7 +2,8 @@ import Foundation
 
 // Les épisodes d'un podcast dont le catalogue d'Apple ne donne pas le flux. On demande son nom
 // et son producteur à Apple, puis on lit le flux que sa page déclare — voir `RadioFrancePage`.
-// Le flux trouvé, c'est `RSSEpisodeProvider` qui fait le reste : il ne sait rien de tout ça.
+// Si la page ne le déclare pas, Podcast Index le connaît souvent (ADR-015). Le flux trouvé,
+// c'est `RSSEpisodeProvider` qui fait le reste : il ne sait rien de tout ça.
 struct RadioFranceEpisodeProvider: EpisodeProvider {
     static let lookupURL = URL(string: "https://itunes.apple.com/lookup")!
     static let keyPrefix = "itunes:"
@@ -10,14 +11,16 @@ struct RadioFranceEpisodeProvider: EpisodeProvider {
     private let client: any HTTPClient
     private let userAgent: String
     private let country: String
+    private let index: PodcastIndexFeedResolver?
     private let feeds: RSSEpisodeProvider
     private let resolved = ResolvedFeeds()
 
     init(client: any HTTPClient, userAgent: String, country: String = ApplePodcastProvider.preferredCountry(),
-         freshness: TimeInterval = 60) {
+         index: PodcastIndexFeedResolver? = nil, freshness: TimeInterval = 60) {
         self.client = client
         self.userAgent = userAgent
         self.country = country
+        self.index = index
         feeds = RSSEpisodeProvider(client: client, userAgent: userAgent, freshness: freshness)
     }
 
@@ -51,7 +54,11 @@ struct RadioFranceEpisodeProvider: EpisodeProvider {
         guard let podcast = try await lookup(id) else { return nil }
         // Si Apple a le flux, c'est lui qui gagne : aucune page à lire.
         if let feed = podcast.feedUrl { return feed }
-        for url in RadioFrancePage.urls(title: podcast.collectionName ?? "", publisher: podcast.artistName) {
+        let title = podcast.collectionName ?? ""
+        // Un producteur qui n'est pas de Radio France n'a ni page à lire, ni rien à chercher
+        // dans l'index : cette source ne couvre qu'eux.
+        guard RadioFrancePage.isStation(podcast.artistName) else { return nil }
+        for url in RadioFrancePage.urls(title: title, publisher: podcast.artistName) {
             do {
                 let page = try await client.get(url, headers: ["User-Agent": userAgent, "Accept": "text/html"])
                 if let feed = RadioFrancePage.feedURL(inPage: page) { return feed }
@@ -61,7 +68,9 @@ struct RadioFranceEpisodeProvider: EpisodeProvider {
                 continue
             }
         }
-        return nil
+        // La page n'a rien dit — soit elle n'existe pas, soit elle ne déclare pas son flux.
+        // L'index, lui, l'a souvent : 22 fois sur 25 (ADR-015).
+        return try await index?.feedURL(title: title, publisher: podcast.artistName)
     }
 
     private func lookup(_ id: String) async throws -> ApplePodcastResult? {

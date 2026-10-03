@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 30
     env:
       TMDB_READ_TOKEN: ci-placeholder
+      PODCASTINDEX_KEY: ci-placeholder
+      PODCASTINDEX_SECRET: ci-placeholder
     steps:
       - uses: actions/checkout@v4
       - name: Xcode

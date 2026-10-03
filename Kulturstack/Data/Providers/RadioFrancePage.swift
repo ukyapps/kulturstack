@@ -31,6 +31,12 @@ enum RadioFrancePage {
 
     private static let articles = ["le-", "la-", "les-", "l-", "un-", "une-", "des-", "du-"]
 
+    // Un producteur de Radio France, et pas un autre : c'est ce qui décide si on va lire une
+    // page — et, quand la page ne donne rien, si on a le droit d'interroger l'index (ADR-015).
+    static func isStation(_ publisher: String?) -> Bool {
+        publisher.flatMap(station(named:)) != nil
+    }
+
     // Les adresses à essayer, de la plus probable à la moins. Vide quand le producteur n'est
     // pas une station de Radio France : lui a son flux chez Apple, il n'a aucune page à lire ici.
     static func urls(title: String, publisher: String?) -> [URL] {
