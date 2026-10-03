@@ -35,6 +35,9 @@ final class SeriesEpisodesViewModel {
     // dire qu'il travaille, sinon on appuie deux fois.
     private(set) var isCheckingEverything = false
     var didFailToCheck = false
+    // Le retour haptique suit le geste : cocher, tout cocher, abandonner, reprendre. Attaché
+    // au nombre d'épisodes vus, il manquait tout ce qui ne le changeait pas (founder, 03/10).
+    private(set) var feedback = 0
 
     private let itemID: UUID
     private let repository: any MediaRepository
@@ -177,6 +180,7 @@ final class SeriesEpisodesViewModel {
             // tout est vu — et « tout vu » pose « terminé » sans le demander (founder, 30/09).
             try status.refreshAfterChecking(item, seasons: summaries)
             didFailToCheck = false
+            feedback += 1
             refresh(season)
             next = nextEpisode(of: item)
             watchStatus = WatchStatusUseCase.status(of: item)
@@ -191,6 +195,7 @@ final class SeriesEpisodesViewModel {
         do {
             try action(item)
             didFailToCheck = false
+            feedback += 1
             watchStatus = WatchStatusUseCase.status(of: item)
             onChange()
         } catch {

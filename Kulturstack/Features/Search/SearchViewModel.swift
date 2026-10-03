@@ -33,6 +33,9 @@ final class SearchViewModel {
     var selectedKind: MediaKind?
     private(set) var sections: [SearchSection] = []
     private(set) var toast: Toast?
+    // Le retour haptique suit le geste : le + et le ♡ d'un résultat le déclenchent, qu'ils
+    // changent la ligne ou non (founder, 03/10 : « sur tous les boutons en fait »).
+    private(set) var feedback = 0
     private(set) var duplicate: Duplicate?
     private var loggedDates: [String: Date] = [:]
 
@@ -95,6 +98,7 @@ final class SearchViewModel {
         do {
             let logID = try logNow(candidate)
             loggedDates[candidate.id] = .now
+            feedback += 1
             show(Toast(title: String(localized: "search.toast.logged"), isError: false, logID: logID))
         } catch {
             show(Toast(title: String(localized: "search.toast.failed"), isError: true))
@@ -105,6 +109,7 @@ final class SearchViewModel {
     func wish(_ candidate: MediaCandidate) {
         do {
             let logID = try wishNow(candidate)
+            feedback += 1
             show(Toast(title: String(localized: "search.toast.wished"), isError: false, logID: logID))
         } catch {
             show(Toast(title: String(localized: "search.toast.failed"), isError: true))

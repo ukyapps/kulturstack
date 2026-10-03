@@ -28,6 +28,7 @@ struct ItemDetailView: View {
                 LogEditView(target: $0, services: services)
             }
             .alert(String(localized: "detail.logAgain.failed"), isPresented: $viewModel.didFailToLog) {}
+            .sensoryFeedback(.success, trigger: viewModel.feedback)
     }
 
     @ViewBuilder private var content: some View {
@@ -87,7 +88,6 @@ struct ItemDetailView: View {
             Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
                 .buttonStyle(.bordered)
         }
-        .sensoryFeedback(.success, trigger: model.logs.count)
     }
 
     private func header(_ model: ItemDetailModel) -> some View {

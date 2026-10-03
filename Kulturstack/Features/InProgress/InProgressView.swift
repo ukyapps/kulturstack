@@ -24,6 +24,9 @@ struct InProgressView: View {
             }
             .navigationDestination(item: $showingItem) { ItemDetailView(itemID: $0.id, services: services) }
             .alert(String(localized: "inprogress.advance.failed"), isPresented: $viewModel.didFailToAdvance) {}
+            // Un seul retour haptique pour l'écran : il suit le geste, et il se déclenche
+            // même quand la ligne qu'on vient de cocher quitte la liste.
+            .sensoryFeedback(.success, trigger: viewModel.feedback)
     }
 
     // Cet onglet sera vu vide souvent : son état vide est un écran d'accueil, pas un trou.

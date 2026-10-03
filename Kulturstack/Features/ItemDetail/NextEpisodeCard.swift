@@ -32,8 +32,6 @@ struct NextEpisodeCard: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.press)
-        // Cocher depuis la fiche se sent comme cocher depuis « En cours » : même geste, même retour.
-        .sensoryFeedback(.success, trigger: next)
         .accessibilityLabel(label)
         .accessibilityHint(String(localized: "series.next.hint"))
     }

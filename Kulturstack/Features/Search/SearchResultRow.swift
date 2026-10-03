@@ -33,7 +33,6 @@ struct SearchResultRow: View {
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(String(localized: model.leadsToEpisodes ? "search.row.episodes" : "search.row.log"))
-                .sensoryFeedback(.success, trigger: model.lastLoggedAt)
             }
         }
     }

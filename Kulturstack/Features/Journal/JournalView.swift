@@ -38,6 +38,7 @@ struct JournalView: View {
                 Text(String(localized: "log.edit.delete.confirm.message"))
             }
             .alert(String(localized: "journal.delete.failed"), isPresented: $viewModel.didFailToDelete) {}
+            .sensoryFeedback(.success, trigger: viewModel.feedback)
             .alert(String(localized: "inprogress.advance.failed"), isPresented: $viewModel.didFailToAdvance) {}
             .toolbar {
                 NavigationLink {

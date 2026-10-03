@@ -39,6 +39,9 @@ struct SeasonsSection: View {
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        // Un seul retour haptique pour toute la section : il suit le geste, et il survit à
+        // la disparition de la ligne qu'on vient de cocher.
+        .sensoryFeedback(.success, trigger: viewModel.feedback)
         .task {
             await viewModel.load()
             // La saison où elle en est s'ouvre d'elle-même : la fiche arrive dépliée au bon endroit.
@@ -191,7 +194,6 @@ struct SeasonsSection: View {
             VStack(alignment: .leading, spacing: 0) {
                 episodeRows(rows, in: season.number)
             }
-            .sensoryFeedback(.selection, trigger: season.watchedCount)
         case .empty:
             Text(String(localized: "series.episodes.empty"))
                 .font(.subheadline)
@@ -227,7 +229,6 @@ struct SeasonsSection: View {
                     Divider()
                 }
             }
-            .sensoryFeedback(.selection, trigger: season.watchedCount)
         default:
             episodes(of: season)
         }
