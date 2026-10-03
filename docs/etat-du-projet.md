@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-09-30
+maj: 2026-10-03
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -8,7 +8,9 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1 et 2 sont livrées.** L'app tourne sur l'iPhone de la founder, installée par câble et réinstallée le 24/09 en même temps que la migration V2 (signature personnelle valable 7 jours — prochaine échéance **~01/10**, `make device`). Deux jours d'usage réel avaient produit **sept retours**, tous traités le 23/09 en cinq PRs (#18 → #22). **420 tests verts**, couverture Domain 96,6 % · Data 95,6 % · Features 90,4 %.
+**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **601 tests verts**, couverture Domain ~97 % · Data ~96 % · Features ~90 %.
+
+La session du 30/09 → 03/10 a traité **huit retours**, en a trouvé **deux de plus** (un par une question de la founder, un en la regardant cliquer), **récupéré une PR fusionnée dans le vide** le 27/09, puis corrigé **cinq retours d'usage** après deux jours sur l'appareil. **Aucun changement de schéma sur tout le lot** — donc aucune migration, et rien à sauvegarder avant d'installer.
 
 Ce que le produit fait aujourd'hui : chercher un film, une série ou un livre (TMDB + OpenLibrary en parallèle), **par titre ou par réalisateur / actrice** ; **le logger en un geste** avec le `+` d'un résultat — qui demande confirmation si l'œuvre est déjà loggée — ou ouvrir sa **fiche** (jaquette, durée, réalisateur, genres, résumé, tous ses logs) et logger depuis là **avec un formulaire** (date au jour près, demi-étoiles, statut, commentaire) ; **garder pour plus tard** avec ♡, dans un onglet **Envie** d'où « Je l'ai vu » fait passer l'œuvre au Journal ; **modifier ou supprimer** un log ; **relire son Journal**, qui s'ouvre sur **tout**, groupé par jour, filtrable par Semaine · Mois · Année et par type, chaque ligne montrant l'aperçu de son commentaire, et dont le tap ouvre la fiche de l'œuvre ; **Réglages** (Confidentialité, À propos, Tout effacer). Tout est local, sans compte, en français et en anglais.
 
@@ -99,28 +101,46 @@ Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question R
 | 34 | **Radio France** — Apple ne publie pas leurs flux ; résolveur + clé gratuite au Trousseau | ⏳ attend 5 min de la founder |
 | 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
 
-### Corrections d'usage — après deux jours de podcasts (30/09)
+### Corrections d'usage — après deux jours de podcasts (30/09 → 01/10)
 
-Huit retours, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. **Deux bugs**, un déjà corrigé le 28/09, cinq décisions produit. L'ordre suit ce qui gêne au quotidien : le Journal d'abord, puisqu'il double sur **tous** les types.
+Huit retours, notés mot pour mot dans `docs/product/retours-utilisateurs.md`. **Deux bugs**, un déjà corrigé le 28/09, cinq décisions produit — plus **un neuvième trouvé par une de ses questions**, et **un dixième trouvé en la regardant cliquer**. Tout est livré.
 
 | PR | Retour | Correction | État |
 |---|---|---|---|
-| 36 | « Dans journal, tout est toujours dupliqué — une œuvre = une seule fiche » | Une ligne de Journal = une **œuvre**, plus un log : le log le plus récent en tête, les autres dans la fiche | ⏳ |
-| 37 | « Quand je finis une saison, ça fait disparaître la série de En cours » | « En cours » passe à la saison suivante sans l'avoir chargée, comme la fiche sait déjà le faire | ⏳ |
-| 38 | « Saison repliée je peux pas tout cocher » + « j'ai tout vu toute la série » + « ça doit passer en terminé » | « Tout cocher » sur l'en-tête replié, « J'ai vu toute la série », et « terminé » posé au lieu d'être proposé quand tout est vu | ⏳ |
-| 39 | « Les podcasts dans l'autre sens, et par année » | Liste du plus ancien au plus récent, regroupée par année, « jusqu'ici » dans le même sens qu'une série | ⏳ |
-| 40 | « Je suis pas obligée de commencer par le premier » + « quelle différence entre logger et j'ai commencé » | Carte « Prochain » retirée des podcasts (le plan le disait déjà) ; le statut redevient un choix dans le formulaire, la fiche garde deux boutons | ⏳ |
+| 36 | « Dans journal, tout est toujours dupliqué — une œuvre = une seule fiche » | Une ligne = une **œuvre** : le log le plus récent en tête, note et commentaire remontés du log qui les porte | ✅ #56 |
+| 37 | « Quand je finis une saison, ça fait disparaître la série de En cours » | « En cours » passe à la saison suivante sans réseau, par le compte rangé dans la fiche | ✅ #57 |
+| 38 | « Si j'ai tout vu, ça doit me la mettre en terminé » | « Terminé » posé tout seul quand toutes les saisons sont vues — **inverse la proposition du 24/09** | ✅ #58 |
+| 39 | « Saison repliée je peux pas tout cocher » + « j'ai tout vu toute la série » | Boutons sur l'en-tête de saison, et « J'ai vu toute la série » sous la liste | ✅ #60 |
+| 40 | « Les podcasts dans l'autre sens, et par année » | Liste du plus ancien au plus récent, **chaque année dépliable et cochable comme une saison** | ✅ #61, #68 |
+| 41 | « Je suis pas obligée de commencer par le premier » | Carte « Prochain » retirée des podcasts (le plan le disait déjà) | ✅ #61 |
+| 42 | « Quelle différence entre logger et j'ai commencé » | Deux boutons sur la fiche ; le statut se choisit dans le formulaire — **founder, inverse son retour du 27/09** | ✅ #62 |
+| 43 | Un podcast dans « En cours » affichait « S1 · E3 sur 96 » | « 3 épisodes écoutés » + le dernier non écouté par son titre, sans barre ni « Terminé » | ✅ #63 |
+| 44 | *(sa question)* « ça s'update quand une nouvelle saison arrive ? » | Le compte de saisons était figé à vie : réappris à chaque ouverture de fiche | ✅ #59 |
+| 45 | *(vu en cliquant)* « je suis obligée de mettre log pour voir les saisons » | Ouvrir la fiche d'une série suffit à l'enregistrer, **sans écrire de log** | ✅ #67 |
 
-**Déjà livré, à re-vérifier sur son iPhone** : « demander quel épisode quand je logge une série ou un podcast » (#42, 27/09) et « cette série n'est pas découpée chez TMDB » sur un podcast (#51, 28/09 à 12h). Son app date peut-être d'avant — signature à renouveler vers le 05/10 de toute façon.
+**Déjà livré avant cette session** : « demander quel épisode quand je logge une série » (#42, 27/09) et le message « pas découpée chez TMDB » sur un podcast (#51, 28/09).
 
-### Nouvelles saisons — cadré le 30/09, pas commencé
+**Et un retour du 27/09 qui n'avait jamais été livré** : la #44 (« le prochain épisode dans le journal aussi ») avait été fusionnée dans une branche déjà écrasée. Récupérée en **#55** — détail dans `docs/journal/2026-10-01-huit-retours-et-les-saisons.md`.
 
-Né d'une question de la founder (« ça s'update quand y'a une nouvelle saison ? ») qui a trouvé un bug — corrigé en #59 — et laissé une feature derrière lui. **Pas de bandeau, pas de notification** : une série dont une saison sort **réapparaît dans « En cours »**, l'écran qui sert déjà à ça. Plan : `docs/plans/nouvelles-saisons.md`, 2 PRs, 1 à 2 jours.
+### Nouvelles saisons — livrée le 01/10
+
+Née de sa question (« ça s'update quand y'a une nouvelle saison ? ») et cadrée avec elle : **pas de bandeau, pas de notification**. Une série dont une saison sort **réapparaît dans « En cours »**, l'écran qui sert déjà à ça. Plan : `docs/plans/nouvelles-saisons.md`.
 
 | PR | Feature | État |
 |---|---|---|
-| 41 | Une série finie qui a du nouveau revient dans « En cours » (aucun réseau) | ⏳ |
-| 42 | Réapprendre les saisons au lancement, une fois par jour, plafonné | ⏳ |
+| 46 | Une série finie revient quand une saison connue n'a pas été vue ; jamais une abandonnée | ✅ #65 |
+| 47 | Réapprendre les saisons au lancement : une fois par jour, 20 séries au plus, panne silencieuse | ✅ #66 |
+
+**Ce que ça ne fait pas, et c'est assumé** : prévenir quand l'app est fermée. Ce serait une notification, donc un serveur, donc la Tranche 6.
+
+### Correctifs d'usage — après deux jours sur l'iPhone (03/10)
+
+Cinq retours, **deux causes**, aucune visible en test. Détail mot pour mot dans `docs/product/retours-utilisateurs.md`.
+
+| PR | Retour | Correction | État |
+|---|---|---|---|
+| 48 | « Plus de petite vibration » + « pas sur le dernier épisode » + « sur tous les boutons » | Le déclencheur suit le **geste**, pas une valeur affichée, et vit au niveau de l'écran | ✅ #70 |
+| 49 | « Ça a mis beaucoup de temps pour tout décocher » + « ça lag quand j'enregistre les podcasts » | Une seule écriture en base par geste au lieu d'une par épisode ; quatre tests **comptent les écritures** | ✅ #69 |
 
 ### Tranches suivantes
 
@@ -293,7 +313,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 420, tous verts
+## 4. Tests — 601, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|

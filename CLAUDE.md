@@ -131,6 +131,12 @@ Bloquant = bug ; secret ou `Config/Secrets.xcconfig` dans le diff ; code de feat
 
 > **Un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer.** Comparer les PNG des états entre eux (`#expect(Set(shots).count == 3)`) — c'est ce qui tient la règle « vide ≠ erreur ≠ edge ». Les captures des PRs se produisent de la même façon, par un `CaptureHarness.swift` temporaire supprimé avant le commit : pièges et mode d'emploi dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`.
 
+> **« Merged » sur GitHub ne veut pas dire « sur `main` ».** Une PR dont la base est une autre branche se fusionne **dans cette branche** — et si celle-ci a déjà été écrasée dans `main`, le travail n'arrive nulle part. C'est arrivé à la #44 le 27/09, découvert le 30/09 : un retour documenté ✅ n'avait jamais tourné sur l'iPhone. Vérifier avec `git merge-base --is-ancestor <commit> origin/main`, et **toujours ouvrir une PR sur `main`**, quitte à rebaser après le squash de la base.
+
+> **Une assertion qui se compare à elle-même ne prouve rien.** `#expect(label == String(localized: "clé"))` est vert même si la clé n'existe pas — les deux côtés rendent la clé, et l'écran affiche « clé 2 1 » en clair. Même famille que `#expect(height > 0)`. Avant d'écrire une assertion, se demander *qu'est-ce qui la rendrait rouge ?* ; si rien, l'ancrer sur quelque chose d'extérieur (`contains("S2")`, des PNG comparés, un **nombre d'écritures**). Pour une mesure de performance, compter les allers-retours en base — un chronomètre est instable.
+
+> **`make device` : trois pièges.** `errSecInternalComponent` à la signature = macOS veut demander l'autorisation d'utiliser la clé et ne peut pas afficher sa fenêtre → **relancer au premier plan**. Un iPhone « available (paired) » n'est **pas** « connected » → écran déverrouillé, câble enfoncé. Et `make device | tail` masque toute la sortie jusqu'à la fin, comme `make test | tail`.
+
 ## Contexte founder — à garder en tête
 
 Retour de burn-out, recherche d'emploi en parallèle, deux produits iOS co-prioritaires (Mealkin + Kulturstack). Le risque identifié est la **dispersion**.
