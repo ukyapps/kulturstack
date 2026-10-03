@@ -1,6 +1,6 @@
 # ADR-013 — Les podcasts : Apple pour chercher, le flux RSS pour les épisodes
 
-- Statut : **accepted**
+- Statut : **accepted** — le point 5 (Radio France par Podcast Index) est **remplacé par l'[ADR-014](014-flux-radio-france-par-leur-page.md)**, qui y arrive sans clé.
 - Date : 2026-09-27
 - Contexte : tranche Podcasts, avancée avant l'import à la demande de la founder
 
@@ -35,4 +35,4 @@ Le PRD annonçait « Apple Podcasts + RSS » sans dire qui fait quoi. Avant d'é
 
 - **Podcast Index comme source unique** (recherche + flux) : sa recherche est moins bonne qu'Apple sur le catalogue français, et elle aurait demandé une clé dès la première PR — donc une action de la founder avant tout résultat visible.
 - **fyyd** (API ouverte, sans clé) : testée le 27/09, pertinence trop faible — « le code a changé » rend un podcast coréen sans rapport.
-- **Deviner l'URL du flux Radio France** depuis la page de l'émission : c'est du scraping, et rien dans ce que rend Apple ne permet de remonter jusqu'à la page.
+- ~~**Deviner l'URL du flux Radio France** depuis la page de l'émission : c'est du scraping, et rien dans ce que rend Apple ne permet de remonter jusqu'à la page.~~ **Écarté à tort** : mesuré le 03/10, le producteur et le titre rendus par Apple suffisent à retrouver la page dans 23 cas sur 24, et la page déclare son flux dans la balise que lisent tous les lecteurs de podcasts. C'est devenu la décision de l'[ADR-014](014-flux-radio-france-par-leur-page.md). La leçon : cette ligne-là n'avait pas été mesurée.
