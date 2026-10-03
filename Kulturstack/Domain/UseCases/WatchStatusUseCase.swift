@@ -51,9 +51,7 @@ struct WatchStatusUseCase {
     // avait posé, jamais ce qui a été dit à la main. Sans épisode coché, aucun statut deviné.
     func refreshAfterChecking(_ item: MediaItem, seasons: [SeasonSummary] = [], now: Date = .now) throws {
         guard Self.hasWatchedEpisodes(item) else {
-            for entry in item.logs.filter({ $0.episode == nil && $0.source == Self.automaticSource }) {
-                try edit.delete(entry)
-            }
+            try edit.delete(item.logs.filter { $0.episode == nil && $0.source == Self.automaticSource })
             return
         }
         // Tout vu pose « terminé », le reste pose « en cours » : le même geste, deux issues.

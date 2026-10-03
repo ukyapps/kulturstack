@@ -215,4 +215,5 @@ private struct FailingLogRepository: LogRepository {
     func find(id: UUID) throws -> LogEntry? { throw FailingError() }
     func save() throws { throw FailingError() }
     func delete(_ log: LogEntry) throws { throw FailingError() }
+    func delete(_ logs: [LogEntry]) throws { throw FailingError() }
 }

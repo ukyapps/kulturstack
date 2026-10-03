@@ -23,7 +23,12 @@ struct SwiftDataLogRepository: LogRepository {
     }
 
     func delete(_ log: LogEntry) throws {
-        context.delete(log)
+        try delete([log])
+    }
+
+    func delete(_ logs: [LogEntry]) throws {
+        guard !logs.isEmpty else { return }
+        for log in logs { context.delete(log) }
         try context.save()
     }
 }
