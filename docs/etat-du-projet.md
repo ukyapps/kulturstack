@@ -8,7 +8,9 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **601 tests verts**, couverture Domain ~97 % · Data ~96 % · Features ~90 %.
+**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **620 tests verts**, couverture Domain 97,0 % · Data 96,2 % · Features 90,2 %.
+
+**Les podcasts de Radio France ont leurs épisodes depuis le 03/10** (PR 34), et **sans clé ni compte** : leur page déclare son flux RSS, et son adresse se déduit de ce que rend Apple — 23 podcasts sur 24. L'inscription à Podcast Index que le plan prévoyait est devenue inutile (ADR-014). Il ne reste que la **PR 35** pour clore la tranche.
 
 La session du 30/09 → 03/10 a traité **huit retours**, en a trouvé **deux de plus** (un par une question de la founder, un en la regardant cliquer), **récupéré une PR fusionnée dans le vide** le 27/09, puis corrigé **cinq retours d'usage** après deux jours sur l'appareil. **Aucun changement de schéma sur tout le lot** — donc aucune migration, et rien à sauvegarder avant d'installer.
 
@@ -98,7 +100,7 @@ Décision founder du 27/09 : **les podcasts avant l'import**. Plan et question R
 | 31 | Chercher un podcast chez Apple (sans clé ni compte) | ✅ #49 |
 | 32 | Les épisodes par le flux RSS (`XMLParser`, sans dépendance) | ✅ #50 |
 | 33 | Le vocabulaire des podcasts : liste à plat, « J'ai tout écouté » | ✅ #51 |
-| 34 | **Radio France** — Apple ne publie pas leurs flux ; résolveur + clé gratuite au Trousseau | ⏳ attend 5 min de la founder |
+| 34 | **Radio France** — Apple ne publie pas leurs flux ; leur page, si : résolveur **sans clé** (ADR-014) | ✅ 03/10 — 23 podcasts sur 24, zéro secret, zéro minute de la founder |
 | 35 | Seed DEBUG avec un podcast, finitions FR / EN | ⏳ |
 
 ### Corrections d'usage — après deux jours de podcasts (30/09 → 01/10)
@@ -313,7 +315,7 @@ Kulturstack/
 
 **Règle apprise en PR 2** : une vue ne garde jamais un `@Model` en main — le ViewModel expose des instantanés valeur (`JournalRowModel`), et une feuille s'ouvre sur un `LogReference` (un id). Sinon, supprimer l'objet pendant que la liste l'affiche fait planter l'app (vu au premier « Tout effacer »).
 
-## 4. Tests — 601, tous verts
+## 4. Tests — 620, tous verts
 
 | Fichier | Tests | Couvre |
 |---|---|---|
@@ -354,7 +356,7 @@ Kulturstack/
 | `TMDBProviderTests` | 17 (paramétrés : 20 cas) | **T-10** fixture réelle → 8 films + 5 séries, personnes ignorées ; film et série détaillés ; ordre conservé ; URL + langue + Bearer ; secret manquant → aucun appel réseau ; 401 et JSON cassé → erreur ; langue selon la locale ; **une recherche de personne ramène sa filmographie, la plus populaire d'abord ; filmographie demandée une fois, bonne langue, jeton ; filmographie en panne → les titres restent ; une recherche de titre ne va pas chercher de personne (homonymes de « dune ») ; 20 œuvres au plus, les plus populaires ; un réalisateur ramène ce qu'il a réalisé ; une actrice ce qu'elle a joué** |
 | `MediaCandidateTests` | 1 | identité = clé externe |
 | `OpenLibraryProviderTests` | 5 | **T-11** fixture réelle → 20 livres, `ol:work:` + `isbn13:` (13 chiffres, max 20) ; `BookDetails` ; **T-12** User-Agent + requête ; 503 propagé ; livres seulement |
-| `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary], familles [écran, livres], detailsProviders = [TMDB] ; User-Agent nomme l'app et un contact |
+| `ProviderRegistryTests` | 2 | live = [tmdb, openlibrary, apple], familles [écran, livres, podcasts], detailsProviders = [TMDB], **3 sources d'épisodes : TMDB, le flux RSS, puis la page de Radio France** ; User-Agent nomme l'app et un contact |
 | `TMDBDetailsTests` | 5 (paramétrés : 8 cas) | fixture film → 2h35, genres, réalisateur ; fixture série → 2 saisons, 14 épisodes, statut, genres, créateurs ; URL movie/{id} + credits + langue + Bearer ; clés d'une autre forme → nil sans requête ; secret manquant → erreur sans requête |
 | `EnrichUseCaseTests` | 5 (paramétrés : 10 cas) | remplit créateurs + poche et enregistre ; créateurs existants gardés ; panne → rien ne change ; clé inconnue → sauté ; needsEnrichment par type |
 | `SearchViewModelTests` | 18 | ♡ → wish + toast portant l'id, pas de pastille ; ligne déjà loggée → « Vu le … », refreshLogDates la met à jour ; + → logNow + pastille + toast (portant l'id du log) qui s'efface, échec → toast d'erreur sans id ; idle sous 2 caractères ; une section par famille ; **debounce → un seul appel avec la dernière saisie** ; effacer → idle ; filtre par type (candidats filtrés, familles étrangères masquées) ; filtre sans résultat = edge ; rien nulle part = aucun résultat ; section en erreur visible à côté des résultats ; retry ciblé ; chips = types des familles ; sous-titre ; **+ sur une œuvre déjà loggée : demande d'abord, confirmer logge, refuser n'écrit rien, et un deuxième tap dans la même session demande aussi** |
@@ -374,8 +376,10 @@ Kulturstack/
 | `InProgressViewModelTests` | 9 | vide ; progression et prochain épisode ; avancer coche **une seule** chose et fait bouger la ligne ; plus de suite au dernier ; terminer sort de la liste ; un livre se termine ; erreur de lecture ≠ vide ; œuvre supprimée entre-temps |
 | `InProgressViewRenderingTests` | 2 | l'onglet vide et l'onglet rempli ne donnent pas le même pixel ; la ligne avec ✓ et la ligne avec « Terminé » non plus |
 | `DebugSeasonsViewTests` | 4 | l'écran DEBUG des saisons se rend dans ses quatre états |
+| `RadioFrancePageTests` | 11 | **l'adresse d'une page Radio France déduite du producteur et du titre, comparée aux 31 cas mesurés sur le vrai site** ; chaque station a son chemin ; un producteur hors Radio France n'a aucune page ; « Rádio FIP » n'est pas « FIP » ; accents et ponctuation ; le nom de la station tombe du titre (« Les Matins de France Culture » → `les-matins`) ; l'article tombe en deuxième essai (« Les Grandes Traversées » → `grandes-traversees`) ; jamais plus de 3 essais, jamais deux fois la même ; un titre sans lettre ne donne rien ; **le flux lu dans la page réelle** ; page sans flux ; seul un `alternate` RSS compte ; données illisibles |
+| `RadioFranceEpisodeProviderTests` | 12 | une clé qui n'est pas un podcast Apple ne déclenche **aucune** requête ; clé malformée non plus ; la chaîne Apple → page → flux → 9 épisodes ; la saison implicite ; **résolution faite une seule fois** (3 requêtes pour lister puis déplier) ; deuxième orthographe essayée si la première n'existe pas ; **podcast sans page → vide sans erreur** ; **page en panne → erreur, pas vide** ; panne d'Apple propagée ; producteur hors Radio France → aucune page chargée ; le flux donné par Apple gagne ; podcast inconnu d'Apple |
 
-Couverture : `Domain/` 97 %, `Data/` 95 %, `Features/` 88 %, `DesignSystem/` 86 %.
+Couverture au 03/10 : `Domain/` 97,0 %, `Data/` 96,2 %, `Features/` 90,2 %. Les deux fichiers de la PR 34 sont à 100 % et 98,4 %.
 
 **Ce que la T2 a changé dans la façon de tester** : un test de rendu qui se contente de `#expect(height > 0)` ne peut pas échouer. Le 24/09 il a laissé passer une section qui rendait « aucune saison » au lieu de la liste (la clé de l'œuvre de test ne correspondait pas à celle du stub). Les tests de rendu **comparent maintenant les PNG des états entre eux** — `#expect(Set(shots).count == 3)` tient directement la règle « vide ≠ erreur ≠ edge » du CLAUDE.md. Même mécanique pour les captures des PRs : un `CaptureHarness.swift` temporaire, supprimé avant le commit (mode d'emploi et pièges dans `docs/journal/2026-09-27-fin-de-la-tranche-2.md`). Fixtures réelles : `tmdb-search-multi-dune.json`, `openlibrary-search-dune.json` (21/09/2026), `tmdb-movie-dune.json` (réduite), `tmdb-tv-dune-prophecy.json` (22/09/2026). Réseau stubbé par `StubURLProtocol` (suite `.serialized`) ou `StubHTTPClient` ; providers simulés par `MockProvider` (délai, erreur, trace d'annulation). Cibles (≥ 70 % Domain et Data, ≥ 50 % Features) tenues.
 
@@ -396,9 +400,9 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | Identité git | `ukyapps` + email noreply |
 | Domaines | kulturstack.com / .app / .io / .fr **libres au 19/09, pas réservés** |
 
-## 6. Décisions (13 ADRs)
+## 6. Décisions (14 ADRs)
 
-001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09).
+001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09) · **014 les flux de Radio France se lisent dans leur page, sans clé** (03/10, remplace le point 5 de l'ADR-013).
 
 ## 7. Carte de la documentation
 
@@ -412,14 +416,14 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | `docs/product/design.md` | l'expérience : écrans, états, design system | avant un écran |
 | `docs/product/retours-utilisateurs.md` | ce que la founder (et plus tard d'autres) a dit, et ce qu'on en a fait | avant de trancher |
 | `docs/tdd/01…07` | architecture, modèle, protocoles, sources, tests, secrets, RGPD | avant de coder une couche |
-| `docs/decisions/001…013` | les ADRs | quand on se demande « pourquoi » |
+| `docs/decisions/001…014` | les ADRs | quand on se demande « pourquoi » |
 | `docs/plans/tranche-1.md` | les 12 PRs de T1 (livrée) | pour l'historique |
 | `docs/plans/tranche-2.md` | les 5 PRs de T2 (**livrée**), et ce qui reste à regarder à l'usage | pour l'historique |
-| `docs/plans/podcasts.md` | les 5 PRs de la tranche **Podcasts** (proposée) — et sa question ouverte | avant chaque PR de podcasts |
+| `docs/plans/podcasts.md` | les 6 PRs de la tranche **Podcasts** (5 livrées, reste la 35) | avant chaque PR de podcasts |
 
 ## 8. Ouvert / à faire
 
-**Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app vers le 01/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app vers le 08/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Les deux choses qui attendaient son verdict à l'écran ont leur réponse (27/09)** :
 
@@ -429,12 +433,12 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 **Prochaine session — par où commencer**
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **La tranche Podcasts, PR 34 et 35** : `docs/plans/podcasts.md`. Les quatre premières sont fusionnées.
-3. **Ce qui attend la founder** : cinq minutes d'inscription gratuite à Podcast Index pour couvrir **Radio France** (Apple ne publie pas leurs flux — 10 podcasts testés, 10 sans flux), et **réinstaller l'app depuis `main`** pour vivre avec les podcasts (`make device`, signature à renouveler vers le 01/10 de toute façon).
+2. **La tranche Podcasts, PR 35** : `docs/plans/podcasts.md` — le seed DEBUG ne crée ni podcast, ni saison, ni épisode, et les compteurs du Journal n'affichent pas « Podcasts · n ». Les cinq autres PRs sont fusionnées.
+3. **Ce qui attend la founder** : **réinstaller l'app depuis `main`** (`make device`) pour avoir les épisodes de Radio France, et vérifier au doigt ce qu'aucun test ne prouve (zones tactiles de « Tout cocher », retour haptique sur un podcast). **Plus rien à créer ni à inscrire** : la PR 34 se passe de Podcast Index.
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
-**Dettes techniques connues, aucune urgente** : le Journal et l'onglet « En cours » filtrent en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs. Le prochain épisode ne vient que des saisons déjà ouvertes (pas d'appel réseau depuis l'onglet). Pas de progression de lecture pour les livres (« p. 212 sur 480 » demanderait un `SchemaV3`). Test du plan pas encore écrit : T-17 (conversion des notes, T3).
+**Dettes techniques connues, aucune urgente** : l'adresse du flux d'un podcast Radio France est retrouvée à chaque visite de sa fiche — la page fait 450 Ko, et le cache vit dans l'instance du résolveur, que `RootView` recrée à chaque rendu (c'est déjà le cas du cache de flux RSS depuis la PR 32). La corriger, c'est **ranger la clé `feed:` trouvée dans les clés externes de l'œuvre** : une seule résolution dans la vie du podcast, et plus aucune après. À faire si le poids devient un sujet à l'usage. · le Journal et l'onglet « En cours » filtrent en mémoire après `fetchAll()` — à passer en `#Predicate` si l'import T3 amène des milliers de logs. Le prochain épisode ne vient que des saisons déjà ouvertes (pas d'appel réseau depuis l'onglet). Pas de progression de lecture pour les livres (« p. 212 sur 480 » demanderait un `SchemaV3`). Test du plan pas encore écrit : T-17 (conversion des notes, T3).
 
 **Question produit encore ouverte** (PRD §9) : musique écoutée vs possédée — se posera en T4 (disques).
 

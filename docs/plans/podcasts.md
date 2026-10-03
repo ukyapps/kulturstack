@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: Podcasts (T4a du PRD, avancée avant l'import — décision founder du 27/09)
-statut: proposé — question Radio France tranchée le 27/09 : la tranche se fait sans, puis Radio France en PR 35
+statut: en cours — PRs 30 à 34 livrées ; reste la PR 35 (seed DEBUG et finitions)
 créé: 2026-09-27
 ---
 
@@ -98,17 +98,19 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 
 **Démo** : captures fiche podcast repliée / dépliée / après avoir coché.
 
-## PR 34 — Radio France `feat/radio-france-feeds`
+## PR 34 — Radio France `feat/radio-france-sans-cle` ✅
 
-**Livre** : les épisodes des podcasts que Apple laisse sans flux — France Inter, France Culture, France Info.
+**Livre** : les épisodes des podcasts que Apple laisse sans flux — France Inter, France Culture, franceinfo, France Musique, FIP, Mouv'.
 
-- Un **résolveur de flux** appelé **uniquement** quand Apple ne donne rien : il rend l'URL du flux à partir de l'identifiant Apple du podcast. Le `RSSEpisodeProvider` de la PR 32 fait le reste, sans rien savoir de tout ça.
-- Source retenue : **Podcast Index**, index ouvert des flux. Inscription **gratuite**, clé rangée dans le Trousseau puis injectée par `make secrets`, comme TMDB — **jamais** dans le dépôt, jamais dans le chat.
-- **À vérifier avec la clé en main, avant d'écrire la PR** : que Radio France y est bien indexé, et que l'endpoint « par identifiant Apple » rend le bon flux. Si ce n'est pas le cas, la PR s'arrête là et on en reparle — le reste de la tranche ne dépend pas d'elle.
-- Un **ADR** accompagne la PR : deuxième source pour une seule famille de podcasts, et pourquoi.
-- Tests : fixture réelle, podcast sans flux chez Apple → le résolveur est appelé ; podcast avec flux → il ne l'est **pas** ; résolveur en panne → la fiche montre son erreur, la recherche continue de marcher.
+**Sans clé, sans compte, sans inscription** — ce qui change par rapport à ce que ce plan prévoyait. Mesuré le 03/10 avant d'écrire une ligne : la **page** d'un podcast Radio France déclare son flux, dans la balise `<link rel="alternate" type="application/rss+xml">` que lit n'importe quel lecteur de podcasts. Et l'adresse de cette page se déduit du producteur et du titre que rend Apple : **23 pages retrouvées sur 24**, 21 du premier coup. Podcast Index — et les cinq minutes d'inscription de la founder — devient inutile. Décision et chiffres : **ADR-014**.
 
-**Démo** : « Le code a changé » et ses 96 épisodes, cochables.
+- Un **résolveur appelé uniquement quand le flux manque** : il part de la clé `itunes:` que porte déjà tout podcast en base — donc il marche aussi sur ceux **déjà loggés**, sans les rechercher. Il demande leur nom à Apple (`lookup`, 2 Ko), puis essaie **au plus trois adresses** de page. Le `RSSEpisodeProvider` de la PR 32 fait le reste, sans rien savoir de tout ça.
+- Un podcast dont Apple donne le flux ne le fait **jamais** travailler : le flux répond avant lui.
+- **Une absence n'est pas une panne** : page inexistante → orthographe suivante, les trois épuisées → l'état vide, qui dit déjà « son flux ne les donne pas ». Toute autre panne remonte en « Impossible de charger les épisodes ».
+- Tests : 19 nouveaux, dont le calcul d'adresse comparé aux **31 cas mesurés sur le vrai site**. Fixtures réelles : le `lookup` d'Apple, la page de « Le code a changé », son flux.
+- **Hors périmètre, et écrit** : ICI (ex-France Bleu), dont les podcasts vivent sur ici.fr.
+
+**Démo** : la fiche d'un podcast Radio France, vide avant, avec ses épisodes après — `docs/captures/podcasts-pr-34/`.
 
 ## PR 35 — Le seed DEBUG et les finitions `chore/podcasts-seed`
 
@@ -138,6 +140,12 @@ Les flux **existent** pourtant : `radiofrance-podcast.net/podcast09/podcast_<uui
 
 **Réponse de la founder : « les deux à parts égales ».** Donc **l'option B d'abord, l'option A ensuite** : la tranche se fait sans Radio France (PRs 30 → 33), et Radio France arrive en **PR 34**, quand elle aura cinq minutes pour l'inscription gratuite. Elle aura entre-temps les épisodes de tout le reste.
 
+### Ce que le 03/10 a changé : une option C, qui ne coûte rien
+
+Avant de demander ces cinq minutes, une troisième piste a été mesurée : **la page du podcast sur radiofrance.fr déclare son flux**, et son adresse se déduit du producteur et du titre rendus par Apple. **23 podcasts sur 24**, dont 21 du premier essai. Ni clé, ni compte, ni secret.
+
+L'ADR-013 avait écarté cette piste d'une phrase — « rien dans ce que rend Apple ne permet de remonter jusqu'à la page ». C'était **supposé, pas mesuré, et faux**. La founder a tranché l'option C le 03/10, Podcast Index restant le recours écrit si la page cesse de marcher. Détail et chiffres : **ADR-014**.
+
 ## Ce qu'on vérifie avant de dire « shippé »
 
 - [ ] **La base de la founder survit à la migration V3** — testée sur son iPhone, avec ses vrais logs et ses épisodes cochés.
@@ -149,8 +157,8 @@ Les flux **existent** pourtant : `radiofrance-podcast.net/podcast09/podcast_<uui
 - [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
 - [ ] Aucune string en dur, FR + EN dans la même PR.
 - [ ] Captures vide **et** rempli dans chaque PR.
-- [ ] Aucun secret dans le dépôt — la clé de la PR 34 passe par le Trousseau et `make secrets`.
-- [ ] Un podcast dont Apple donne le flux **n'appelle pas** le résolveur de la PR 34.
+- [x] Aucun secret dans le dépôt — **la PR 34 n'en introduit aucun** : elle lit une page publique, sans clé ni compte (ADR-014).
+- [x] Un podcast dont Apple donne le flux **n'appelle pas** le résolveur de la PR 34.
 
 ## Ce que cette tranche ne résout pas
 
