@@ -261,6 +261,7 @@ private struct FailingLogRepository: LogRepository {
     func find(id: UUID) throws -> LogEntry? { throw StubError() }
     func save() throws { throw StubError() }
     func delete(_ log: LogEntry) throws { throw StubError() }
+    func delete(_ logs: [LogEntry]) throws { throw StubError() }
 }
 
 @MainActor
@@ -273,6 +274,7 @@ private final class StubLogRepository: LogRepository {
     func find(id: UUID) throws -> LogEntry? { try result.get().first { $0.id == id } }
     func save() throws {}
     func delete(_ log: LogEntry) throws { throw StubError() }
+    func delete(_ logs: [LogEntry]) throws { throw StubError() }
 }
 
 // Cocher des épisodes ne doit pas noyer le journal : une saison cochée, c'est une ligne

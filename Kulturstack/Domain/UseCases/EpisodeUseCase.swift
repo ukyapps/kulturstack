@@ -57,7 +57,7 @@ struct EpisodeUseCase {
     func toggle(_ episode: Episode, of item: MediaItem, now: Date = .now) throws {
         let watched = episode.logs.filter { $0.item?.id == item.id }
         guard watched.isEmpty else {
-            for entry in watched { try edit.delete(entry) }
+            try edit.delete(watched)
             return
         }
         try log.log(item, status: .done, date: now, episode: episode)
@@ -66,23 +66,17 @@ struct EpisodeUseCase {
     // Cocher un ensemble choisi — une année de podcast, par exemple. On ne redouble jamais
     // ce qui l'est déjà, et décocher ne touche que ce qui est passé en argument.
     func check(_ episodes: [Episode], of item: MediaItem, now: Date = .now) throws {
-        for episode in episodes where !episode.isWatched {
-            try log.log(item, status: .done, date: now, episode: episode)
-        }
+        try log.log(item, episodes: episodes.filter { !$0.isWatched }, status: .done, date: now)
     }
 
     func uncheck(_ episodes: [Episode], of item: MediaItem) throws {
-        for episode in episodes {
-            for entry in episode.logs.filter({ $0.item?.id == item.id }) { try edit.delete(entry) }
-        }
+        try edit.delete(episodes.flatMap { $0.logs.filter { $0.item?.id == item.id } })
     }
 
     // « Tout cocher jusqu'ici » : on comble les trous de la saison, on ne redouble jamais ce qui l'est déjà.
     func checkUpTo(_ episode: Episode, of item: MediaItem, now: Date = .now) throws {
         guard let season = episode.season else { return }
-        for candidate in season.orderedEpisodes where candidate.number <= episode.number && !candidate.isWatched {
-            try log.log(item, status: .done, date: now, episode: candidate)
-        }
+        try check(season.orderedEpisodes.filter { $0.number <= episode.number }, of: item, now: now)
     }
 
     // « J'ai vu toute la saison » : la même règle que « jusqu'ici », appliquée au dernier épisode.

@@ -22,4 +22,9 @@ struct EditLogUseCase {
         try repository.delete(log)
     }
 
+    // Une seule écriture pour tout un lot : décocher une saison ne doit pas se sentir.
+    func delete(_ logs: [LogEntry]) throws {
+        try repository.delete(logs)
+    }
+
 }
