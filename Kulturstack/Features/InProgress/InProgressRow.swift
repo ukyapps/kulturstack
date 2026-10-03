@@ -30,8 +30,6 @@ struct InProgressRow: View {
         }
         .padding(.vertical, Spacing.xs)
         .contentShape(Rectangle())
-        // Le tap se sent autant qu'il se voit : la ligne bouge peu, la main doit savoir.
-        .sensoryFeedback(.success, trigger: model.progress?.position)
     }
 
     // Une série a une suite à cocher ; un livre, ou une série arrivée au bout, se termine.

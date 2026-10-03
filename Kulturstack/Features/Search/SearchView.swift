@@ -53,6 +53,9 @@ struct SearchView: View {
                 }
             }
             .animation(.default, value: viewModel.toast)
+            // Le + et le ♡ d'un résultat se sentent comme une coche d'épisode : même geste
+            // pour la main, même retour (founder, 03/10).
+            .sensoryFeedback(.success, trigger: viewModel.feedback)
             .sheet(item: $editing) { LogEditView(logID: $0.id, services: services) }
             .confirmationDialog(String(localized: "search.duplicate.title"), isPresented: isWarningOfDuplicate,
                                 titleVisibility: .visible, presenting: viewModel.duplicate) { _ in

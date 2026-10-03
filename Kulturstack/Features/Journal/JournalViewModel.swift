@@ -23,6 +23,8 @@ final class JournalViewModel {
     var selectedKind: MediaKind?
     var didFailToDelete = false
     var didFailToAdvance = false
+    // Le retour haptique suit le geste, pas la donnée affichée (founder, 03/10).
+    private(set) var feedback = 0
     private let repository: any LogRepository
     private let editUseCase: EditLogUseCase
     // Le Journal ne sait avancer une série que si on lui en donne le moyen : les écrans de
@@ -46,7 +48,7 @@ final class JournalViewModel {
     func advance(_ row: JournalRowModel) async {
         guard let advanceUseCase, let itemID = row.itemID else { return }
         do {
-            try await advanceUseCase.advance(itemID: itemID)
+            if try await advanceUseCase.advance(itemID: itemID) { feedback += 1 }
             didFailToAdvance = false
         } catch {
             didFailToAdvance = true

@@ -17,6 +17,8 @@ final class ItemDetailViewModel {
 
     private(set) var state: State = .loading
     var didFailToLog = false
+    // Le retour haptique suit le geste (founder, 03/10).
+    private(set) var feedback = 0
 
     private(set) var subject: Subject
     private(set) var enrichmentTask: Task<Void, Never>?
@@ -109,6 +111,7 @@ final class ItemDetailViewModel {
                 if let item = log.item { subject = .stored(item.id) }
             }
             didFailToLog = false
+            feedback += 1
             load()
         } catch {
             didFailToLog = true
