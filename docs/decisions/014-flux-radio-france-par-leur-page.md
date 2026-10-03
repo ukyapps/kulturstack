@@ -2,7 +2,7 @@
 
 - Statut : **accepted**
 - Date : 2026-10-03
-- Contexte : tranche Podcasts, PR 34. Remplace le point 5 de l'[ADR-013](013-sources-des-podcasts.md).
+- Contexte : tranche Podcasts, PR 34. Remplace le point 5 de l'[ADR-013](013-sources-des-podcasts.md), et est **prolongé par l'[ADR-015](015-podcast-index-en-second-recours.md)**, qui va chercher ailleurs ce que la page ne donne pas (76 % → 97 %).
 
 ## Contexte
 
