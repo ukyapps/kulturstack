@@ -15,6 +15,23 @@ Standard founder (2026-07-10) : **jamais** de secret dans le chat, un `.env`, un
 | `TMDB_READ_TOKEN` | jeton de lecture TMDB v4 (ou clé v3) — gratuit, non facturé, révocable | Trousseau → `Secrets.xcconfig` (gitignoré) → `Info.plist` → binaire |
 | OpenLibrary | pas de clé | — |
 
+## Tranche Podcasts : deux secrets de plus (ADR-015)
+
+| Secret | Nature | Où il vit |
+|---|---|---|
+| `PODCASTINDEX_KEY` | clé d'API Podcast Index — 20 caractères, gratuite, révocable | même tuyau que TMDB |
+| `PODCASTINDEX_SECRET` | secret d'API Podcast Index — 40 caractères ; les deux signent chaque requête (SHA-1 de clé + secret + heure Unix) | même tuyau que TMDB |
+| Apple Podcasts, RSS, radiofrance.fr | pas de clé | — |
+
+Même risque accepté que TMDB : extractibles du binaire. La différence à nommer — ce sont les identifiants **personnels de la founder**, et son quota. Révocables depuis son compte. Ils migrent derrière le proxy en T6.
+
+**Sans eux, l'app marche** : la source se tait, les podcasts de Radio France dont la page donne le flux gardent leurs épisodes, les autres montrent leur état vide. La CI tourne avec `ci-placeholder`.
+
+**Deux pièges rencontrés le 03/10 en les rangeant :**
+
+- Podcast Index envoie **trois** choses : une clé (20 caractères), un secret (40) et un mot de passe de compte. C'est le **secret** qu'il faut, pas le mot de passe.
+- Un copier-coller **depuis une capture d'écran** passe par la reconnaissance de texte de macOS, qui remplace certaines lettres par des sosies cyrilliques (Р, А, е, Е). La valeur fait la bonne longueur et l'authentification échoue quand même. Vérifier avec `pbpaste | python3 -c "import sys;print(sys.stdin.read().isascii())"`, et copier depuis la page, jamais depuis une image.
+
 Le jeton **est extractable du binaire**. C'est accepté et documenté (ADR-001). Rayon d'explosion : quelqu'un fait des recherches TMDB avec notre quota. Réponse : rotation.
 
 ## Le pipeline

@@ -108,7 +108,7 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 
 **76 % est le plafond de cette source**, et c'est mesuré, pas estimé : sur les 25 qui manquent, **8** ont une page qui ne déclare aucun flux, et **17** ont une adresse de page qu'aucune règle ne déduit du titre. Les retrouver par ce chemin demanderait un index des pages de Radio France, c'est-à-dire un crawl — que leur `robots.txt` interdit explicitement.
 
-**Mais une autre source va plus loin.** Mesuré le 03/10 au soir, la clé de la founder en main : **Podcast Index retrouve 22 des 25**, dont 7 des 8 dont la page ne déclare rien. Le plafond réel est donc **97 %**, pas 76 %. Ce sera une **PR 36**, avec son ADR : elle introduit deux secrets et une deuxième source, et demande un appariement strict (titre **et** producteur) parce que la correspondance par identifiant Apple de Podcast Index est très incomplète.
+**Mais une autre source va plus loin.** Mesuré le 03/10 au soir, la clé de la founder en main : **Podcast Index retrouve 22 des 25**, dont 7 des 8 dont la page ne déclare rien. Livré en **PR 36** (ADR-015) : la couverture passe à **97 %**.
 
 - Un **résolveur appelé uniquement quand le flux manque** : il part de la clé `itunes:` que porte déjà tout podcast en base — donc il marche aussi sur ceux **déjà loggés**, sans les rechercher. Il demande leur nom à Apple (`lookup`, 2 Ko), puis essaie **au plus trois adresses** de page. Le `RSSEpisodeProvider` de la PR 32 fait le reste, sans rien savoir de tout ça.
 - Un podcast dont Apple donne le flux ne le fait **jamais** travailler : le flux répond avant lui.
@@ -121,6 +121,16 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 ## PR 35 — Le seed DEBUG et les finitions `chore/podcasts-seed`
 
 **Livre** : le seed DEBUG crée un podcast avec ses épisodes, les compteurs du Journal montrent « Podcasts · n », et les libellés FR / EN sont relus (« écouté » et non « vu » — `MediaKind.seenActionLabel` existe déjà).
+
+## PR 36 — Podcast Index, quand la page ne dit rien `feat/podcast-index-radio-france` ✅
+
+**Livre** : les 24 % de podcasts Radio France que la page laissait sans épisodes. Couverture **76 % → 97 %**.
+
+- **Second recours seulement** : la page d'abord (gratuite, sans clé), l'index ensuite. Un test vérifie l'ordre.
+- **Pour Radio France seulement** : un flux hébergé ailleurs n'est jamais retenu, un producteur d'une autre maison ne déclenche aucune requête. C'est ce qui borne les dégâts d'un mauvais appariement, et ce qui garde le quota pour ce à quoi il sert.
+- **Appariement strict** : titre **et** producteur, accents et ponctuation ignorés, flux vivant, le plus fourni gagne. Sans ça, « L'instant pour Soi » — dont l'**auteur** s'appelle « L'instant M » — atterrirait sur la fiche de l'émission de France Inter.
+- **Deux secrets**, même tuyau que TMDB. Sans eux, l'app marche et la source se tait.
+- Tests : 16 nouveaux, dont la signature SHA-1 comparée à ce que rend `shasum`, et une fixture réelle qui porte les quatre pièges d'un coup.
 
 ---
 
@@ -163,7 +173,7 @@ L'ADR-013 avait écarté cette piste d'une phrase — « rien dans ce que rend A
 - [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
 - [ ] Aucune string en dur, FR + EN dans la même PR.
 - [ ] Captures vide **et** rempli dans chaque PR.
-- [x] Aucun secret dans le dépôt — **la PR 34 n'en introduit aucun** : elle lit une page publique, sans clé ni compte (ADR-014).
+- [x] Aucun secret dans le dépôt — la PR 34 n'en introduit aucun ; les deux de la **PR 36** passent par le Trousseau et `make secrets`, jamais par le dépôt (ADR-015).
 - [x] Un podcast dont Apple donne le flux **n'appelle pas** le résolveur de la PR 34.
 
 ## Ce que cette tranche ne résout pas

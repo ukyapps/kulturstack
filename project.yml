@@ -43,6 +43,8 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         ITSAppUsesNonExemptEncryption: false
         TMDBReadToken: $(TMDB_READ_TOKEN)
+        PodcastIndexKey: $(PODCASTINDEX_KEY)
+        PodcastIndexSecret: $(PODCASTINDEX_SECRET)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ukyapps.kulturstack

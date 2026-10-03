@@ -9,8 +9,11 @@ struct RadioFranceEpisodeProviderTests {
     private static let itunesKey = "itunes:1498344139"
     private static let pagePath = "/franceinter/podcasts/le-code-a-change"
 
-    private func makeProvider(_ client: StubHTTPClient) -> RadioFranceEpisodeProvider {
-        RadioFranceEpisodeProvider(client: client, userAgent: "Kulturstack/0.1.0", country: "FR")
+    private func makeProvider(_ client: StubHTTPClient, withIndex: Bool = false) -> RadioFranceEpisodeProvider {
+        let secrets = MockSecrets(values: withIndex ? [.podcastIndexKey: "KEY", .podcastIndexSecret: "SECRET"] : [:])
+        return RadioFranceEpisodeProvider(
+            client: client, userAgent: "Kulturstack/0.1.0", country: "FR",
+            index: PodcastIndexFeedResolver(secrets: secrets, client: client, userAgent: "Kulturstack/0.1.0"))
     }
 
     private func lookup(title: String, publisher: String, feed: String? = nil) -> Data {
@@ -187,6 +190,50 @@ struct RadioFranceEpisodeProviderTests {
 
         #expect(episodes.count == 9)
         #expect(paths == ["/lookup", "/podcast09/direct.xml"])
+    }
+
+    // MARK: - Quand la page ne suffit pas
+
+    // « L'instant M » a une page parfaitement normale sur radiofrance.fr, qui ne déclare aucun
+    // flux. L'index, lui, le connaît : c'est le cas qui a fait passer la couverture de 76 % à
+    // 97 % (ADR-015).
+    @Test func theIndexAnswersWhenThePageDeclaresNoFeed() async throws {
+        let client = StubHTTPClient(routes: [
+            "/lookup": .success(lookup(title: "L'instant M", publisher: "France Inter")),
+            // La page existe, elle ne déclare rien.
+            "/franceinter/podcasts/l-instant-m": .success(Data("<html><head></head><body>M</body></html>".utf8)),
+            "/api/1.0/search/byterm": .success(try Fixtures.data("podcastindex-search-instant-m")),
+            "/podcast09/": .success(try Fixtures.data("rss-le-code-a-change", extension: "xml")),
+        ])
+
+        let episodes = try await makeProvider(client, withIndex: true).episodes(forKey: Self.itunesKey, season: 1)
+        let paths = client.calls.map { $0.url.path() }
+
+        #expect(episodes.count == 9)
+        #expect(paths.contains("/api/1.0/search/byterm"))
+        // L'index arrive après la page, jamais avant : il coûte une clé, elle est gratuite.
+        #expect(paths.firstIndex(of: "/franceinter/podcasts/l-instant-m")! < paths.firstIndex(of: "/api/1.0/search/byterm")!)
+    }
+
+    // Quand la page donne le flux, l'index n'est jamais interrogé.
+    @Test func theIndexIsNotAskedWhenThePageAnswers() async throws {
+        let client = try fullChain()
+
+        _ = try await makeProvider(client, withIndex: true).seasons(forKey: Self.itunesKey)
+
+        #expect(client.calls.allSatisfy { !$0.url.path().contains("podcastindex") })
+        #expect(client.calls.count == 3)
+    }
+
+    // Un producteur hors Radio France ne déclenche ni page, ni interrogation de l'index :
+    // cette source ne couvre qu'eux, et le quota de la clé ne sert qu'à ça.
+    @Test func anotherPublisherNeverReachesTheIndex() async throws {
+        let client = StubHTTPClient(routes: [
+            "/lookup": .success(lookup(title: "Transfert", publisher: "Slate.fr")),
+        ])
+
+        #expect(try await makeProvider(client, withIndex: true).seasons(forKey: Self.itunesKey).isEmpty)
+        #expect(client.calls.count == 1)
     }
 
     // Un podcast qu'Apple ne connaît plus : rien à montrer, rien à faire tomber.
