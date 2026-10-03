@@ -17,7 +17,19 @@ struct EpisodeUseCase {
                 if !seasons.isEmpty { return seasons }
             }
         }
-        return []
+        // Aucune source n'a rien à dire — le seed DEBUG, qui n'en a pas, ou un flux devenu
+        // vide. Ce qu'on a déjà en base vaut mieux que « aucune saison », qui serait faux.
+        // Une panne, elle, ne passe pas ici : elle a déjà été levée plus haut.
+        return stored(of: item)
+    }
+
+    private func stored(of item: MediaItem) -> [SeasonSummary] {
+        item.seasons.sorted { $0.number < $1.number }.map { season in
+            SeasonSummary(number: season.number, title: season.title,
+                          episodeCount: season.episodes.count,
+                          airDate: season.orderedEpisodes.first?.airDate,
+                          isSpecials: season.number == 0)
+        }
     }
 
     // Déplier une saison : on la charge, on la met en cache, on rend ses épisodes.

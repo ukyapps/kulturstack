@@ -47,6 +47,34 @@ struct EpisodeUseCaseTests {
         #expect(provider.seasonCalls == [Self.key])
     }
 
+    // Aucune source ne répond — hors ligne, ou le seed DEBUG qui n'en a pas : ce qu'on a déjà
+    // en base vaut mieux que « aucune saison », qui serait un mensonge.
+    @Test func whenNoSourceAnswersTheStoredSeasonsAreShown() async throws {
+        let provider = StubEpisodeProvider(key: "une-autre-clé", seasons: .success([]))
+        let (item, useCase) = try make(provider: provider)
+        let season = try Season.make(number: 2, title: "Deuxième", item: item)
+        container.mainContext.insert(season)
+        container.mainContext.insert(Episode(number: 1, title: "Hello", season: season))
+        container.mainContext.insert(Episode(number: 2, title: "Goodbye", season: season))
+
+        let seasons = try await useCase.seasons(of: item)
+
+        #expect(seasons.map(\.number) == [2])
+        #expect(seasons.first?.title == "Deuxième")
+        #expect(seasons.first?.episodeCount == 2)
+    }
+
+    // Quand la source répond, c'est elle qui fait foi : elle connaît les saisons qui viennent
+    // de sortir, la base ne connaît que celles qu'on a déjà ouvertes.
+    @Test func aSourceThatAnswersWinsOverWhatIsStored() async throws {
+        let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1, episodes: 9),
+                                                              StubEpisodeProvider.season(2, episodes: 10)]))
+        let (item, useCase) = try make(provider: provider)
+        container.mainContext.insert(try Season.make(number: 7, item: item))
+
+        #expect(try await useCase.seasons(of: item).map(\.number) == [1, 2])
+    }
+
     @Test func aWorkWithoutEpisodesAsksNothing() async throws {
         let provider = StubEpisodeProvider(seasons: .success([StubEpisodeProvider.season(1)]))
         let (item, useCase) = try make(provider: provider, kind: .film)

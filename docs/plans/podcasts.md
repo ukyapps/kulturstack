@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: Podcasts (T4a du PRD, avancée avant l'import — décision founder du 27/09)
-statut: en cours — PRs 30 à 34 livrées ; reste la PR 35 (seed DEBUG et finitions)
+statut: **livrée** — les 7 PRs sont fusionnées
 créé: 2026-09-27
 ---
 
@@ -120,7 +120,13 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 
 ## PR 35 — Le seed DEBUG et les finitions `chore/podcasts-seed`
 
-**Livre** : le seed DEBUG crée un podcast avec ses épisodes, les compteurs du Journal montrent « Podcasts · n », et les libellés FR / EN sont relus (« écouté » et non « vu » — `MediaKind.seenActionLabel` existe déjà).
+**Livre** ✅ : le seed DEBUG crée un podcast avec ses épisodes, les compteurs du Journal montrent « Podcasts · n ».
+
+- Le podcast du seed porte **huit épisodes sur deux ans**, trois écoutés, avec des identités de flux : la fiche les range par année et se coche, hors ligne.
+- **Severance** gagne ses deux saisons : la première vue en entier, trois épisodes de la seconde — c'est ce qui remplit « En cours » et « prochain : E4 ».
+- Les compteurs du Journal n'ont demandé **aucun code** : ils listent les types qui portent un log, « Podcasts · 1 » est apparu tout seul.
+- Les libellés FR / EN n'ont rien demandé non plus : `seenActionLabel` et le vocabulaire des épisodes datent de la PR 33, et `PodcastVocabularyTests` les tient.
+- **Trouvé en faisant les captures** : la fiche ne lisait les saisons que depuis la source, jamais depuis la base — les épisodes du seed étaient donc invisibles, et un flux devenu vide effaçait ce qu'on avait déjà. `EpisodeUseCase.seasons(of:)` se replie maintenant sur ce qui est en base. Une panne, elle, reste une panne.
 
 ## PR 36 — Podcast Index, quand la page ne dit rien `feat/podcast-index-radio-france` ✅
 
