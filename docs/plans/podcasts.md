@@ -102,7 +102,9 @@ Les mêmes qu'en T1 et T2, elles ont tenu :
 
 **Livre** : les épisodes des podcasts que Apple laisse sans flux — France Inter, France Culture, franceinfo, France Musique, FIP, Mouv'.
 
-**Sans clé, sans compte, sans inscription** — ce qui change par rapport à ce que ce plan prévoyait. Mesuré le 03/10 avant d'écrire une ligne : la **page** d'un podcast Radio France déclare son flux, dans la balise `<link rel="alternate" type="application/rss+xml">` que lit n'importe quel lecteur de podcasts. Et l'adresse de cette page se déduit du producteur et du titre que rend Apple : **23 pages retrouvées sur 24**, 21 du premier coup. Podcast Index — et les cinq minutes d'inscription de la founder — devient inutile. Décision et chiffres : **ADR-014**.
+**Sans clé, sans compte, sans inscription** — ce qui change par rapport à ce que ce plan prévoyait. Mesuré le 03/10 avant d'écrire une ligne : la **page** d'un podcast Radio France déclare son flux, dans la balise `<link rel="alternate" type="application/rss+xml">` que lit n'importe quel lecteur de podcasts, et l'adresse de cette page se déduit du producteur et du titre que rend Apple. Podcast Index — et les cinq minutes d'inscription de la founder — devient inutile. Décision et chiffres : **ADR-014**.
+
+**Couverture mesurée : 73 %**, sur un échantillon aléatoire de 106 podcasts tiré des 514 que Radio France publie chez Apple sans flux. Les **émissions** passent (France Culture 77 %, France Inter 67 %, France Musique 93 %, FIP 100 %) ; les **chroniques et mixes** ratent (Mouv' 38 %, franceinfo 60 %) — leur page n'existe pas, ou existe sans déclarer de flux. **ICI (ex-France Bleu) : zéro**, ses podcasts sont sur ici.fr.
 
 - Un **résolveur appelé uniquement quand le flux manque** : il part de la clé `itunes:` que porte déjà tout podcast en base — donc il marche aussi sur ceux **déjà loggés**, sans les rechercher. Il demande leur nom à Apple (`lookup`, 2 Ko), puis essaie **au plus trois adresses** de page. Le `RSSEpisodeProvider` de la PR 32 fait le reste, sans rien savoir de tout ça.
 - Un podcast dont Apple donne le flux ne le fait **jamais** travailler : le flux répond avant lui.
