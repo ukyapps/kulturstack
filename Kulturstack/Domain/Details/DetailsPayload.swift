@@ -70,6 +70,23 @@ struct BookDetails: DetailsPayload, Equatable {
     }
 }
 
+struct AlbumDetails: DetailsPayload, Equatable {
+    static let kind = MediaKind.album
+    var trackCount: Int?
+    var genre: String?
+
+    init(trackCount: Int? = nil, genre: String? = nil) {
+        self.trackCount = trackCount
+        self.genre = genre
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        trackCount = try c.decodeIfPresent(Int.self, forKey: .trackCount)
+        genre = try c.decodeIfPresent(String.self, forKey: .genre)
+    }
+}
+
 struct PodcastDetails: DetailsPayload, Equatable {
     static let kind = MediaKind.podcast
     var feedURL: URL?

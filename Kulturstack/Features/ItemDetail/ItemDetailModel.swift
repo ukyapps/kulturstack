@@ -19,7 +19,9 @@ struct ItemDetailModel: Equatable {
     private static let maxSubjects = 3
     // Les sources qu'on interroge d'abord, les clés secondaires (IMDb, Trakt…) ensuite.
     private static let providerNames = [("tmdb", "TMDB"), ("ol", "OpenLibrary"), ("openlibrary", "OpenLibrary"), ("isbn13", "OpenLibrary"),
-                                        ("imdb", "IMDb"), ("trakt", "Trakt")]
+                                        ("imdb", "IMDb"), ("trakt", "Trakt"),
+                                        // Podcasts et disques partagent la clé `itunes:` et le même catalogue.
+                                        ("itunes", "Apple"), ("apple", "Apple"), ("apple-music", "Apple")]
 
     init(item: MediaItem) {
         let details = item.details
@@ -78,6 +80,9 @@ struct ItemDetailModel: Equatable {
         case let book as BookDetails:
             return [book.pageCount.map { String(localized: "detail.pages \($0)") }, book.publisher, list(book.subjects)]
                 .compactMap { $0 }
+        case let album as AlbumDetails:
+            let parts = [album.trackCount.map { String(localized: "detail.tracks \($0)") }, album.genre].compactMap { $0 }
+            return parts.isEmpty ? [] : [parts.joined(separator: String(localized: "common.separator"))]
         default:
             return []
         }
