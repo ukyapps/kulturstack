@@ -4,4 +4,5 @@ enum DomainError: Error, Equatable {
     case itemNotFound
     case seasonsNotAllowed(for: MediaKind)
     case episodeNotOfThisItem
+    case ownershipNotAllowed(for: MediaKind)
 }
