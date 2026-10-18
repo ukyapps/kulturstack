@@ -96,10 +96,10 @@ struct SchemaMigrationTests {
     }
 
     @Test func currentSchemaIsTheLastOfThePlan() {
-        #expect(KulturstackMigrationPlan.schemas.count == 3)
+        #expect(KulturstackMigrationPlan.schemas.count == 4)
         #expect(KulturstackMigrationPlan.schemas.last == KulturstackMigrationPlan.current)
-        #expect(KulturstackMigrationPlan.current.versionIdentifier == KulturstackSchemaV3.versionIdentifier)
-        #expect(KulturstackMigrationPlan.stages.count == 2)
+        #expect(KulturstackMigrationPlan.current.versionIdentifier == KulturstackSchemaV4.versionIdentifier)
+        #expect(KulturstackMigrationPlan.stages.count == 3)
     }
 
     // MARK: - L'identité d'un épisode de podcast (tranche Podcasts, PR 30)
@@ -173,6 +173,52 @@ struct SchemaMigrationTests {
         #expect(episode.key == "\(season.key):e5")
         #expect(episode.externalID == nil)
         withExtendedLifetime(container) {}
+    }
+
+    // T-01, troisième étage : la base de la founder est en V3 depuis le 27/09, avec ses
+    // épisodes de podcasts. C'est celle-là qui migrera sur son téléphone, pas une base vide.
+    @Test @MainActor func storeCreatedWithV3KeepsEverythingAndGainsAnEmptyLibrary() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("migration-v3-\(UUID().uuidString).store")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        do {
+            let v3 = try ModelContainer(
+                for: Schema(versionedSchema: KulturstackSchemaV3.self),
+                configurations: ModelConfiguration(url: url)
+            )
+            let context = v3.mainContext
+            let transfert = KulturstackSchemaV3.MediaItem(kind: .podcast, title: "Transfert")
+            let kafka = KulturstackSchemaV3.MediaItem(kind: .book, title: "Kafka sur le rivage")
+            context.insert(transfert)
+            context.insert(kafka)
+            context.insert(KulturstackSchemaV3.ExternalRef(provider: "itunes", value: "1234", item: transfert))
+            let season = KulturstackSchemaV3.Season(number: 1, item: transfert)
+            context.insert(season)
+            let episode = KulturstackSchemaV3.Episode(key: "\(season.key):gguid-42", number: 1,
+                                                      externalID: "guid-42", season: season)
+            context.insert(episode)
+            context.insert(KulturstackSchemaV3.LogEntry(item: transfert, status: .done, episode: episode))
+            context.insert(KulturstackSchemaV3.LogEntry(item: kafka, status: .done, rating: 10, note: "Relu."))
+            try context.save()
+        }
+
+        let current = try ModelContainerFactory.onDisk(url: url)
+        let context = current.mainContext
+        let items = try context.fetch(FetchDescriptor<MediaItem>(sortBy: [SortDescriptor(\.title)]))
+        let episodes = try context.fetch(FetchDescriptor<Episode>())
+        let logs = try context.fetch(FetchDescriptor<LogEntry>())
+
+        #expect(items.map(\.title) == ["Kafka sur le rivage", "Transfert"])
+        #expect(episodes.map(\.externalID) == ["guid-42"])
+        #expect(episodes.first?.isWatched == true)
+        #expect(logs.count == 2)
+        #expect(logs.first(where: { $0.rating == 10 })?.note == "Relu.")
+        #expect(try context.fetchCount(FetchDescriptor<ExternalRef>()) == 1)
+        // Le modèle ajouté par la V4 existe et ne casse rien : la bibliothèque est vide, et
+        // rien de ce qui était là n'est devenu « possédé » par accident.
+        #expect(try context.fetchCount(FetchDescriptor<OwnedCopy>()) == 0)
+        #expect(items.allSatisfy { !$0.isOwned })
     }
 
     @Test @MainActor func externalRefKeyIsUnique() throws {

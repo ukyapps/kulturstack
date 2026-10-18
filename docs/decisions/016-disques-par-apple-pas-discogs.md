@@ -1,6 +1,6 @@
 # ADR-016 — Les disques se cherchent chez Apple, pas chez Discogs
 
-- Statut : **accepted**
+- Statut : **accepted**, **prémisse amendée le 17/10** (voir ci-dessous)
 - Date : 2026-10-17
 - Contexte : tranche Disques (T4b du PRD). Même source et même tuyau que l'[ADR-013](013-sources-des-podcasts.md) pour les podcasts.
 
@@ -52,3 +52,22 @@ Sur les vraies API, avant d'écrire une ligne.
 - **Discogs en source principale** : pas de pochette sans compte (mesuré), et un catalogue d'éditions là où on veut une œuvre.
 - **MusicBrainz** : gratuit et sans clé, mais sans pochette lui non plus (il faut un second appel à Cover Art Archive), et sa recherche rend des groupes de sortie à désambiguïser. Reste le bon recours si Apple se ferme.
 - **Apple Music API** (la vraie, `api.music.apple.com`) : demande un compte développeur payant et un token signé. L'API publique suffit.
+
+---
+
+## Amendement du 17/10 — la prémisse était fausse
+
+Une heure après la fusion de la PR 37, la founder :
+
+> « les disques, je les écoute pas, je les ai dans ma bibliothèque. »
+
+Cet ADR a comparé les sources pour répondre à **« avec quoi logge-t-on *j'ai écouté cet album* »**. La vraie question était **« avec quoi dit-on *j'ai ce disque* »**. Ce qui reste vrai, et ce qui ne l'est plus :
+
+| | |
+|---|---|
+| **Tient toujours** | Le choix d'Apple comme source : 24/25 avec pochette, sans clé. On ne peut pas dire « je l'ai » d'une œuvre qu'on ne sait pas trouver — la recherche, la fiche et la dédup de la PR 37 sont la fondation de la bibliothèque. |
+| **Tient toujours** | Le point 5 — pas de pistes cochables. Il se trouve que c'est encore plus vrai qu'écrit : elle n'écoute pas le disque dans l'app du tout. |
+| **Amendé** | « Apple pour **écouter** » devient « Apple pour **trouver** ». L'action mise en avant sur une fiche de disque se décide à l'usage, pas ici. |
+| **Avancé** | Discogs était rangé « pour la T5, quand on voudra le format et l'édition ». La T5 a commencé le jour même (**ADR-017**). Le format n'est toujours pas demandé à l'écran, donc Discogs attend encore — mais il attend moins longtemps que prévu. |
+
+> **La leçon n'est pas « il fallait mieux mesurer ».** Les chiffres étaient bons et le sont restés. Ce qui manquait n'était pas dans les API : c'était de lui demander **ce qu'elle fait d'un disque** avant de choisir avec quoi le journaliser. Une mesure répond bien à la question qu'on lui pose.

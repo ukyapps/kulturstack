@@ -35,8 +35,8 @@ struct DebugSectionTests {
         host.view.layoutIfNeeded()
 
         #expect(host.view.bounds.height > 0)
-        // Le badge lit la version du plan : « Base V3 » depuis la tranche Podcasts.
-        #expect(Int(KulturstackMigrationPlan.current.versionIdentifier.major) == 3)
+        // Le badge lit la version du plan : « Base V4 » depuis la bibliothèque.
+        #expect(Int(KulturstackMigrationPlan.current.versionIdentifier.major) == 4)
     }
 
     private func localized(_ key: String, language: String) throws -> String {

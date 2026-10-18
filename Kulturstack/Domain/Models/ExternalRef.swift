@@ -1,6 +1,6 @@
 import SwiftData
 
-extension KulturstackSchemaV3 {
+extension KulturstackSchemaV4 {
     @Model
     final class ExternalRef {
         @Attribute(.unique) var key: String

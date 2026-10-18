@@ -19,6 +19,15 @@ enum MediaKind: String, Codable, CaseIterable, Sendable {
         }
     }
 
+    // Ce qui s'achète et se range sur une étagère. Un podcast ne se possède pas, un concert
+    // non plus : leur fiche n'a pas à proposer « Dans ma bibliothèque » (ADR-010).
+    var canBeOwned: Bool {
+        switch self {
+        case .film, .series, .book, .album, .game: true
+        case .podcast, .concert, .theatre, .exhibition: false
+        }
+    }
+
     var allowedStatuses: [LogStatus] {
         hasDuration ? [.wishlist, .inProgress, .done, .dropped] : [.wishlist, .done]
     }

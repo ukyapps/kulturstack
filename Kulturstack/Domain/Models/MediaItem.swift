@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension KulturstackSchemaV3 {
+extension KulturstackSchemaV4 {
     @Model
     final class MediaItem {
         @Attribute(.unique) var id: UUID
@@ -20,6 +20,7 @@ extension KulturstackSchemaV3 {
         @Relationship(deleteRule: .cascade, inverse: \ExternalRef.item) var externalRefs: [ExternalRef]
         @Relationship(deleteRule: .cascade, inverse: \LogEntry.item) var logs: [LogEntry]
         @Relationship(deleteRule: .cascade, inverse: \Season.item) var seasons: [Season]
+        @Relationship(deleteRule: .cascade, inverse: \OwnedCopy.item) var ownedCopies: [OwnedCopy]
 
         init(kind: MediaKind, title: String, originalTitle: String? = nil, year: Int? = nil,
              creators: [String] = [], summary: String? = nil, coverURL: URL? = nil) {
@@ -38,6 +39,7 @@ extension KulturstackSchemaV3 {
             self.externalRefs = []
             self.logs = []
             self.seasons = []
+            self.ownedCopies = []
         }
 
         var kind: MediaKind {
@@ -46,6 +48,9 @@ extension KulturstackSchemaV3 {
         }
 
         var orderedSeasons: [Season] { seasons.sorted { $0.number < $1.number } }
+
+        // Dans la bibliothèque = au moins un exemplaire. Un seul suffit à répondre « je l'ai ».
+        var isOwned: Bool { !ownedCopies.isEmpty }
 
         var details: (any DetailsPayload)? {
             guard let detailsData else { return nil }
