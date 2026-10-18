@@ -25,12 +25,14 @@ final class ItemDetailViewModel {
     private let repository: any MediaRepository
     private let logUseCase: LogUseCase
     private let enrich: EnrichUseCase?
+    private let ownership: OwnershipUseCase
 
     init(subject: Subject, repository: any MediaRepository, logUseCase: LogUseCase, enrich: EnrichUseCase? = nil) {
         self.subject = subject
         self.repository = repository
         self.logUseCase = logUseCase
         self.enrich = enrich
+        ownership = OwnershipUseCase(repository: repository)
     }
 
     // Un candidat déjà en base devient sa fiche réelle ; sinon on montre l'aperçu de la recherche.
@@ -90,6 +92,31 @@ final class ItemDetailViewModel {
         switch subject {
         case .stored(let itemID): .item(itemID)
         case .candidate(let candidate): .candidate(candidate)
+        }
+    }
+
+    // « Dans ma bibliothèque » bascule : on peut se tromper et se dédire. Une œuvre pas
+    // encore en base y entre d'abord, sans aucun log — posséder n'est pas consommer.
+    func toggleOwned() {
+        do {
+            let item: MediaItem
+            switch subject {
+            case .stored(let itemID):
+                guard let stored = try repository.find(itemID: itemID) else {
+                    state = .missing
+                    return
+                }
+                item = stored
+            case .candidate(let candidate):
+                item = try logUseCase.store(candidate)
+                subject = .stored(item.id)
+            }
+            try ownership.toggle(item)
+            didFailToLog = false
+            feedback += 1
+            load()
+        } catch {
+            didFailToLog = true
         }
     }
 

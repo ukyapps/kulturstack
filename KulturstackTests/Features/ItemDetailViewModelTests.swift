@@ -168,7 +168,6 @@ struct ItemDetailViewModelTests {
         withExtendedLifetime(container) {}
     }
 
-
     // MARK: - La fiche d'une série s'ouvre sur ses saisons
 
     // « Quand je clique sur une fiche, ça me met pas les saisons, je suis obligée de mettre
@@ -229,16 +228,3 @@ struct ItemDetailViewModelTests {
     }
 }
 
-private struct FailingError: Error {}
-
-@MainActor
-private struct FailingMediaRepository: MediaRepository {
-    func findItem(withAnyKey keys: [String]) throws -> MediaItem? { throw FailingError() }
-    func find(itemID: UUID) throws -> MediaItem? { throw FailingError() }
-    func add(_ item: MediaItem, refs: [ExternalRef]) throws { throw FailingError() }
-    func add(_ refs: [ExternalRef], to item: MediaItem) throws { throw FailingError() }
-    func add(_ log: LogEntry) throws { throw FailingError() }
-    func add(_ logs: [LogEntry]) throws { throw FailingError() }
-    func save() throws { throw FailingError() }
-    func deleteAll() throws { throw FailingError() }
-}
