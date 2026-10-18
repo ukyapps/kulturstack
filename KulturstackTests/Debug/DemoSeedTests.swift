@@ -21,6 +21,9 @@ struct DemoSeedTests {
         // les empiler sans que le test s'en aperçoive.
         #expect(first.seasons > 0)
         #expect(first.episodes > 0)
+        // Sans ce compteur, « remplir » deux fois pourrait empiler les exemplaires possédés
+        // sans que rien ne s'en aperçoive — c'est ce que les saisons avaient appris.
+        #expect(first.ownedCopies > 0)
         #expect(first == second)
     }
 
@@ -32,7 +35,8 @@ struct DemoSeedTests {
         try seed.fill()
         try seed.wipe()
 
-        #expect(try counts(in: context) == Counts(items: 0, logs: 0, refs: 0, seasons: 0, episodes: 0))
+        #expect(try counts(in: context) == Counts(items: 0, logs: 0, refs: 0, seasons: 0, episodes: 0,
+                                                  ownedCopies: 0))
     }
 
     @Test @MainActor func seededLogsSpreadOverTheLastYear() throws {
@@ -111,7 +115,61 @@ struct DemoSeedTests {
         let logs = try context.fetch(FetchDescriptor<LogEntry>())
         let kinds = Set(logs.filter { $0.status != .wishlist && $0.episode == nil }.compactMap { $0.item?.kind })
 
-        #expect(kinds.isSuperset(of: [.film, .series, .book, .podcast]))
+        #expect(kinds.isSuperset(of: [.film, .series, .book, .podcast, .album]))
+    }
+
+    // Les trois relations à une œuvre, côte à côte. C'est tout l'intérêt des disques du
+    // seed : « possédé jamais consommé » ne se voit autrement qu'en les saisissant à la main.
+    @Test @MainActor func theSeedShowsTheThreeRelationsToAWork() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        try DemoSeed(context: context).fill()
+        let items = try context.fetch(FetchDescriptor<MediaItem>())
+
+        let possédéEtConsommé = items.filter { $0.isOwned && !$0.logs.isEmpty }
+        let possédéJamaisConsommé = items.filter { $0.isOwned && $0.logs.isEmpty }
+        let consomméJamaisPossédé = items.filter { !$0.isOwned && !$0.logs.isEmpty }
+
+        #expect(!possédéEtConsommé.isEmpty)
+        #expect(!possédéJamaisConsommé.isEmpty)
+        #expect(!consomméJamaisPossédé.isEmpty)
+        // Et le cas le plus parlant porte un nom, pour qu'on sache lequel regarder à l'écran.
+        let titresPossédésJamaisConsommés = possédéJamaisConsommé.map(\.title)
+        #expect(titresPossédésJamaisConsommés.contains("Discovery"))
+        withExtendedLifetime(container) {}
+    }
+
+    // Un disque possédé mais jamais écouté n'a aucun log : il ne doit apparaître **que** dans
+    // la bibliothèque, jamais dans le Journal.
+    @Test @MainActor func theOwnedUnplayedRecordStaysOutOfTheJournal() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        try DemoSeed(context: context).fill()
+
+        let logs = try context.fetch(FetchDescriptor<LogEntry>())
+        let titresLoggés = logs.compactMap(\.item).map(\.title)
+        let titresPossédés = try SwiftDataMediaRepository(context: context).ownedItems().map(\.title)
+
+        #expect(titresPossédés.contains("Discovery"))
+        #expect(!titresLoggés.contains("Discovery"))
+        withExtendedLifetime(container) {}
+    }
+
+    // Les disques du seed portent leurs pistes et leur genre : sans ça, leur fiche n'affiche
+    // aucune rubrique et le bug du 17/10 (décodage en poche générique) repasserait inaperçu.
+    @Test @MainActor func seededRecordsCarryTheirDetails() throws {
+        let container = try ModelContainerFactory.inMemory()
+        let context = container.mainContext
+        try DemoSeed(context: context).fill()
+
+        let albums = try context.fetch(FetchDescriptor<MediaItem>()).filter { $0.kind == .album }
+        let ram = try #require(albums.first { $0.title == "Random Access Memories" })
+        let details = try #require(ram.details as? AlbumDetails)
+
+        #expect(albums.count == 3)
+        #expect(details.trackCount == 14)
+        #expect(details.genre == "Pop")
+        withExtendedLifetime(container) {}
     }
 
     private struct Counts: Equatable {
@@ -120,6 +178,7 @@ struct DemoSeedTests {
         let refs: Int
         let seasons: Int
         let episodes: Int
+        let ownedCopies: Int
     }
 
     @MainActor private func counts(in context: ModelContext) throws -> Counts {
@@ -128,7 +187,8 @@ struct DemoSeedTests {
             logs: try context.fetchCount(FetchDescriptor<LogEntry>()),
             refs: try context.fetchCount(FetchDescriptor<ExternalRef>()),
             seasons: try context.fetchCount(FetchDescriptor<Season>()),
-            episodes: try context.fetchCount(FetchDescriptor<Episode>())
+            episodes: try context.fetchCount(FetchDescriptor<Episode>()),
+            ownedCopies: try context.fetchCount(FetchDescriptor<OwnedCopy>())
         )
     }
 }
