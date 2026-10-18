@@ -33,16 +33,3 @@ struct SettingsViewModelTests {
     }
 }
 
-private struct FailingError: Error {}
-
-@MainActor
-private struct FailingMediaRepository: MediaRepository {
-    func findItem(withAnyKey keys: [String]) throws -> MediaItem? { throw FailingError() }
-    func find(itemID: UUID) throws -> MediaItem? { throw FailingError() }
-    func add(_ item: MediaItem, refs: [ExternalRef]) throws { throw FailingError() }
-    func add(_ refs: [ExternalRef], to item: MediaItem) throws { throw FailingError() }
-    func add(_ log: LogEntry) throws { throw FailingError() }
-    func add(_ logs: [LogEntry]) throws { throw FailingError() }
-    func save() throws { throw FailingError() }
-    func deleteAll() throws { throw FailingError() }
-}

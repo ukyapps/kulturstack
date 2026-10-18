@@ -12,6 +12,7 @@ struct ItemDetailModel: Equatable {
     let logs: [ItemLogRowModel]
     let source: String?
     let watchStatus: LogStatus?
+    let isOwned: Bool
 
     // « Quand je cherche un livre je peux pas dire en cours dans les boutons en haut »
     // (founder, 27/09). Ce qui ne dure pas — un film, un concert — ne se commence pas ;
@@ -40,6 +41,7 @@ struct ItemDetailModel: Equatable {
             .map(ItemLogRowModel.init)
         source = Self.source(of: item.externalRefs)
         watchStatus = WatchStatusUseCase.status(of: item)
+        isOwned = item.isOwned
     }
 
     // Aperçu d'un résultat de recherche pas encore en base : mêmes rubriques, aucun log.
@@ -55,8 +57,10 @@ struct ItemDetailModel: Equatable {
         facts = Self.facts(for: candidate.details)
         logs = []
         source = Self.providerNames.first { $0.0 == candidate.providerID }?.1 ?? candidate.providerID
-        // Une œuvre pas encore en base n'a aucun log : elle n'est en cours de rien.
+        // Une œuvre pas encore en base n'a aucun log : elle n'est en cours de rien, et on
+        // ne la possède pas encore non plus.
         watchStatus = nil
+        isOwned = false
     }
 
     private static func headline(kind: MediaKind, runtime: Int?, creator: String?) -> String {

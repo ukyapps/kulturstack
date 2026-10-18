@@ -601,6 +601,38 @@
         }
       }
     },
+    "detail.library.add": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to my library"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans ma bibliothèque"
+          }
+        }
+      }
+    },
+    "detail.library.remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from my library"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer de ma bibliothèque"
+          }
+        }
+      }
+    },
     "detail.log": {
       "localizations": {
         "en": {
@@ -1809,6 +1841,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Théâtre"
+          }
+        }
+      }
+    },
+    "library.empty.message": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What you own shows up here — records, books, films. Open a work and tap “Add to my library”."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que tu possèdes apparaîtra ici — disques, livres, films. Ouvre une fiche et appuie sur « Dans ma bibliothèque »."
+          }
+        }
+      }
+    },
+    "library.empty.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your library is empty"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bibliothèque est vide"
+          }
+        }
+      }
+    },
+    "library.error.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library unavailable"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothèque indisponible"
+          }
+        }
+      }
+    },
+    "library.remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer"
+          }
+        }
+      }
+    },
+    "library.remove.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t update your library."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de modifier ta bibliothèque."
           }
         }
       }
@@ -3882,6 +3994,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Journal"
+          }
+        }
+      }
+    },
+    "tab.library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothèque"
           }
         }
       }

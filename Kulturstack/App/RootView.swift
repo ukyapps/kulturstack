@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
-    enum Tab: Hashable { case journal, wishlist, inProgress, search }
+    enum Tab: Hashable { case journal, wishlist, inProgress, library, search }
 
     @Environment(\.modelContext) private var context
     @State private var selectedTab = Tab.journal
@@ -29,6 +29,15 @@ struct RootView: View {
             }
             .tabItem { Label(String(localized: "tab.inProgress"), systemImage: "play.circle") }
             .tag(Tab.inProgress)
+
+            // Cinquième onglet, décidé par la founder contre ma reco du segment dans Envie
+            // (ADR-017) : posséder n'est pas une vue dérivée du Journal, qui liste des logs
+            // — un disque possédé jamais écouté n'en a aucun.
+            NavigationStack {
+                LibraryView(services: services) { selectedTab = .search }
+            }
+            .tabItem { Label(String(localized: "tab.library"), systemImage: "books.vertical.fill") }
+            .tag(Tab.library)
 
             NavigationStack {
                 SearchView(useCase: SearchUseCase(providers: registry.providers), services: services)

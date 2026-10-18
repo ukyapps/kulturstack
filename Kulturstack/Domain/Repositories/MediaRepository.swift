@@ -9,6 +9,10 @@ protocol MediaRepository {
     func add(_ log: LogEntry) throws
     // Écrire en lot : une seule écriture pour toute une saison, ou tout un flux.
     func add(_ logs: [LogEntry]) throws
+    // « Je la possède » — l'autre relation à l'œuvre, indépendante des logs (ADR-010).
+    func add(_ copy: OwnedCopy) throws
+    func delete(_ copies: [OwnedCopy]) throws
+    func ownedItems() throws -> [MediaItem]
     func save() throws
     func deleteAll() throws
 }

@@ -80,13 +80,25 @@ struct ItemDetailView: View {
     // aussi un log — « quelle différence entre logger et j'ai commencé, c'est bizarre »
     // (founder, 30/09). Le statut se choisit dans le formulaire, où il a toujours été.
     private func actions(_ model: ItemDetailModel) -> some View {
-        HStack(spacing: Spacing.s) {
-            Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
-                logging = viewModel.logTarget
+        VStack(spacing: Spacing.s) {
+            HStack(spacing: Spacing.s) {
+                Button(String(localized: model.logs.isEmpty ? "detail.log" : "detail.logAgain"), systemImage: "plus.circle.fill") {
+                    logging = viewModel.logTarget
+                }
+                .buttonStyle(.borderedProminent)
+                Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
+                    .buttonStyle(.bordered)
             }
-            .buttonStyle(.borderedProminent)
-            Button(String(localized: "detail.wish"), systemImage: "heart") { viewModel.wish() }
+            // Sur sa propre ligne : à trois boutons, les libellés ne tiennent pas côte à côte
+            // sur un iPhone. Et le libellé dit ce que l'appui va faire, pas où on en est —
+            // ce qui ne se voit pas n'existe pas (founder, 27/09).
+            if model.kind.canBeOwned {
+                Button(String(localized: model.isOwned ? "detail.library.remove" : "detail.library.add"),
+                       systemImage: model.isOwned ? "books.vertical.fill" : "books.vertical") {
+                    viewModel.toggleOwned()
+                }
                 .buttonStyle(.bordered)
+            }
         }
     }
 

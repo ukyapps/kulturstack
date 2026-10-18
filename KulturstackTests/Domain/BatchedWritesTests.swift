@@ -102,6 +102,18 @@ private struct CountingMediaRepository: MediaRepository {
         try wrapped.add(logs)
     }
 
+    func add(_ copy: OwnedCopy) throws {
+        counter.count()
+        try wrapped.add(copy)
+    }
+
+    func delete(_ copies: [OwnedCopy]) throws {
+        guard !copies.isEmpty else { return }
+        counter.count()
+        try wrapped.delete(copies)
+    }
+
+    func ownedItems() throws -> [MediaItem] { try wrapped.ownedItems() }
     func save() throws { try wrapped.save() }
     func deleteAll() throws { try wrapped.deleteAll() }
 }
