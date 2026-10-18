@@ -1,11 +1,13 @@
 ---
 type: plan
 tranche: Disques (T4b du PRD)
-statut: en cours — PR 37 en revue
+statut: **livrée** (PR 37, #77) — prémisse corrigée par la founder le 17/10, voir ci-dessous
 créé: 2026-10-17
 ---
 
 # Plan — Disques
+
+> ⚠️ **Prémisse corrigée le 17/10, après la fusion de la PR 37.** La founder : « les disques, je les écoute pas, je les ai dans ma bibliothèque. » Ce plan a été écrit pour *journaliser* un disque ; elle veut le *posséder*. La PR 37 reste la fondation — on ne dit pas « je l'ai » d'une œuvre qu'on ne sait pas trouver — mais la suite est dans `bibliotheque.md`, pas ici. **La PR 38 de ce plan (seed DEBUG) est abandonnée** : le seed des disques arrivera avec celui de la bibliothèque.
 
 **Objectif** : à la fin, un disque se cherche, se logge et se relit dans le Journal comme un film. Pochette, artiste, année, nombre de pistes, genre. Rien à cocher : un album s'écoute d'un bloc.
 
