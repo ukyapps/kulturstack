@@ -6,8 +6,8 @@ struct ProviderRegistryTests {
     @Test func liveRegistryHasTMDBOpenLibraryAndApple() {
         let registry = ProviderRegistry.live(secrets: MockSecrets(), client: StubHTTPClient(data: Data()), appVersion: "0.1.0")
 
-        #expect(registry.providers.map(\.id) == ["tmdb", "openlibrary", "apple"])
-        #expect(registry.families == [.screen, .books, .podcasts])
+        #expect(registry.providers.map(\.id) == ["tmdb", "openlibrary", "apple", "apple-music"])
+        #expect(registry.families == [.screen, .books, .music, .podcasts])
         // Apple cherche, il ne complète pas une fiche après coup : TMDB reste seul à le faire.
         #expect(registry.detailsProviders.count == 1)
         #expect(registry.detailsProviders.first is TMDBProvider)

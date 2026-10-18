@@ -27,6 +27,7 @@ struct ProviderRegistry: Sendable {
             TMDBProvider(secrets: secrets, client: client),
             OpenLibraryProvider(client: client, userAgent: userAgent(appVersion: appVersion)),
             ApplePodcastProvider(client: client),
+            AppleAlbumProvider(client: client),
         ], episodeSources: [
             RSSEpisodeProvider(client: client, userAgent: userAgent(appVersion: appVersion)),
             // En dernier : il n'a quelque chose à dire que des podcasts dont Apple ne donne

@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-10-03
+maj: 2026-10-17
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -145,19 +145,38 @@ Cinq retours, **deux causes**, aucune visible en test. Détail mot pour mot dans
 | 48 | « Plus de petite vibration » + « pas sur le dernier épisode » + « sur tous les boutons » | Le déclencheur suit le **geste**, pas une valeur affichée, et vit au niveau de l'écran | ✅ #70 |
 | 49 | « Ça a mis beaucoup de temps pour tout décocher » + « ça lag quand j'enregistre les podcasts » | Une seule écriture en base par geste au lieu d'une par épisode ; quatre tests **comptent les écritures** | ✅ #69 |
 
+### Tranche Disques — **en cours** (17/10, 1 PR sur 2)
+
+Décision founder du 17/10, après mesure des trois types sans source : **« on fait les disques avec Apple »**. Plan : `docs/plans/disques.md`, choix de la source : **ADR-016**.
+
+| PR | Feature | État |
+|---|---|---|
+| 37 | Chercher un disque chez Apple, sa fiche, son log — **sans clé ni secret** | 🔄 en revue |
+| 38 | Seed DEBUG avec un disque, compteurs du Journal | ⏳ |
+
+**Ce que la mesure du 17/10 a donné**, sur les vraies API, avant d'écrire une ligne : **Apple 24/25** (pochette 600 px après réécriture de l'adresse, artiste, année, pistes, genre) ; **Discogs écarté** — ses pochettes demandent un compte, 0 sur 15 résultats en anonyme, et il décrit des **éditions** là où on veut une œuvre (il redevient le bon choix en T5) ; **jeux** → IGDB, 2 secrets, car Steam sans clé rate **0/4 des exclusivités Nintendo** ; **concerts** → aucune source utilisable, MusicBrainz ne connaît **aucun artiste francophone de taille moyenne** (6/15 réels, deux faux positifs).
+
+**Le seul disque raté : Stromae** — *Racine carrée* et *Multitude* sont absents du catalogue Apple France, vérifié de trois façons. Trou de licence, documenté plutôt que caché.
+
+**Aucun changement de schéma** : `MediaKind.album`, `SearchFamily.music` et leurs libellés FR / EN existent depuis la T1. Première tranche depuis la T2 sans migration — rien à sauvegarder avant d'installer.
+
+**Un bug trouvé par un test, pas par l'usage** : `DetailsCodec` décodait un disque en `GenericDetails`, donc sa fiche n'affichait ni pistes ni genre alors que le provider les remplissait. Corrigé dans la PR 37, avec trois tests de codec.
+
 ### Tranches suivantes
+
+**Tranché le 17/10 : les disques passent avant l'import.** La founder, après la mesure : « on fait les disques avec Apple ». L'import (T3) reste la suivante.
 
 **Tranché le 27/09 : les podcasts passent avant l'import.** « Maintenant je voudrais qu'on ajoute les podcasts et tout » — la founder les écoute, son historique Trakt ne va nulle part. **Les numéros de tranche ne changent pas** (ils sont cités dans les ADRs et le PRD) : c'est l'**ordre d'exécution** qui change, et il est écrit dans la colonne ci-dessous. Le plan est dans `docs/plans/podcasts.md`, et il porte **une question ouverte** : comment couvrir Radio France, dont Apple ne publie pas les flux.
 
 | # | Ordre | Tranche | Contenu | Serveur |
 |---|---|---|---|---|
 | 2 | ✅ | Épisodes | **livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
-| 4a | **1ᵉʳ** | **Podcasts** | Apple Podcasts (recherche) + RSS (épisodes) — **la suivante**, décision du 27/09 | non |
+| 4a | ✅ | Podcasts | **livrée le 03/10** — Apple (recherche) + RSS, page Radio France, Podcast Index en recours | non |
+| 4b | **1ᵉʳ** | **Disques** | **Apple**, pas Discogs (ADR-016) — **en cours**, décision du 17/10 | non |
 | 3 | 2ᵉ | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
-| 4b | 3ᵉ | Disques | Discogs | non |
-| 5 | 4ᵉ | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
-| 6 | 5ᵉ | Jeux + Concerts | IGDB, Setlist.fm, **proxy Supabase** | oui |
-| 7 | 6ᵉ | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
+| 5 | 3ᵉ | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
+| 6 | 4ᵉ | Jeux + Concerts | IGDB (2 secrets) ; **les concerts sans source**, mesuré le 17/10 | oui |
+| 7 | 5ᵉ | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
 | 8 | — | Social | comptes, partage, sync — nice-to-have | oui |
 
 La Tranche 4 était « Disques + Podcasts » ; elle se coupe en deux, les podcasts d'abord. Les numéros restent ceux du PRD : les renuméroter casserait les renvois de douze ADRs.
@@ -402,9 +421,9 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | Identité git | `ukyapps` + email noreply |
 | Domaines | kulturstack.com / .app / .io / .fr **libres au 19/09, pas réservés** |
 
-## 6. Décisions (15 ADRs)
+## 6. Décisions (16 ADRs)
 
-001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09) · **014 les flux de Radio France se lisent dans leur page, sans clé** (03/10, remplace le point 5 de l'ADR-013) · **015 Podcast Index en second recours, pour Radio France seulement** (03/10, prolonge l'ADR-014 : 76 % → 97 %).
+001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09) · **014 les flux de Radio France se lisent dans leur page, sans clé** (03/10, remplace le point 5 de l'ADR-013) · **015 Podcast Index en second recours, pour Radio France seulement** (03/10, prolonge l'ADR-014 : 76 % → 97 %) · **016 les disques se cherchent chez Apple, pas chez Discogs** (17/10, mesuré : 24/25 avec pochette contre 0 pochette sans compte chez Discogs).
 
 ## 7. Carte de la documentation
 
@@ -425,7 +444,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 ## 8. Ouvert / à faire
 
-**Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app vers le 08/10** (`make device`, iPhone branché — la signature personnelle dure 7 jours) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
+**Founder** : **utiliser l'app quelques jours et noter ce qui coince** (le plus important — c'est ce qui a donné les sept retours du 23/09) · **réinstaller l'app — la signature a expiré vers le 08/10** (`make device`, iPhone branché, déverrouillé, et la commande au premier plan) · réserver les domaines · (optionnel) désinstaller l'app GitHub « Claude » · recherche INPI avant le store · avant l'App Store, vérifier le nom affiché du compte développeur payant · avant toute monétisation, demander l'accord commercial TMDB.
 
 **Les deux choses qui attendaient son verdict à l'écran ont leur réponse (27/09)** :
 

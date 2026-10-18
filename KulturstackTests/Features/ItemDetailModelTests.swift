@@ -64,6 +64,33 @@ struct ItemDetailModelTests {
         #expect(model.facts[2] == "Science fiction, Deserts, Politics")
     }
 
+    @Test func albumFactsCountTracksAndNameTheGenre() throws {
+        let container = try container()
+        let item = MediaItem(kind: .album, title: "Random Access Memories", year: 2013, creators: ["Daft Punk"])
+        try item.setDetails(AlbumDetails(trackCount: 14, genre: "Pop"))
+        container.mainContext.insert(item)
+
+        let model = ItemDetailModel(item: item)
+
+        #expect(model.headline.contains("Daft Punk"))
+        #expect(model.facts.count == 1)
+        #expect(model.facts[0].contains("14"))
+        #expect(model.facts[0].contains("Pop"))
+        // Une clé non résolue s'afficherait en clair : « detail.tracks 14 ». Ce qui l'attrape,
+        // c'est de chercher la clé dans le rendu, pas de la comparer à elle-même.
+        #expect(!model.facts[0].contains("detail.tracks"))
+    }
+
+    // Un disque qu'Apple rend sans genre ni nombre de pistes n'affiche pas de rubrique vide.
+    @Test func anAlbumWithoutDetailsHasNoFacts() throws {
+        let container = try container()
+        let item = MediaItem(kind: .album, title: "Inconnu")
+        try item.setDetails(AlbumDetails())
+        container.mainContext.insert(item)
+
+        #expect(ItemDetailModel(item: item).facts.isEmpty)
+    }
+
     @Test func logsAreNewestFirstAsValueSnapshots() throws {
         let container = try container()
         let item = MediaItem(kind: .film, title: "Dune")
@@ -106,8 +133,12 @@ struct ItemDetailModelTests {
         #expect(ItemDetailModel(candidate: fromOL).source == "OpenLibrary")
     }
 
+    // « Source : itunes » s'affichait en minuscules sur une fiche de podcast, et aurait fait
+    // pareil sur un disque : les deux partagent la clé `itunes:`, qui est un identifiant, pas
+    // un nom de marque.
     @Test(arguments: [
         (["tmdb"], "TMDB"), (["ol", "isbn13"], "OpenLibrary"), (["tmdb", "imdb"], "TMDB, IMDb"), ([], nil),
+        (["itunes"], "Apple"),
     ])
     func sourceNamesTheProviders(providers: [String], expected: String?) throws {
         let container = try container()
