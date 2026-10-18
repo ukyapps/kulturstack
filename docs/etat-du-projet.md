@@ -1,6 +1,6 @@
 ---
 type: état des lieux
-maj: 2026-10-17
+maj: 2026-10-18
 règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas son histoire (l'histoire est dans docs/journal/)
 ---
 
@@ -145,14 +145,30 @@ Cinq retours, **deux causes**, aucune visible en test. Détail mot pour mot dans
 | 48 | « Plus de petite vibration » + « pas sur le dernier épisode » + « sur tous les boutons » | Le déclencheur suit le **geste**, pas une valeur affichée, et vit au niveau de l'écran | ✅ #70 |
 | 49 | « Ça a mis beaucoup de temps pour tout décocher » + « ça lag quand j'enregistre les podcasts » | Une seule écriture en base par geste au lieu d'une par épisode ; quatre tests **comptent les écritures** | ✅ #69 |
 
-### Tranche Disques — **en cours** (17/10, 1 PR sur 2)
+### Tranche Bibliothèque — **en cours** (17/10)
+
+Décision founder du 17/10, une heure après la fusion des disques : **« les disques, je les écoute pas, je les ai dans ma bibliothèque. d'ailleurs sur les livres, rajoute une option sur j'ai dans ma bibliothèque »**. C'est l'`OwnedCopy` de l'**ADR-010**, dessiné le 20/09 et rangé en T5 ; l'usage l'a rappelé trois semaines plus tôt. Ergonomie : **ADR-017**. Plan : `docs/plans/bibliotheque.md`.
+
+| PR | Feature | État |
+|---|---|---|
+| 38 | Schéma V4 : `OwnedCopy`, l'autre relation à l'œuvre | 🔄 #78 — **verte, en attente de la vérification de migration sur l'iPhone** |
+| 39 | « Dans ma bibliothèque » sur la fiche + cinquième onglet | ⏳ |
+| 40 | Seed DEBUG et compteurs | ⏳ |
+
+**Sa décision d'écran, contre ma reco** : un **cinquième onglet**, pas un segment dans Envie. La barre devient **Journal · Envie · En cours · Bibliothèque · Recherche**, ce qui **inverse son verdict du 27/09** (« la barre ne bouge plus »), en connaissance de cause. C'est la **première fois sur cinq** qu'elle ne replie pas une information dans un écran existant — et la règle tient quand même : aucun écran existant ne convenait, le Journal étant bâti sur les **logs**, qu'un disque possédé jamais écouté n'a pas.
+
+**Ce qui est hors périmètre, et écrit** : le format (vinyle / CD / poche), l'édition, le scan de code-barres, l'import d'une collection Discogs. Le modèle porte les champs, l'écran ne les demande pas.
+
+### Tranche Disques — **livrée** (17/10, 1 PR), prémisse corrigée le jour même
 
 Décision founder du 17/10, après mesure des trois types sans source : **« on fait les disques avec Apple »**. Plan : `docs/plans/disques.md`, choix de la source : **ADR-016**.
 
 | PR | Feature | État |
 |---|---|---|
-| 37 | Chercher un disque chez Apple, sa fiche, son log — **sans clé ni secret** | 🔄 en revue |
-| 38 | Seed DEBUG avec un disque, compteurs du Journal | ⏳ |
+| 37 | Chercher un disque chez Apple, sa fiche, son log — **sans clé ni secret** | ✅ #77 (18/10) |
+| 38 | Seed DEBUG avec un disque | ❌ **abandonnée** — le seed des disques arrive avec celui de la bibliothèque |
+
+> **La prémisse de cette tranche était fausse, et les chiffres étaient bons.** Elle a été construite sur « un disque se logge comme un film » ; la founder voulait « un disque se possède ». Ce qui manquait n'était pas dans les API — c'était de lui demander **ce qu'elle fait d'un disque** avant de choisir avec quoi le journaliser. Amendement au bas de l'ADR-016. La PR 37 n'est pas perdue pour autant : on ne dit pas « je l'ai » d'une œuvre qu'on ne sait pas trouver.
 
 **Ce que la mesure du 17/10 a donné**, sur les vraies API, avant d'écrire une ligne : **Apple 24/25** (pochette 600 px après réécriture de l'adresse, artiste, année, pistes, genre) ; **Discogs écarté** — ses pochettes demandent un compte, 0 sur 15 résultats en anonyme, et il décrit des **éditions** là où on veut une œuvre (il redevient le bon choix en T5) ; **jeux** → IGDB, 2 secrets, car Steam sans clé rate **0/4 des exclusivités Nintendo** ; **concerts** → aucune source utilisable, MusicBrainz ne connaît **aucun artiste francophone de taille moyenne** (6/15 réels, deux faux positifs).
 
@@ -172,9 +188,10 @@ Décision founder du 17/10, après mesure des trois types sans source : **« on 
 |---|---|---|---|---|
 | 2 | ✅ | Épisodes | **livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
 | 4a | ✅ | Podcasts | **livrée le 03/10** — Apple (recherche) + RSS, page Radio France, Podcast Index en recours | non |
-| 4b | **1ᵉʳ** | **Disques** | **Apple**, pas Discogs (ADR-016) — **en cours**, décision du 17/10 | non |
+| 4b | ✅ | Disques | **livrée le 18/10** — Apple, pas Discogs (ADR-016) | non |
+| 5 | **1ᵉʳ** | **Bibliothèque** | `OwnedCopy`, bouton sur la fiche, cinquième onglet — **en cours**, décision du 17/10 (ADR-017) | non |
 | 3 | 2ᵉ | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
-| 5 | 3ᵉ | Collection | `OwnedCopy`, formats, import collection Discogs, scan code-barres, « Ma bibliothèque » | non |
+| 5b | 3ᵉ | Collection, la suite | formats, éditions, import collection Discogs, scan code-barres | non |
 | 6 | 4ᵉ | Jeux + Concerts | IGDB (2 secrets) ; **les concerts sans source**, mesuré le 17/10 | oui |
 | 7 | 5ᵉ | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
 | 8 | — | Social | comptes, partage, sync — nice-to-have | oui |
@@ -421,9 +438,9 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 | Identité git | `ukyapps` + email noreply |
 | Domaines | kulturstack.com / .app / .io / .fr **libres au 19/09, pas réservés** |
 
-## 6. Décisions (16 ADRs)
+## 6. Décisions (17 ADRs)
 
-001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09) · **014 les flux de Radio France se lisent dans leur page, sans clé** (03/10, remplace le point 5 de l'ADR-013) · **015 Podcast Index en second recours, pour Radio France seulement** (03/10, prolonge l'ADR-014 : 76 % → 97 %) · **016 les disques se cherchent chez Apple, pas chez Discogs** (17/10, mesuré : 24/25 avec pochette contre 0 pochette sans compte chez Discogs).
+001 clé TMDB embarquée · 002 modèle générique + poche · 003 migration dès la PR 1 · 004 identité et dédup · 005 recherche unifiée · 006 notation et statuts · 007 iOS 18 + FR/EN · 008 nom Kulturstack · 009 Trakt par export JSON · 010 collection `OwnedCopy` · 011 ordre des tranches · 012 review locale, pas de review CI · **013 sources des podcasts : Apple cherche, le flux RSS liste** (27/09) · **014 les flux de Radio France se lisent dans leur page, sans clé** (03/10, remplace le point 5 de l'ADR-013) · **015 Podcast Index en second recours, pour Radio France seulement** (03/10, prolonge l'ADR-014 : 76 % → 97 %) · **016 les disques se cherchent chez Apple, pas chez Discogs** (17/10, mesuré : 24/25 avec pochette contre 0 pochette sans compte chez Discogs ; **prémisse amendée le jour même**) · **017 « Ma bibliothèque » prend un cinquième onglet** (17/10, met en œuvre l'ADR-010 : posséder n'est pas consommer).
 
 ## 7. Carte de la documentation
 
