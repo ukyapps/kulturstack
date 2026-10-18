@@ -8,7 +8,7 @@ règle: mis à jour à chaque PR fusionnée — c'est la photo du projet, pas so
 
 ## 1. En deux lignes
 
-**Les Tranches 1, 2 et Podcasts sont livrées**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **645 tests verts**, couverture Domain ~97 % · Data 96,0 % · Features ~90 %.
+**Les Tranches 1, 2, Podcasts et Disques sont livrées, la Bibliothèque est à 2 PRs sur 3**, ainsi que trois vagues de correctifs d'usage. L'app tourne sur l'iPhone de la founder, réinstallée le **01/10 à 16h25** — signature personnelle valable 7 jours, prochaine échéance **~08/10** (`make device`). **645 tests verts**, couverture Domain ~97 % · Data 96,0 % · Features ~90 %.
 
 **Les podcasts de Radio France ont leurs épisodes depuis le 03/10**, **couverture 97 %**, en deux temps. D'abord leur **page**, qui déclare son flux RSS à l'adresse qu'on déduit de ce que rend Apple : 76 %, sans clé ni compte (PR 34, ADR-014). Puis **Podcast Index**, interrogé seulement quand la page ne dit rien : les 21 points restants (PR 36, ADR-015), au prix de deux secrets au Trousseau. ICI (ex-France Bleu) reste hors périmètre. Il ne reste que la **PR 35** pour clore la tranche.
 
@@ -145,19 +145,33 @@ Cinq retours, **deux causes**, aucune visible en test. Détail mot pour mot dans
 | 48 | « Plus de petite vibration » + « pas sur le dernier épisode » + « sur tous les boutons » | Le déclencheur suit le **geste**, pas une valeur affichée, et vit au niveau de l'écran | ✅ #70 |
 | 49 | « Ça a mis beaucoup de temps pour tout décocher » + « ça lag quand j'enregistre les podcasts » | Une seule écriture en base par geste au lieu d'une par épisode ; quatre tests **comptent les écritures** | ✅ #69 |
 
-### Tranche Bibliothèque — **en cours** (17/10)
+### Tranche Bibliothèque — **2 PRs sur 3** (17 → 18/10)
 
 Décision founder du 17/10, une heure après la fusion des disques : **« les disques, je les écoute pas, je les ai dans ma bibliothèque. d'ailleurs sur les livres, rajoute une option sur j'ai dans ma bibliothèque »**. C'est l'`OwnedCopy` de l'**ADR-010**, dessiné le 20/09 et rangé en T5 ; l'usage l'a rappelé trois semaines plus tôt. Ergonomie : **ADR-017**. Plan : `docs/plans/bibliotheque.md`.
 
 | PR | Feature | État |
 |---|---|---|
-| 38 | Schéma V4 : `OwnedCopy`, l'autre relation à l'œuvre | 🔄 #78 — **verte, en attente de la vérification de migration sur l'iPhone** |
-| 39 | « Dans ma bibliothèque » sur la fiche + cinquième onglet | ⏳ |
+| 38 | Schéma V4 : `OwnedCopy`, l'autre relation à l'œuvre | ✅ #78 — **migration vérifiée sur l'iPhone**, 14/57/54/31 identiques ligne à ligne |
+| 39 | « Dans ma bibliothèque » sur la fiche + cinquième onglet | ✅ #80 |
 | 40 | Seed DEBUG et compteurs | ⏳ |
 
 **Sa décision d'écran, contre ma reco** : un **cinquième onglet**, pas un segment dans Envie. La barre devient **Journal · Envie · En cours · Bibliothèque · Recherche**, ce qui **inverse son verdict du 27/09** (« la barre ne bouge plus »), en connaissance de cause. C'est la **première fois sur cinq** qu'elle ne replie pas une information dans un écran existant — et la règle tient quand même : aucun écran existant ne convenait, le Journal étant bâti sur les **logs**, qu'un disque possédé jamais écouté n'a pas.
 
 **Ce qui est hors périmètre, et écrit** : le format (vinyle / CD / poche), l'édition, le scan de code-barres, l'import d'une collection Discogs. Le modèle porte les champs, l'écran ne les demande pas.
+
+### La base perdue, et la sauvegarde automatique (18/10)
+
+**L'app avait disparu de l'iPhone avec sa base** : 0 œuvre, 0 log, 0 épisode. Signature expirée vers le 08/10, base vivant **uniquement** sur le téléphone, **aucune** sauvegarde automatique.
+
+| | |
+|---|---|
+| **Perdu** | le 28/09 → 08/10 — la période des podcasts et des huit retours |
+| **Récupéré** | sauvegarde du 27/09, restaurée et vérifiée ligne à ligne : **14 œuvres · 57 logs · 54 épisodes · 31 cochés** |
+| **Corrigé** | agent launchd, **toutes les 30 minutes** dès que l'iPhone est branché (#79) |
+
+Une **base vide** ne devient jamais « la dernière bonne sauvegarde » : marquée `-VIDE`, code 2, le lien `derniere` ne bouge pas. Les sauvegardes vivent dans `Application Support` — macOS interdit à un agent launchd d'écrire dans `~/Documents`. **12 tests** couvrent les cas d'échec, `xcrun` simulé.
+
+**Ce que ça ne résout pas** : il faut brancher le téléphone. Trois semaines sans câble, et on reperd trois semaines. La parade suivante serait un **export JSON depuis les Réglages**, sans Mac.
 
 ### Tranche Disques — **livrée** (17/10, 1 PR), prémisse corrigée le jour même
 
@@ -468,11 +482,14 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 1. **La place de l'onglet « En cours »** : « oui c'est bien » — il **reste en troisième position**, la barre ne bouge plus.
 2. **« Tout cocher jusqu'ici » derrière un appui long** : « je ne l'avais pas trouvé, faut le rendre visible ». Devenu un bouton visible (#39). **Troisième fois qu'un geste caché tombe** après l'appui long de l'Envie le 22/09 : dans cette app, ce qui ne se voit pas n'existe pas.
 
-**Prochaine session — par où commencer**
+**Prochaine session — par où commencer** (mis à jour le 18/10)
+
+0. **La base de la founder a été perdue une fois** (28/09 → 08/10) et c'est corrigé à la source : `make sauvegarde-auto` tourne. Mais **il faut qu'elle branche son iPhone** — la sauvegarde n'a lieu que là. Si elle ne le branche pas, la parade suivante est un **export JSON depuis les Réglages**, sans Mac.
+
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **La tranche Podcasts est close** (7 PRs sur 7, `docs/plans/podcasts.md`). La suivante au plan est l'**import du passé** (T3) — sauf si l'usage dit autre chose. Un chantier connu attend aussi : **ICI** (ex-France Bleu), 0 % aujourd'hui, ~45 % atteignable en reconnaissant ses stations et en les envoyant directement à Podcast Index (mesuré le 03/10 sur 20 podcasts).
-3. **Ce qui attend la founder** : **réinstaller l'app depuis `main`** (`make device`) pour avoir les épisodes de Radio France, et vérifier au doigt ce qu'aucun test ne prouve (zones tactiles de « Tout cocher », retour haptique sur un podcast). Rien à créer : la clé Podcast Index est posée depuis le 03/10.
+2. **La tranche Bibliothèque est à 2 PRs sur 3** (`docs/plans/bibliotheque.md`) : il reste le **seed DEBUG** (PR 40), qui doit créer une œuvre possédée **sans** être consommée et une consommée **sans** être possédée — le seul moyen de voir les trois cas sans rien saisir. Ensuite l'**import du passé** (T3) — sauf si l'usage dit autre chose. Un chantier connu attend aussi : **ICI** (ex-France Bleu), 0 % aujourd'hui, ~45 % atteignable en reconnaissant ses stations et en les envoyant directement à Podcast Index (mesuré le 03/10 sur 20 podcasts).
+3. **Ce qui attend la founder** : juger au doigt ce qu'aucun test ne prouve — le bouton « Dans ma bibliothèque » **se voit-il assez** (3ᵉ position, ligne à part, style discret) ; la **barre à cinq onglets** reste-t-elle lisible (risque annoncé dans l'ADR-017) ; le **retour haptique** à l'ajout et au retrait. L'app est installée depuis le 18/10.
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
 
