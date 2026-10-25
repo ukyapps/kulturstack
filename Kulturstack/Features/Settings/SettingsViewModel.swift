@@ -9,14 +9,19 @@ final class SettingsViewModel {
     // pas avant d'avoir quelque chose à donner.
     private(set) var exportFile: URL?
     private(set) var exportedWorks = 0
+    var didFailToRestore = false
+    var restoreSummary: String?
     private let wipe: WipeUseCase
     private let export: ExportUseCase?
+    private let importer: ImportUseCase?
     private let version: String
     private let build: String
 
-    init(wipe: WipeUseCase, export: ExportUseCase? = nil, version: String, build: String) {
+    init(wipe: WipeUseCase, export: ExportUseCase? = nil, importer: ImportUseCase? = nil,
+         version: String, build: String) {
         self.wipe = wipe
         self.export = export
+        self.importer = importer
         self.version = version
         self.build = build
     }
@@ -36,6 +41,26 @@ final class SettingsViewModel {
         } catch {
             exportFile = nil
             didFailToExport = true
+        }
+    }
+
+    // Restaurer **fusionne** : rien n'est effacé, ce qui manque est ajouté. C'est pour ça
+    // qu'aucune confirmation ne précède — l'opération ne peut rien détruire.
+    func restore(from result: Swift.Result<URL, any Error>) {
+        guard let importer, case .success(let url) = result else {
+            if case .failure = result { didFailToRestore = true }
+            return
+        }
+        let accès = url.startAccessingSecurityScopedResource()
+        defer { if accès { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let bilan = try importer.restore(from: try Data(contentsOf: url))
+            restoreSummary = String(localized: "settings.restore.done \(bilan.itemsAdded) \(bilan.logsAdded)")
+            didFailToRestore = false
+            prepareExport()
+        } catch {
+            restoreSummary = nil
+            didFailToRestore = true
         }
     }
 
