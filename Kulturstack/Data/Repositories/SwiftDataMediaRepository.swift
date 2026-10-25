@@ -66,6 +66,10 @@ struct SwiftDataMediaRepository: MediaRepository {
             .sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
     }
 
+    func allItems() throws -> [MediaItem] {
+        try context.fetch(FetchDescriptor<MediaItem>())
+    }
+
     func save() throws {
         try context.save()
     }

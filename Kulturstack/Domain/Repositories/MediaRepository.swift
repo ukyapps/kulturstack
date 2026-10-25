@@ -13,6 +13,8 @@ protocol MediaRepository {
     func add(_ copy: OwnedCopy) throws
     func delete(_ copies: [OwnedCopy]) throws
     func ownedItems() throws -> [MediaItem]
+    // Tout, pour l'export : y compris les œuvres sans aucun log.
+    func allItems() throws -> [MediaItem]
     func save() throws
     func deleteAll() throws
 }

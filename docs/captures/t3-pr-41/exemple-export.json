@@ -1,0 +1,1013 @@
+{
+  "app" : "1.0",
+  "exportedAt" : "2027-01-15T08:00:00Z",
+  "formatVersion" : 1,
+  "items" : [
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/kQs6keheMwCxJxrzV83VUwFtHkB.jpg",
+      "creators" : [
+        "Justine Triet"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:915935"
+      ],
+      "id" : "482A704E-C421-4506-9F34-E3D427CF5502",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-10-13T11:13:40Z",
+          "id" : "619DE05F-BD82-42D5-8FEB-902D3EE186B3",
+          "note" : "Le chien mérite un César.",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Anatomie d'une chute",
+      "year" : 2023
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9782070196678-M.jpg",
+      "creators" : [
+        "Leïla Slimani"
+      ],
+      "externalKeys" : [
+        "isbn13:9782070196678"
+      ],
+      "id" : "D324BDAA-029C-43AE-B321-11269EBCE676",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-10-10T11:13:40Z",
+          "id" : "D4E5A77B-F1DF-4748-837F-60BE1BC522EA",
+          "rating" : 7,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Chanson douce",
+      "year" : 2016
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9780441172719-M.jpg",
+      "creators" : [
+        "Frank Herbert"
+      ],
+      "externalKeys" : [
+        "isbn13:9780441172719"
+      ],
+      "id" : "35693A9C-D4FE-4651-B9DC-B23F097AB4E1",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2025-12-09T12:13:40Z",
+          "id" : "481FAA04-B79B-46A2-919A-93DA9F04BD26",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Dune",
+      "year" : 1965
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+      "creators" : [
+        "Denis Villeneuve"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:438631"
+      ],
+      "id" : "9C8ACE6D-D23F-4DB9-B6E5-446C2592C3B0",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2025-12-29T12:13:40Z",
+          "id" : "DAD79871-A62A-4E94-85B0-E000D2EB4B19",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-09-15T11:13:40Z",
+          "id" : "A8DFDBC9-D928-4676-B92C-3E0E10B13B40",
+          "note" : "Revu avant la suite.",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Dune",
+      "year" : 2021
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",
+      "creators" : [
+        "Denis Villeneuve"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:693134"
+      ],
+      "id" : "2E335AFD-FF03-4293-9B91-A4BAC154F6E4",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-09-17T11:13:40Z",
+          "id" : "66B59948-BD98-47EA-8C01-DD48CE84C6D8",
+          "note" : "Vu en IMAX.",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "originalTitle" : "Dune: Part Two",
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Dune : deuxième partie",
+      "year" : 2024
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
+      "creators" : [
+        "Daniel Kwan",
+        "Daniel Scheinert"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:545611"
+      ],
+      "id" : "5C983346-DD21-4FE9-9236-4D2847F25785",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-07-27T11:13:40Z",
+          "id" : "E4DE5E6E-0394-474D-9A9E-B9EB182BC1B2",
+          "rating" : 7,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Everything Everywhere All at Once",
+      "year" : 2022
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/27vEYsRKa3eAniwmoccOoluEXQ1.jpg",
+      "creators" : [
+        "Phoebe Waller-Bridge"
+      ],
+      "externalKeys" : [
+        "tmdb:tv:67070"
+      ],
+      "id" : "7EC1E8CB-AC48-4F43-8D34-1F10FF24A1E9",
+      "kind" : "series",
+      "logs" : [
+        {
+          "date" : "2026-10-24T11:13:40Z",
+          "id" : "282E49EA-9EEA-4BC9-A1B5-1EF63A58D61A",
+          "note" : "Deux saisons parfaites.",
+          "rating" : 10,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Fleabag",
+      "year" : 2016
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9781400079278-M.jpg",
+      "creators" : [
+        "Haruki Murakami"
+      ],
+      "externalKeys" : [
+        "isbn13:9781400079278"
+      ],
+      "id" : "7F53D435-D989-4D51-9067-D7EC74D379B0",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-07-17T11:13:40Z",
+          "id" : "67BF9C5A-4E75-4489-858C-FA86C4D2900E",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "originalTitle" : "海辺のカフカ",
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Kafka sur le rivage",
+      "year" : 2002
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9782070360024-M.jpg",
+      "creators" : [
+        "Albert Camus"
+      ],
+      "externalKeys" : [
+        "isbn13:9782070360024"
+      ],
+      "id" : "31C769FD-EC6E-4A7C-976F-8C61B2685912",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-04-28T11:13:40Z",
+          "id" : "AD382B54-027A-403C-89AE-F23DB726C3E0",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "L'Étranger",
+      "year" : 1942
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9780441478125-M.jpg",
+      "creators" : [
+        "Ursula K. Le Guin"
+      ],
+      "externalKeys" : [
+        "isbn13:9780441478125"
+      ],
+      "id" : "C6EE3B89-127E-4162-8BBE-1C0068009A05",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-10-17T11:13:40Z",
+          "id" : "E739EA7F-62E3-490C-A549-A97D13D7B5E4",
+          "source" : "demo",
+          "status" : "inProgress"
+        }
+      ],
+      "originalTitle" : "The Left Hand of Darkness",
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "La Main gauche de la nuit",
+      "year" : 1969
+    },
+    {
+      "creators" : [
+        "France Inter"
+      ],
+      "externalKeys" : [
+        "itunes:1498344139"
+      ],
+      "id" : "32A5D7CE-67BF-4684-8444-D71C510AEE45",
+      "kind" : "podcast",
+      "logs" : [
+        {
+          "date" : "2026-10-05T11:13:40Z",
+          "episodeKey" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-1",
+          "id" : "1D057420-4450-49AA-B0AD-19633318A53D",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-11T11:13:40Z",
+          "episodeKey" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-2",
+          "id" : "86CC37E6-E457-4149-819E-5D58AA5EF1B6",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-17T11:13:40Z",
+          "episodeKey" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-3",
+          "id" : "4FB4C18A-A105-46BF-8CF9-9FABC46FD340",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-23T11:13:40Z",
+          "id" : "2D7ED11F-BBC1-448E-9D35-B1642C3400FC",
+          "source" : "demo",
+          "status" : "inProgress"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+        {
+          "episodes" : [
+            {
+              "airDate" : "2025-06-12T11:13:40Z",
+              "externalID" : "demo-guid-1",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-1",
+              "number" : 1,
+              "runtimeMinutes" : 16,
+              "title" : "Le Français qui a vu naître Google"
+            },
+            {
+              "airDate" : "2025-08-21T11:13:40Z",
+              "externalID" : "demo-guid-2",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-2",
+              "number" : 2,
+              "runtimeMinutes" : 17,
+              "title" : "Les vaches aussi innovent"
+            },
+            {
+              "airDate" : "2025-09-20T11:13:40Z",
+              "externalID" : "demo-guid-3",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-3",
+              "number" : 3,
+              "runtimeMinutes" : 18,
+              "title" : "Les chevaux s'expriment du bout des lèvres"
+            },
+            {
+              "airDate" : "2025-10-20T11:13:40Z",
+              "externalID" : "demo-guid-4",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-4",
+              "number" : 4,
+              "runtimeMinutes" : 19,
+              "title" : "Ce que font les animaux sans nous"
+            },
+            {
+              "airDate" : "2025-12-29T12:13:40Z",
+              "externalID" : "demo-guid-5",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-5",
+              "number" : 5,
+              "runtimeMinutes" : 20,
+              "title" : "Et si nous vivions dans une simulation"
+            },
+            {
+              "airDate" : "2026-06-27T11:13:40Z",
+              "externalID" : "demo-guid-6",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-6",
+              "number" : 6,
+              "runtimeMinutes" : 16,
+              "title" : "Ce qu'on gagne à interroger notre réalité"
+            },
+            {
+              "airDate" : "2026-08-26T11:13:40Z",
+              "externalID" : "demo-guid-7",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-7",
+              "number" : 7,
+              "runtimeMinutes" : 17,
+              "title" : "La tech a-t-elle un genre ?"
+            },
+            {
+              "airDate" : "2026-10-16T11:13:40Z",
+              "externalID" : "demo-guid-8",
+              "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1:gdemo-guid-8",
+              "number" : 8,
+              "runtimeMinutes" : 18,
+              "title" : "Bande annonce de la nouvelle saison"
+            }
+          ],
+          "key" : "32A5D7CE-67BF-4684-8444-D71C510AEE45:s1",
+          "number" : 1
+        }
+      ],
+      "title" : "Le code a changé",
+      "year" : 2020
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9780441172696-M.jpg",
+      "creators" : [
+        "Frank Herbert"
+      ],
+      "externalKeys" : [
+        "isbn13:9780441172696"
+      ],
+      "id" : "AE0CCA5D-D93D-4488-A288-790E377174AD",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-10-25T12:13:40Z",
+          "id" : "1014D513-CCD2-48DB-BD5E-B73EE0F9CAEA",
+          "rating" : 7,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "originalTitle" : "Dune Messiah",
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Le Messie de Dune",
+      "year" : 1969
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9782070402472-M.jpg",
+      "creators" : [
+        "Annie Ernaux"
+      ],
+      "externalKeys" : [
+        "isbn13:9782070402472"
+      ],
+      "id" : "4CB5E236-515B-44E0-819A-AF3670A91DE4",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-09-25T11:13:40Z",
+          "id" : "4428529C-B631-49E8-BF3B-B94837B326CF",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Les Années",
+      "year" : 2008
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9780571334650-M.jpg",
+      "creators" : [
+        "Sally Rooney"
+      ],
+      "externalKeys" : [
+        "isbn13:9780571334650"
+      ],
+      "id" : "D7E8D22E-667A-46AF-8700-F10093C70698",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-03-29T11:13:40Z",
+          "id" : "C6F90E7C-AB3E-449E-A7E3-819EB39C9B86",
+          "rating" : 6,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Normal People",
+      "year" : 2018
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+      "creators" : [
+        "Christopher Nolan"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:872585"
+      ],
+      "id" : "3B80779F-A43E-42D4-8F00-218747270111",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-04-08T11:13:40Z",
+          "id" : "95117CF1-C936-43C0-8ECE-FC221B7CEC52",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Oppenheimer",
+      "year" : 2023
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+      "creators" : [
+        "Bong Joon-ho"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:496243"
+      ],
+      "id" : "5327135B-51AF-4B18-9C4C-79F90FF40E71",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-05-28T11:13:40Z",
+          "id" : "E5E31C6C-5642-46DB-B73A-AFFC898C0E37",
+          "rating" : 10,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "originalTitle" : "기생충",
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Parasite",
+      "year" : 2019
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/k3waqVXSnvCZWfJYNtdamTgTtTA.jpg",
+      "creators" : [
+        "Celine Song"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:666277"
+      ],
+      "id" : "0E0D6A7A-7B0C-4D10-AFA7-9DCD2183CF99",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-10-20T11:13:40Z",
+          "id" : "4EACF92D-3155-40FA-8FFB-D5B2B16C4D78",
+          "source" : "demo",
+          "status" : "wishlist"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Past Lives",
+      "year" : 2023
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9781635575637-M.jpg",
+      "creators" : [
+        "Susanna Clarke"
+      ],
+      "externalKeys" : [
+        "isbn13:9781635575637"
+      ],
+      "id" : "1113327C-AC1E-4C61-A450-AF30EF773A2C",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-09-10T11:13:40Z",
+          "id" : "761C37B9-93C9-4A8D-87E7-CDCD4E650BBE",
+          "note" : "Lu d'une traite.",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Piranesi",
+      "year" : 2020
+    },
+    {
+      "creators" : [
+        "Céline Sciamma"
+      ],
+      "externalKeys" : [
+        "tmdb:movie:531428"
+      ],
+      "id" : "6A3154A3-BDEC-415C-83FF-CAF568750700",
+      "kind" : "film",
+      "logs" : [
+        {
+          "date" : "2026-02-17T12:13:40Z",
+          "id" : "28D99B6D-AEAC-4419-9095-2CED2F09E046",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Portrait de la jeune fille en feu",
+      "year" : 2019
+    },
+    {
+      "coverURL" : "https://covers.openlibrary.org/b/isbn/9780062316097-M.jpg",
+      "creators" : [
+        "Yuval Noah Harari"
+      ],
+      "externalKeys" : [
+        "isbn13:9780062316097"
+      ],
+      "id" : "0025B795-F98B-47D9-B218-8B2425DAD179",
+      "kind" : "book",
+      "logs" : [
+        {
+          "date" : "2026-08-16T11:13:40Z",
+          "id" : "E6E9C146-6399-4A06-B156-6310E32F804E",
+          "note" : "Lâché au chapitre 6.",
+          "source" : "demo",
+          "status" : "dropped"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Sapiens",
+      "year" : 2011
+    },
+    {
+      "creators" : [
+        "Dan Erickson"
+      ],
+      "externalKeys" : [
+        "tmdb:tv:95396"
+      ],
+      "id" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C",
+      "kind" : "series",
+      "logs" : [
+        {
+          "date" : "2025-11-19T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e1",
+          "id" : "68D35073-3B86-4161-B14D-016497B99F8D",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-21T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e2",
+          "id" : "D4EF79B7-95B8-4DCC-8EF1-AC068A031BBD",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-23T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e3",
+          "id" : "3EECC51C-349F-4B1B-B77A-1966603266EC",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-25T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e4",
+          "id" : "E81218A2-C24F-49AB-99D1-3FF09C00997B",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-27T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e5",
+          "id" : "B8C06EC8-43F8-4348-94AB-E87C3B6949B4",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-29T12:13:40Z",
+          "id" : "0187DA6B-846C-4524-9186-8701590D8138",
+          "rating" : 8,
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-11-29T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e6",
+          "id" : "7599767D-9C9D-422B-A1CB-20880BD4DFD7",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-12-01T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e7",
+          "id" : "0370FBFA-43AD-48A4-8FA9-DA3416B6C767",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-12-03T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e8",
+          "id" : "A071AB8A-12A3-43BF-BF09-E397549EC53B",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2025-12-05T12:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e9",
+          "id" : "CD0084B8-A049-4A69-B3FD-DB0EAAD61077",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-13T11:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e1",
+          "id" : "8127DD21-4367-49FA-8D64-0D3896BB670E",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-16T11:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e2",
+          "id" : "00C0B2B4-E9F1-475A-BA62-AD6AE87FC014",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-19T11:13:40Z",
+          "episodeKey" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e3",
+          "id" : "3FDB82FD-2927-4A20-9177-F88E80C4FA7C",
+          "source" : "demo",
+          "status" : "done"
+        },
+        {
+          "date" : "2026-10-22T11:13:40Z",
+          "id" : "8DD2C9B2-76C3-4009-BA9D-6A12668AA799",
+          "source" : "demo",
+          "status" : "inProgress"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+        {
+          "episodes" : [
+            {
+              "airDate" : "2025-09-20T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e1",
+              "number" : 1,
+              "runtimeMinutes" : 45,
+              "title" : "Good News About Hell"
+            },
+            {
+              "airDate" : "2025-09-27T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e2",
+              "number" : 2,
+              "runtimeMinutes" : 46,
+              "title" : "Half Loop"
+            },
+            {
+              "airDate" : "2025-10-04T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e3",
+              "number" : 3,
+              "runtimeMinutes" : 47,
+              "title" : "In Perpetuity"
+            },
+            {
+              "airDate" : "2025-10-11T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e4",
+              "number" : 4,
+              "runtimeMinutes" : 48,
+              "title" : "The You You Are"
+            },
+            {
+              "airDate" : "2025-10-18T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e5",
+              "number" : 5,
+              "runtimeMinutes" : 49,
+              "title" : "The Grim Barbarity of Optics and Design"
+            },
+            {
+              "airDate" : "2025-10-25T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e6",
+              "number" : 6,
+              "runtimeMinutes" : 50,
+              "title" : "Hide and Seek"
+            },
+            {
+              "airDate" : "2025-11-01T12:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e7",
+              "number" : 7,
+              "runtimeMinutes" : 51,
+              "title" : "Defiant Jazz"
+            },
+            {
+              "airDate" : "2025-11-08T12:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e8",
+              "number" : 8,
+              "runtimeMinutes" : 45,
+              "title" : "What's for Dinner?"
+            },
+            {
+              "airDate" : "2025-11-15T12:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1:e9",
+              "number" : 9,
+              "runtimeMinutes" : 46,
+              "title" : "The We We Are"
+            }
+          ],
+          "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s1",
+          "number" : 1
+        },
+        {
+          "episodes" : [
+            {
+              "airDate" : "2026-06-27T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e1",
+              "number" : 1,
+              "runtimeMinutes" : 48,
+              "title" : "Hello, Ms. Cobel"
+            },
+            {
+              "airDate" : "2026-07-04T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e2",
+              "number" : 2,
+              "runtimeMinutes" : 49,
+              "title" : "Goodbye, Mrs. Selvig"
+            },
+            {
+              "airDate" : "2026-07-11T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e3",
+              "number" : 3,
+              "runtimeMinutes" : 50,
+              "title" : "Who Is Alive?"
+            },
+            {
+              "airDate" : "2026-07-18T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e4",
+              "number" : 4,
+              "runtimeMinutes" : 51,
+              "title" : "Woe's Hollow"
+            },
+            {
+              "airDate" : "2026-07-25T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e5",
+              "number" : 5,
+              "runtimeMinutes" : 52,
+              "title" : "Trojan's Horse"
+            },
+            {
+              "airDate" : "2026-08-01T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e6",
+              "number" : 6,
+              "runtimeMinutes" : 53,
+              "title" : "Attila"
+            },
+            {
+              "airDate" : "2026-08-08T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e7",
+              "number" : 7,
+              "runtimeMinutes" : 54,
+              "title" : "Chikhai Bardo"
+            },
+            {
+              "airDate" : "2026-08-15T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e8",
+              "number" : 8,
+              "runtimeMinutes" : 55,
+              "title" : "Sweet Vitriol"
+            },
+            {
+              "airDate" : "2026-08-22T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e9",
+              "number" : 9,
+              "runtimeMinutes" : 56,
+              "title" : "The After Hours"
+            },
+            {
+              "airDate" : "2026-08-29T11:13:40Z",
+              "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2:e10",
+              "number" : 10,
+              "runtimeMinutes" : 48,
+              "title" : "Cold Harbor"
+            }
+          ],
+          "key" : "484BA6A5-6D76-45CD-A4EB-3D6B817FB26C:s2",
+          "number" : 2
+        }
+      ],
+      "title" : "Severance",
+      "year" : 2022
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/7O4iVfOMQmdCSxhOg1WnzG1AgYT.jpg",
+      "creators" : [
+        "Rachel Kondo",
+        "Justin Marks"
+      ],
+      "externalKeys" : [
+        "tmdb:tv:126308"
+      ],
+      "id" : "808D63AD-372D-4882-9ACF-C4E88BD5ED55",
+      "kind" : "series",
+      "logs" : [
+        {
+          "date" : "2026-08-26T11:13:40Z",
+          "id" : "988579AA-96BC-455F-9C39-6AB324508571",
+          "source" : "demo",
+          "status" : "dropped"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Shōgun",
+      "year" : 2024
+    },
+    {
+      "coverURL" : "https://image.tmdb.org/t/p/w342/7HW47XbkNQ5fiwQFYGWdw9gs144.jpg",
+      "creators" : [
+        "Jesse Armstrong"
+      ],
+      "externalKeys" : [
+        "tmdb:tv:76331"
+      ],
+      "id" : "15FF5610-F77D-42E8-8718-BC5DF6481DB3",
+      "kind" : "series",
+      "logs" : [
+        {
+          "date" : "2026-06-27T11:13:40Z",
+          "id" : "37D0A682-2AF7-4979-9D53-1ECFA859C888",
+          "rating" : 9,
+          "source" : "demo",
+          "status" : "done"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "Succession",
+      "year" : 2018
+    },
+    {
+      "creators" : [
+        "Christopher Storer"
+      ],
+      "externalKeys" : [
+        "tmdb:tv:136315"
+      ],
+      "id" : "122B69F9-336D-4F0A-9E96-195D7FACB89C",
+      "kind" : "series",
+      "logs" : [
+        {
+          "date" : "2026-10-05T11:13:40Z",
+          "id" : "949256AC-C131-4A58-898F-539872980FE4",
+          "source" : "demo",
+          "status" : "wishlist"
+        }
+      ],
+      "ownedCopies" : [
+
+      ],
+      "seasons" : [
+
+      ],
+      "title" : "The Bear",
+      "year" : 2022
+    }
+  ]
+}

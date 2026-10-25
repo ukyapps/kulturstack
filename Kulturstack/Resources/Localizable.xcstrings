@@ -3630,6 +3630,78 @@
         }
       }
     },
+    "settings.export": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export my data"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exporter mes données"
+          }
+        }
+      }
+    },
+    "settings.export.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t prepare the export."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de préparer l’export."
+          }
+        }
+      }
+    },
+    "settings.export.footer %lld": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld work, with its logs, checked episodes and what you own. Save the file to Files or iCloud — nothing leaves your phone on its own."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld works, with their logs, checked episodes and what you own. Save the file to Files or iCloud — nothing leaves your phone on its own."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld œuvre, avec ses logs, ses épisodes cochés et ce que tu possèdes. Range le fichier dans Fichiers ou iCloud : il ne part nulle part tout seul."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld œuvres, avec leurs logs, les épisodes cochés et ce que tu possèdes. Range le fichier dans Fichiers ou iCloud : il ne part nulle part tout seul."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "settings.language": {
       "localizations": {
         "en": {
@@ -3859,13 +3931,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deletes all your works and logs from this iPhone. There is no backup inside the app."
+            "value": "Deletes all your works and logs from this iPhone. Export them first if you want to keep them."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supprime toutes tes fiches et tous tes logs de cet iPhone. Il n’y a pas de sauvegarde dans l’app."
+            "value": "Supprime toutes tes fiches et tous tes logs de cet iPhone. Exporte-les d’abord si tu veux les garder."
           }
         }
       }

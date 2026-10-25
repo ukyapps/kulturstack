@@ -114,6 +114,7 @@ private struct CountingMediaRepository: MediaRepository {
     }
 
     func ownedItems() throws -> [MediaItem] { try wrapped.ownedItems() }
+    func allItems() throws -> [MediaItem] { try wrapped.allItems() }
     func save() throws { try wrapped.save() }
     func deleteAll() throws { try wrapped.deleteAll() }
 }

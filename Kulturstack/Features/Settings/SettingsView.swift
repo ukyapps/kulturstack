@@ -12,10 +12,15 @@ struct SettingsView: View {
         let info = Bundle.main.infoDictionary
         _viewModel = State(initialValue: SettingsViewModel(
             wipe: services.wipeUseCase,
+            export: ExportUseCase(repository: services.mediaRepository),
             version: info?["CFBundleShortVersionString"] as? String ?? "0",
             build: info?["CFBundleVersion"] as? String ?? "0"))
         self.services = services
     }
+
+    #if DEBUG
+    var viewModelForTesting: SettingsViewModel { viewModel }
+    #endif
 
     var body: some View {
         Form {
@@ -29,6 +34,21 @@ struct SettingsView: View {
                 NavigationLink(String(localized: "settings.privacy")) { PrivacyView() }
                 NavigationLink(String(localized: "settings.about")) { AboutView(versionLine: viewModel.versionLine) }
             }
+            // Avant « Tout effacer », et c'est voulu : on propose de sauvegarder avant de
+            // proposer de détruire. Sans Mac ni câble — la sauvegarde du Mac n'avait rien
+            // vu passer pendant sept jours faute de téléphone branché (25/10).
+            Section {
+                if let file = viewModel.exportFile {
+                    ShareLink(item: file) {
+                        Label(String(localized: "settings.export"), systemImage: "square.and.arrow.up")
+                    }
+                } else {
+                    Label(String(localized: "settings.export"), systemImage: "square.and.arrow.up")
+                        .foregroundStyle(Color.textSecondary)
+                }
+            } footer: {
+                Text(viewModel.exportFooter)
+            }
             Section {
                 Button(String(localized: "settings.wipe"), role: .destructive) { isConfirmingWipe = true }
             } footer: {
@@ -38,6 +58,11 @@ struct SettingsView: View {
             DebugSection()
             #endif
         }
+        .task { viewModel.prepareExport() }
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+            viewModel.prepareExport()
+        }
+        .alert(String(localized: "settings.export.failed"), isPresented: $viewModel.didFailToExport) {}
         .navigationTitle(String(localized: "settings.title"))
         .navigationBarTitleDisplayMode(.inline)
         // Deux confirmations : effacer, c'est irréversible et sans sauvegarde avant T3.
