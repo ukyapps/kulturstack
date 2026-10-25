@@ -15,6 +15,7 @@ struct AppServices {
     let refreshSeasonsUseCase: RefreshSeasonsUseCase
     let advanceUseCase: AdvanceUseCase
     let wipeUseCase: WipeUseCase
+    let importUseCase: ImportUseCase
     let connectivity: any ConnectivityMonitoring
 
     init(context: ModelContext, detailsProviders: [any DetailsProvider] = [],
@@ -31,6 +32,8 @@ struct AppServices {
         logHistory = LogHistoryUseCase(dedup: dedup)
         enrichUseCase = EnrichUseCase(repository: mediaRepository, providers: detailsProviders)
         wipeUseCase = WipeUseCase(repository: mediaRepository)
+        importUseCase = ImportUseCase(media: mediaRepository,
+                                      episodes: SwiftDataEpisodeRepository(context: context))
         episodeUseCase = EpisodeUseCase(repository: SwiftDataEpisodeRepository(context: context),
                                         providers: episodeProviders, log: logUseCase, edit: editUseCase)
         watchStatusUseCase = WatchStatusUseCase(log: logUseCase, edit: editUseCase)

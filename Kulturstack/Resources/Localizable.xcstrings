@@ -3676,7 +3676,7 @@
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld works, with their logs, checked episodes and what you own. Save the file to Files or iCloud — nothing leaves your phone on its own."
+                  "value": "%lld works, with their logs, checked episodes and what you own. Save the file to Files or iCloud, and restore it here if you lose your data."
                 }
               }
             }
@@ -3694,7 +3694,7 @@
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld œuvres, avec leurs logs, les épisodes cochés et ce que tu possèdes. Range le fichier dans Fichiers ou iCloud : il ne part nulle part tout seul."
+                  "value": "%lld œuvres, avec leurs logs, les épisodes cochés et ce que tu possèdes. Range le fichier dans Fichiers ou iCloud, et restaure-le ici si tu perds ta base."
                 }
               }
             }
@@ -3762,6 +3762,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Confidentialité"
+          }
+        }
+      }
+    },
+    "settings.restore": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore from a file"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurer depuis un fichier"
+          }
+        }
+      }
+    },
+    "settings.restore.done %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld works and %2$lld logs restored. What was already there is untouched."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld œuvres et %2$lld logs remis. Ce qui était déjà là n’a pas bougé."
+          }
+        }
+      }
+    },
+    "settings.restore.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That file couldn’t be read. Nothing was changed."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce fichier n’a pas pu être lu. Rien n’a été modifié."
           }
         }
       }

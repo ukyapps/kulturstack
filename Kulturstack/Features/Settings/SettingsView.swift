@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var isConfirmingWipe = false
     @State private var isConfirmingWipeAgain = false
     @State private var didWipe = false
+    @State private var isPickingRestoreFile = false
     private let services: AppServices
 
     init(services: AppServices) {
@@ -13,6 +14,7 @@ struct SettingsView: View {
         _viewModel = State(initialValue: SettingsViewModel(
             wipe: services.wipeUseCase,
             export: ExportUseCase(repository: services.mediaRepository),
+            importer: services.importUseCase,
             version: info?["CFBundleShortVersionString"] as? String ?? "0",
             build: info?["CFBundleVersion"] as? String ?? "0"))
         self.services = services
@@ -21,6 +23,10 @@ struct SettingsView: View {
     #if DEBUG
     var viewModelForTesting: SettingsViewModel { viewModel }
     #endif
+
+    private var isShowingRestoreSummary: Binding<Bool> {
+        Binding(get: { viewModel.restoreSummary != nil }, set: { if !$0 { viewModel.restoreSummary = nil } })
+    }
 
     var body: some View {
         Form {
@@ -46,6 +52,9 @@ struct SettingsView: View {
                     Label(String(localized: "settings.export"), systemImage: "square.and.arrow.up")
                         .foregroundStyle(Color.textSecondary)
                 }
+                Button(String(localized: "settings.restore"), systemImage: "square.and.arrow.down") {
+                    isPickingRestoreFile = true
+                }
             } footer: {
                 Text(viewModel.exportFooter)
             }
@@ -63,6 +72,11 @@ struct SettingsView: View {
             viewModel.prepareExport()
         }
         .alert(String(localized: "settings.export.failed"), isPresented: $viewModel.didFailToExport) {}
+        .fileImporter(isPresented: $isPickingRestoreFile, allowedContentTypes: [.json]) { result in
+            viewModel.restore(from: result)
+        }
+        .alert(String(localized: "settings.restore.failed"), isPresented: $viewModel.didFailToRestore) {}
+        .alert(viewModel.restoreSummary ?? "", isPresented: isShowingRestoreSummary) {}
         .navigationTitle(String(localized: "settings.title"))
         .navigationBarTitleDisplayMode(.inline)
         // Deux confirmations : effacer, c'est irréversible et sans sauvegarde avant T3.
