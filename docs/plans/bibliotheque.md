@@ -1,7 +1,7 @@
 ---
 type: plan
 tranche: Bibliothèque (T5 du PRD, avancée — décision founder du 17/10)
-statut: en cours — PR 38 (schéma V4) écrite
+statut: **livrée** — les 3 PRs sont fusionnées (#78, #80, et la PR 40)
 créé: 2026-10-17
 ---
 
@@ -73,20 +73,32 @@ Les mêmes qu'en T1, T2, Podcasts et Disques :
 - Strings FR + EN. Retour haptique sur le bouton, comme tous les autres depuis la #70.
 - Tests : basculer, se dédire, idempotence (deux appuis ne font pas deux exemplaires), un podcast n'a pas le bouton, l'onglet liste ce qui est possédé et rien d'autre.
 
-## PR 40 — Le seed DEBUG et les compteurs `chore/bibliotheque-seed`
+## PR 40 — Le seed DEBUG `chore/bibliotheque-seed` ✅
 
-**Livre** : le seed crée des œuvres possédées — dont une possédée **sans** être consommée, et une consommée **sans** être possédée. C'est le seul moyen de voir les trois cas sans rien saisir.
+**Livre** : le seed porte les **trois relations** à une œuvre, et trois disques qui les incarnent — ce que la tranche Disques devait faire et qui a été reporté ici.
+
+| Disque | Relation | Où il se voit |
+|---|---|---|
+| Random Access Memories | possédé **et** écouté | Journal **et** Bibliothèque |
+| **Discovery** | possédé, **jamais** écouté | **Bibliothèque seulement** |
+| Kind of Blue | écouté, **pas** possédé | **Journal seulement** |
+
+- Dune (film), Dune et Piranesi (livres) sont aussi possédés : la bibliothèque n'est pas qu'une étagère à vinyles, et ses **deux « Dune »** montrent à l'écran que c'est l'identité qui compte, pas le titre.
+- Les **identifiants Apple sont les vrais** : logger le même album depuis la recherche dédoublonne au lieu de créer un doublon.
+- Les disques portent leurs **pistes et leur genre**, sinon leur fiche n'affiche aucune rubrique — et le bug du 17/10 (décodage en poche générique) repasserait inaperçu.
+- Le compteur épinglé du Journal passe de 22 à **24 œuvres**, pas 25 : Discovery n'a aucun log. Ce chiffre protège la règle plutôt que de la subir.
+- **Aucun compteur n'a demandé de code** : « Disques · n » apparaît tout seul dans le Journal, comme les podcasts en T4a.
 
 ## Ce qu'on vérifie avant de dire « shippé »
 
-- [ ] **La base de la founder survit à la migration V4** — testée sur son iPhone, avec ses vrais logs et ses épisodes cochés.
-- [ ] T-01 vert dans sa version V3 → V4 **avec des données**.
-- [ ] Rien n'est devenu « possédé » tout seul à la migration.
-- [ ] Trois rendus distincts sur l'onglet Bibliothèque, comparés image contre image.
-- [ ] Le bouton n'apparaît pas sur un podcast.
-- [ ] Coverage ≥ 70 % Domain et Data, ≥ 50 % Features.
-- [ ] Aucune string en dur, FR + EN dans la même PR.
-- [ ] Captures vide **et** rempli dans chaque PR.
+- [x] **La base de la founder survit à la migration V4** — testée sur son iPhone, avec ses vrais logs et ses épisodes cochés.
+- [x] T-01 vert dans sa version V3 → V4 **avec des données**.
+- [x] Rien n'est devenu « possédé » tout seul à la migration — vérifié sur l'appareil le 18/10, `ZOWNEDCOPY` vide.
+- [x] Trois rendus distincts sur l'onglet Bibliothèque, comparés image contre image.
+- [x] Le bouton n'apparaît pas sur un podcast — tenu par `canBeOwned` et ses tests, **pas** par une capture.
+- [x] Coverage : Domain 98,2 % · Data 96,2 % · Features 89,4 %.
+- [x] Aucune string en dur, FR + EN dans la même PR.
+- [x] Captures vide **et** rempli dans chaque PR.
 - [x] Aucun secret : cette tranche n'en introduit aucun.
 
 ## Ce que cette tranche ne résout pas

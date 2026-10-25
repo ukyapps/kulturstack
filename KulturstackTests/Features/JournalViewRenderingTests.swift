@@ -27,14 +27,18 @@ struct JournalViewRenderingTests {
             return
         }
         #expect(content.sections.count > 1)
-        // Le seed pose 24 logs hors envies pour 22 œuvres : deux d'entre elles en portent
+        // Le seed pose 26 logs hors envies pour 24 œuvres : deux d'entre elles en portent
         // deux (un film revu, une série notée puis reprise), et le podcast en porte un.
         // Une œuvre = une ligne — les épisodes cochés n'en sont pas.
-        #expect(content.total == 22)
+        //
+        // 24 et non 26 œuvres en base : le seed contient **trois** disques, et « Discovery »
+        // est possédé sans avoir jamais été écouté. Aucun log, donc aucune ligne ici — il
+        // n'existe que dans la bibliothèque. C'est précisément ce que ce chiffre protège.
+        #expect(content.total == 24)
         // Sur l'identité, pas sur le titre : le seed contient un film et un livre qui
         // s'appellent tous les deux « Dune », et ce sont bien deux œuvres.
         let items = content.sections.flatMap(\.rows).compactMap(\.itemID)
-        #expect(items.count == 22)
+        #expect(items.count == 24)
         #expect(Set(items).count == items.count)
 
         // L'état « filtre sans résultat », qui doit se distinguer du vide et de l'erreur.

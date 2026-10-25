@@ -16,6 +16,11 @@ struct DemoSeed {
             for (provider, value) in entry.refs {
                 context.insert(ExternalRef(provider: provider, value: value, item: item))
             }
+            if entry.kind == .album, let tracks = entry.tracks {
+                try item.setDetails(AlbumDetails(trackCount: tracks, genre: entry.genre))
+            }
+            // Posséder n'écrit aucun log : c'est l'autre relation à l'œuvre (ADR-010).
+            if entry.owned { context.insert(try OwnedCopy.make(item: item)) }
             for log in entry.logs {
                 context.insert(try LogEntry.make(item: item, status: log.status, date: date(daysAgo: log.daysAgo),
                                                  rating: log.rating, note: log.note, source: "demo"))
@@ -60,6 +65,11 @@ struct DemoSeed {
         let creators: [String]
         var cover: String? = nil
         var refs: [(String, String)] = []
+        // « Je l'ai » — indépendant des logs. Le seed en montre les trois cas : possédé et
+        // écouté, possédé jamais écouté, écouté jamais possédé.
+        var owned: Bool = false
+        var tracks: Int? = nil
+        var genre: String? = nil
         let logs: [Log]
         var seasons: [SeasonPlan] = []
     }
@@ -93,6 +103,7 @@ struct DemoSeed {
     private static let catalog: [Entry] = [
         Entry(kind: .film, title: "Dune", year: 2021, creators: ["Denis Villeneuve"],
               cover: "\(tmdb)/d5NXSklXo0qyIYkgV94XAgMIckC.jpg", refs: [("tmdb", "movie:438631")],
+              owned: true,
               logs: [Log(daysAgo: 300, rating: 9), Log(daysAgo: 40, rating: 9, note: "Revu avant la suite.")]),
         Entry(kind: .film, title: "Dune : deuxième partie", originalTitle: "Dune: Part Two", year: 2024,
               creators: ["Denis Villeneuve"], cover: "\(tmdb)/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",
@@ -133,7 +144,7 @@ struct DemoSeed {
               refs: [("tmdb", "tv:136315")], logs: [Log(daysAgo: 20, status: .wishlist)]),
         Entry(kind: .book, title: "Dune", year: 1965, creators: ["Frank Herbert"],
               cover: "\(openLibrary)/9780441172719-M.jpg", refs: [("isbn13", "9780441172719")],
-              logs: [Log(daysAgo: 320, rating: 9)]),
+              owned: true, logs: [Log(daysAgo: 320, rating: 9)]),
         Entry(kind: .book, title: "Le Messie de Dune", originalTitle: "Dune Messiah", year: 1969,
               creators: ["Frank Herbert"], cover: "\(openLibrary)/9780441172696-M.jpg",
               refs: [("isbn13", "9780441172696")], logs: [Log(daysAgo: 0, rating: 7)]),
@@ -151,7 +162,7 @@ struct DemoSeed {
               refs: [("isbn13", "9780441478125")], logs: [Log(daysAgo: 8, status: .inProgress)]),
         Entry(kind: .book, title: "Piranesi", year: 2020, creators: ["Susanna Clarke"],
               cover: "\(openLibrary)/9781635575637-M.jpg", refs: [("isbn13", "9781635575637")],
-              logs: [Log(daysAgo: 45, rating: 9, note: "Lu d'une traite.")]),
+              owned: true, logs: [Log(daysAgo: 45, rating: 9, note: "Lu d'une traite.")]),
         Entry(kind: .book, title: "Normal People", year: 2018, creators: ["Sally Rooney"],
               cover: "\(openLibrary)/9780571334650-M.jpg", refs: [("isbn13", "9780571334650")],
               logs: [Log(daysAgo: 210, rating: 6)]),
@@ -161,6 +172,22 @@ struct DemoSeed {
         Entry(kind: .book, title: "Chanson douce", year: 2016, creators: ["Leïla Slimani"],
               cover: "\(openLibrary)/9782070196678-M.jpg", refs: [("isbn13", "9782070196678")],
               logs: [Log(daysAgo: 15, rating: 7)]),
+        // Les trois disques portent les trois relations possibles à une œuvre, et c'est tout
+        // leur intérêt : sans eux, la bibliothèque du seed serait vide et le cas « possédé
+        // jamais consommé » invisible. Les identifiants sont les vrais : si la founder logge
+        // le même album depuis la recherche, il dédoublonne au lieu de faire un doublon.
+        Entry(kind: .album, title: "Random Access Memories", year: 2013, creators: ["Daft Punk"],
+              refs: [("itunes", "album:617154241")], owned: true, tracks: 14, genre: "Pop",
+              logs: [Log(daysAgo: 25, rating: 9, note: "Le vinyle, enfin.")]),
+        // Possédé, jamais écouté dans l'app : il n'apparaît QUE dans la bibliothèque. Aucun
+        // log, donc rien dans le Journal — c'est exactement le cas que la founder décrit.
+        Entry(kind: .album, title: "Discovery", year: 2001, creators: ["Daft Punk"],
+              refs: [("itunes", "album:697194953")], owned: true, tracks: 14, genre: "Électronique",
+              logs: []),
+        // Écouté, pas possédé : l'inverse. Il est dans le Journal, pas dans la bibliothèque.
+        Entry(kind: .album, title: "Kind of Blue", year: 1959, creators: ["Miles Davis"],
+              refs: [("itunes", "album:268443092")], tracks: 5, genre: "Jazz",
+              logs: [Log(daysAgo: 6, rating: 10)]),
         // Le podcast du seed : sans lui, « Remplir données démo » ne montre ni la liste
         // d'épisodes à plat, ni les années repliables, ni le compteur « Podcasts » du Journal.
         Entry(kind: .podcast, title: "Le code a changé", year: 2020, creators: ["France Inter"],
