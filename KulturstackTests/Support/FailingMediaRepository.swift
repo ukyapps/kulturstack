@@ -18,6 +18,7 @@ struct FailingMediaRepository: MediaRepository {
     func add(_ copy: OwnedCopy) throws { throw FailingRepositoryError() }
     func delete(_ copies: [OwnedCopy]) throws { throw FailingRepositoryError() }
     func ownedItems() throws -> [MediaItem] { throw FailingRepositoryError() }
+    func allItems() throws -> [MediaItem] { throw FailingRepositoryError() }
     func save() throws { throw FailingRepositoryError() }
     func deleteAll() throws { throw FailingRepositoryError() }
 }
