@@ -145,7 +145,7 @@ Cinq retours, **deux causes**, aucune visible en test. Détail mot pour mot dans
 | 48 | « Plus de petite vibration » + « pas sur le dernier épisode » + « sur tous les boutons » | Le déclencheur suit le **geste**, pas une valeur affichée, et vit au niveau de l'écran | ✅ #70 |
 | 49 | « Ça a mis beaucoup de temps pour tout décocher » + « ça lag quand j'enregistre les podcasts » | Une seule écriture en base par geste au lieu d'une par épisode ; quatre tests **comptent les écritures** | ✅ #69 |
 
-### Tranche Bibliothèque — **2 PRs sur 3** (17 → 18/10)
+### Tranche Bibliothèque — **complète** (17 → 18/10, 3 PRs sur 3)
 
 Décision founder du 17/10, une heure après la fusion des disques : **« les disques, je les écoute pas, je les ai dans ma bibliothèque. d'ailleurs sur les livres, rajoute une option sur j'ai dans ma bibliothèque »**. C'est l'`OwnedCopy` de l'**ADR-010**, dessiné le 20/09 et rangé en T5 ; l'usage l'a rappelé trois semaines plus tôt. Ergonomie : **ADR-017**. Plan : `docs/plans/bibliotheque.md`.
 
@@ -153,11 +153,13 @@ Décision founder du 17/10, une heure après la fusion des disques : **« les di
 |---|---|---|
 | 38 | Schéma V4 : `OwnedCopy`, l'autre relation à l'œuvre | ✅ #78 — **migration vérifiée sur l'iPhone**, 14/57/54/31 identiques ligne à ligne |
 | 39 | « Dans ma bibliothèque » sur la fiche + cinquième onglet | ✅ #80 |
-| 40 | Seed DEBUG et compteurs | ⏳ |
+| 40 | Seed DEBUG : les **trois relations** à une œuvre, et trois disques qui les incarnent | ✅ |
 
 **Sa décision d'écran, contre ma reco** : un **cinquième onglet**, pas un segment dans Envie. La barre devient **Journal · Envie · En cours · Bibliothèque · Recherche**, ce qui **inverse son verdict du 27/09** (« la barre ne bouge plus »), en connaissance de cause. C'est la **première fois sur cinq** qu'elle ne replie pas une information dans un écran existant — et la règle tient quand même : aucun écran existant ne convenait, le Journal étant bâti sur les **logs**, qu'un disque possédé jamais écouté n'a pas.
 
 **Ce qui est hors périmètre, et écrit** : le format (vinyle / CD / poche), l'édition, le scan de code-barres, l'import d'une collection Discogs. Le modèle porte les champs, l'écran ne les demande pas.
+
+**Le seed montre les trois cas**, parce que le deuxième ne se voit pas autrement : *Random Access Memories* possédé **et** écouté, ***Discovery* possédé jamais écouté** (bibliothèque seulement, aucune ligne de Journal), *Kind of Blue* écouté jamais possédé. Les identifiants Apple sont les vrais : logger le même album depuis la recherche dédoublonne.
 
 ### La base perdue, et la sauvegarde automatique (18/10)
 
@@ -203,8 +205,8 @@ Décision founder du 17/10, après mesure des trois types sans source : **« on 
 | 2 | ✅ | Épisodes | **livrée le 27/09** — saisons / épisodes (séries seulement), onglet « En cours », statuts en cours / abandonné | non |
 | 4a | ✅ | Podcasts | **livrée le 03/10** — Apple (recherche) + RSS, page Radio France, Podcast Index en recours | non |
 | 4b | ✅ | Disques | **livrée le 18/10** — Apple, pas Discogs (ADR-016) | non |
-| 5 | **1ᵉʳ** | **Bibliothèque** | `OwnedCopy`, bouton sur la fiche, cinquième onglet — **en cours**, décision du 17/10 (ADR-017) | non |
-| 3 | 2ᵉ | Import du passé | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
+| 5 | ✅ | Bibliothèque | **livrée le 18/10** — `OwnedCopy`, bouton sur la fiche, cinquième onglet (ADR-017) | non |
+| 3 | **1ᵉʳ** | **Import du passé** | Trakt ZIP JSON, CSV Goodreads / IMDb / Letterboxd / générique, file « à confirmer », export JSON | non |
 | 5b | 3ᵉ | Collection, la suite | formats, éditions, import collection Discogs, scan code-barres | non |
 | 6 | 4ᵉ | Jeux + Concerts | IGDB (2 secrets) ; **les concerts sans source**, mesuré le 17/10 | oui |
 | 7 | 5ᵉ | Théâtre / Expos + IA | saisie assistée, enrichissement LLM, recos, export Obsidian | oui |
@@ -488,7 +490,7 @@ Tests du plan pas encore écrits : T-17 (conversion des notes, T3).
 
 
 1. **`git fetch` avant de lire l'état du projet.** Un dépôt propre peut être en retard : le 27/09, une session de l'après-midi a travaillé sur un `main` vieux de quatre heures et a réécrit des documents que la #36 venait de mettre à jour. `gh pr list --state open` ne montre pas ça — une PR **fusionnée** ne s'y voit pas.
-2. **La tranche Bibliothèque est à 2 PRs sur 3** (`docs/plans/bibliotheque.md`) : il reste le **seed DEBUG** (PR 40), qui doit créer une œuvre possédée **sans** être consommée et une consommée **sans** être possédée — le seul moyen de voir les trois cas sans rien saisir. Ensuite l'**import du passé** (T3) — sauf si l'usage dit autre chose. Un chantier connu attend aussi : **ICI** (ex-France Bleu), 0 % aujourd'hui, ~45 % atteignable en reconnaissant ses stations et en les envoyant directement à Podcast Index (mesuré le 03/10 sur 20 podcasts).
+2. **La tranche Bibliothèque est close** (3 PRs sur 3, `docs/plans/bibliotheque.md`). La suivante au plan est l'**import du passé** (T3) : Trakt en ZIP JSON, CSV Goodreads / Letterboxd, file « à confirmer », export JSON. C'est la plus grosse tranche jusqu'ici — sauf si l'usage dit autre chose, et il a dit autre chose deux fois de suite. Un chantier connu attend aussi : **ICI** (ex-France Bleu), 0 % aujourd'hui, ~45 % atteignable en reconnaissant ses stations et en les envoyant directement à Podcast Index (mesuré le 03/10 sur 20 podcasts).
 3. **Ce qui attend la founder** : juger au doigt ce qu'aucun test ne prouve — le bouton « Dans ma bibliothèque » **se voit-il assez** (3ᵉ position, ligne à part, style discret) ; la **barre à cinq onglets** reste-t-elle lisible (risque annoncé dans l'ADR-017) ; le **retour haptique** à l'ajout et au retrait. L'app est installée depuis le 18/10.
 4. Si l'app ne s'ouvre plus sur l'iPhone : la signature personnelle a expiré (7 jours). iPhone branché et déverrouillé, puis `make device` — échéance **~01/10**.
 5. TestFlight seulement si d'autres testeuses deviennent nécessaires — compte développeur payant, décision founder du 22/09 de ne pas le faire tout de suite.
